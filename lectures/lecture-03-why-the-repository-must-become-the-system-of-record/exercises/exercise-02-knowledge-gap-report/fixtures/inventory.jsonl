@@ -1,0 +1,10 @@
+{"id": "k-entry-file", "decision": "AGENTS.md is the agent entry point", "location": "repo:AGENTS.md", "critical": true}
+{"id": "k-layering", "decision": "core never touches the filesystem", "location": "repo:docs/ARCHITECTURE.md", "critical": true}
+{"id": "k-api-auth", "decision": "all endpoints require session auth", "location": "repo:src/api/CONSTRAINTS.md", "critical": true}
+{"id": "k-commands", "decision": "setup/test/lint run through make", "location": "repo:Makefile", "critical": false}
+{"id": "k-scope", "decision": "feature statuses and evidence", "location": "repo:feature_list.json", "critical": false}
+{"id": "k-storage-adr", "decision": "JSON files, no database", "location": "repo:docs/adr/0001-storage.md", "critical": false}
+{"id": "k-versioning", "decision": "API version bumps need a migration note", "location": "Confluence: repo guidelines page", "critical": true}
+{"id": "k-flaky-test", "decision": "the login test is flaky on CI, rerun once", "location": "Slack #repo-help thread", "critical": false}
+{"id": "k-rate-limits", "decision": "the payment provider rate-limits at 10 rps", "location": "Priya's head", "critical": true}
+{"id": "k-old-bug", "decision": "the CSV importer chokes on BOM markers", "location": "Jira ticket PLAT-412", "critical": false}

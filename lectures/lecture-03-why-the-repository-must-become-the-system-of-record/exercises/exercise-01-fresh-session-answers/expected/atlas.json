@@ -1,0 +1,43 @@
+{
+  "questions": [
+    {
+      "id": "what-is-this",
+      "question": "What is this system?",
+      "answered": true,
+      "answer": "atlas-tool: renders local map tiles for offline hiking maps.",
+      "source": "AGENTS.md"
+    },
+    {
+      "id": "how-organized",
+      "question": "How is it organized?",
+      "answered": true,
+      "answer": "Two layers: renderer (tile math, pure) and cache (disk layout under tiles/).",
+      "source": "docs/ARCHITECTURE.md"
+    },
+    {
+      "id": "how-to-run",
+      "question": "How do I run it?",
+      "answered": true,
+      "answer": "./atlas render --help",
+      "source": "AGENTS.md (Run line)"
+    },
+    {
+      "id": "how-to-verify",
+      "question": "How do I verify it?",
+      "answered": true,
+      "answer": "./verify.sh",
+      "source": "AGENTS.md (Verification line)"
+    },
+    {
+      "id": "where-are-we",
+      "question": "Where are we now?",
+      "answered": true,
+      "answer": "add zoom level 14, then re-run ./verify.sh",
+      "source": "claude-progress.md (Next best step line)"
+    }
+  ],
+  "answered": 5,
+  "total": 5,
+  "visibility_gap": 0.0,
+  "ready": true
+}

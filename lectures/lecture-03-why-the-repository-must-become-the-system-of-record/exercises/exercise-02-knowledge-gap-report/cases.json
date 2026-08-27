@@ -1,0 +1,20 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "scattered",
+      "args": ["fixtures/inventory.jsonl"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/gap-report.json", "kind": "json" }
+    },
+    {
+      "name": "clean",
+      "args": ["fixtures/inventory-clean.jsonl"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/gap-report-clean.json", "kind": "json" }
+    }
+  ]
+}

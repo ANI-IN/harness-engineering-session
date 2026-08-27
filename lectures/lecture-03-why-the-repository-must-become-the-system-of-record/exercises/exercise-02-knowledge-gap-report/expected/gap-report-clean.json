@@ -1,0 +1,8 @@
+{
+  "total": 10,
+  "in_repo": 9,
+  "outside": 1,
+  "visibility_gap": 0.1,
+  "critical_outside": [],
+  "verdict": "acceptable"
+}

@@ -1,0 +1,1 @@
+diverges at $.questions[1].answer: 'atlas-tool: renders local map tiles for offline hiking maps.' != 'Two layers: renderer (tile math, pure) and cache (disk layout under tiles/).'

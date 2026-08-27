@@ -49,7 +49,7 @@ the harness-creator skill) follows the same conventions and lands next.
 | --- | --- | --- |
 | [01: Why capable agents still fail](lectures/lecture-01-why-capable-agents-still-fail/) | Capability is not reliable execution; failures live in five subsystems | Project 01 |
 | [02: What a harness actually is](lectures/lecture-02-what-a-harness-actually-is/) | Instructions, tools, environment, state, feedback, as one system | Project 01 |
-| 03: Why the repository must become the system of record | If it's not in the repo, it doesn't exist for the agent | Project 02 |
+| [03: Why the repository must become the system of record](lectures/lecture-03-why-the-repository-must-become-the-system-of-record/) | If it's not in the repo, it doesn't exist for the agent | Project 02 |
 | 04: Why one giant instruction file fails | Map, not manual: progressive disclosure | Project 02 |
 | 05: Why long-running tasks lose continuity | Context decay; externalized state across sessions | Project 03 |
 | 06: Why initialization needs its own phase | init.sh as a first-class phase | Project 03 |

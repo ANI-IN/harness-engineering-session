@@ -1,0 +1,26 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "mapped",
+      "args": ["fixtures/repos/repo-mapped"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/mapped.json", "kind": "json" }
+    },
+    {
+      "name": "blank-spots",
+      "args": ["fixtures/repos/repo-blank-spots"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/blank-spots.json", "kind": "json" }
+    },
+    {
+      "name": "missing-repo",
+      "args": ["fixtures/no-such-repo"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}

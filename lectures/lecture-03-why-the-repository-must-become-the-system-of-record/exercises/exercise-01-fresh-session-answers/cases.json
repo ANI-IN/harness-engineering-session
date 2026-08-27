@@ -1,0 +1,20 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "atlas",
+      "args": ["fixtures/repos/repo-atlas"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/atlas.json", "kind": "json" }
+    },
+    {
+      "name": "thin",
+      "args": ["fixtures/repos/repo-thin"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/thin.json", "kind": "json" }
+    }
+  ]
+}

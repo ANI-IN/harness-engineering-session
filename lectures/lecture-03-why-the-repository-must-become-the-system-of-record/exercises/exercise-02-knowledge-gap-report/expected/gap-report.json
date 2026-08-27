@@ -1,0 +1,11 @@
+{
+  "total": 10,
+  "in_repo": 6,
+  "outside": 4,
+  "visibility_gap": 0.4,
+  "critical_outside": [
+    "k-versioning",
+    "k-rate-limits"
+  ],
+  "verdict": "needs-externalization"
+}

@@ -1,0 +1,10 @@
+{"id": "c-entry", "decision": "AGENTS.md is the agent entry point", "location": "repo:AGENTS.md", "critical": true}
+{"id": "c-arch", "decision": "two-layer renderer/cache split", "location": "repo:docs/ARCHITECTURE.md", "critical": true}
+{"id": "c-verify", "decision": "verify.sh is the completion gate", "location": "repo:AGENTS.md", "critical": true}
+{"id": "c-pins", "decision": "runtime pinned via .python-version", "location": "repo:.python-version", "critical": false}
+{"id": "c-state", "decision": "feature statuses and evidence", "location": "repo:feature_list.json", "critical": false}
+{"id": "c-progress", "decision": "session history and next step", "location": "repo:claude-progress.md", "critical": false}
+{"id": "c-cache-adr", "decision": "tiles cached by zoom/x/y path", "location": "repo:docs/adr/0002-cache-layout.md", "critical": false}
+{"id": "c-clean", "decision": "sessions end via the clean-state checklist", "location": "repo:clean-state-checklist.md", "critical": false}
+{"id": "c-style", "decision": "renderer stays pure, no I/O", "location": "repo:docs/ARCHITECTURE.md", "critical": true}
+{"id": "c-oncall", "decision": "weekend deploy freeze", "location": "Ops runbook (Confluence)", "critical": false}

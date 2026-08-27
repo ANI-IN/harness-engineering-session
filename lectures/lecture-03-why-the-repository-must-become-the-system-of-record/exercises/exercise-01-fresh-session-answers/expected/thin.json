@@ -1,0 +1,43 @@
+{
+  "questions": [
+    {
+      "id": "what-is-this",
+      "question": "What is this system?",
+      "answered": true,
+      "answer": "thin-tool: parses one CSV format.",
+      "source": "AGENTS.md"
+    },
+    {
+      "id": "how-organized",
+      "question": "How is it organized?",
+      "answered": false,
+      "answer": null,
+      "source": null
+    },
+    {
+      "id": "how-to-run",
+      "question": "How do I run it?",
+      "answered": true,
+      "answer": "./thin parse --help",
+      "source": "AGENTS.md (Run line)"
+    },
+    {
+      "id": "how-to-verify",
+      "question": "How do I verify it?",
+      "answered": false,
+      "answer": null,
+      "source": null
+    },
+    {
+      "id": "where-are-we",
+      "question": "Where are we now?",
+      "answered": false,
+      "answer": null,
+      "source": null
+    }
+  ],
+  "answered": 2,
+  "total": 5,
+  "visibility_gap": 0.6,
+  "ready": false
+}
