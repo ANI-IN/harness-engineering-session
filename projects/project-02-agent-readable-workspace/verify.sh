@@ -6,6 +6,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 REPO_ROOT="$(cd ../.. && pwd)"
+# Resolve the pinned Node 20 toolchain (pnpm lives beside it); bare `pnpm`
+# would resolve through PATH order, which a newer Node elsewhere can shadow.
+NODE20_BIN="$(bash "$REPO_ROOT/tools/find_node20.sh")"
 
 STACK="both"
 for arg in "$@"; do
@@ -33,6 +36,6 @@ if [ "$STACK" = "python" ] || [ "$STACK" = "both" ]; then
   (cd "$REPO_ROOT" && uv run pytest projects/project-02-agent-readable-workspace -q)
 fi
 if [ "$STACK" = "typescript" ] || [ "$STACK" = "both" ]; then
-  (cd "$REPO_ROOT" && pnpm exec vitest run --silent=true \
+  (cd "$REPO_ROOT" && "$NODE20_BIN/pnpm" exec vitest run --silent=true \
     projects/project-02-agent-readable-workspace)
 fi
