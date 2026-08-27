@@ -1,0 +1,55 @@
+{
+  "protocol": "two sessions; every step is a fresh child process of this track's CLI",
+  "session_a": {
+    "steps": [
+      {
+        "command": "kb init --data-dir kb-data --seed data/sample-documents",
+        "exit": 0,
+        "observed": "exit 0: {\"data_dir\":\"kb-data\",\"created\":[\"kb-data\",\"kb-data/documents\",\"kb-data/index\"],\"seeded\":[\"architecture-notes.md\",\"retrieval-plan.md\",\"team-meeting.txt\"],\"metadata_entries\":3}"
+      },
+      {
+        "command": "kb import --data-dir kb-data imports/field-guide.md",
+        "exit": 0,
+        "observed": "exit 0: {\"imported\":[{\"id\":\"field-guide\",\"title\":\"Field guide to importing\",\"filename\":\"field-guide.md\",\"lines\":20,\"origin\":\"imported\",\"metadata\":{\"chars\":841,\"words\":142,\"paragraphs\":6}}],\"skipped\":[]}"
+      },
+      {
+        "command": "kb index --data-dir kb-data",
+        "exit": 0,
+        "observed": "exit 0: {\"indexed\":[{\"document\":\"architecture-notes\",\"chunks\":3},{\"document\":\"field-guide\",\"chunks\":3},{\"document\":\"retrieval-plan\",\"chunks\":2},{\"document\":\"team-meeting\",\"chunks\":2}],\"skipped\":[],\"total_chunks\":10}"
+      },
+      {
+        "command": "kb status --data-dir kb-data",
+        "exit": 0,
+        "observed": "exit 0: {\"documents\":4,\"indexed\":4,\"total_chunks\":10,\"state\":\"ready\",\"stale\":[]}"
+      }
+    ],
+    "handoff_written": true
+  },
+  "session_b": {
+    "handoff_sections": 3,
+    "steps": [
+      {
+        "command": "kb status --data-dir kb-data",
+        "exit": 0,
+        "observed": "exit 0: {\"documents\":4,\"indexed\":4,\"total_chunks\":10,\"state\":\"ready\",\"stale\":[]}"
+      },
+      {
+        "command": "kb ask --data-dir kb-data \"Which lines become citations in the ranking?\"",
+        "exit": 0,
+        "observed": "exit 0: {\"question\":\"Which lines become citations in the ranking?\",\"citations\":[{\"document\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"chunk\":1,\"excerpt\":\"The ranking keeps the two best scoring lines and returns them as citations.\",\"score\":3},{\"document\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"chunk\":0,\"excerpt\":\"# Retrieval plan\",\"score\":2}],\"answer\":\"Based on \\\"Retrieval plan\\\" (chunk 1): The ranking keeps the two best scoring lines and returns them as citations. See also \\\"Retrieval plan\\\" (chunk 0).\"}"
+      },
+      {
+        "command": "kb show --data-dir kb-data field-guide",
+        "exit": 0,
+        "observed": "exit 0: {\"id\":\"field-guide\",\"title\":\"Field guide to importing\",\"filename\":\"field-guide.md\",\"lines\":20,\"origin\":\"imported\",\"metadata\":{\"chars\":841,\"words\":142,\"paragraphs\":6},\"content\":\"# Field guide to importing\\n\\nImporting is the moment a document becomes part of the knowledge base\\ninstead of a file that happens to sit nearby. The import command copies\\nthe file into the documents folder and, just as important, records it in\\nthe metadata index.\\n\\n## Why the metadata index exists\\n\\nA directory scan tells you what files exist; the metadata index tells you\\nwhat the system knows. Listing reads the index, never the directory, so\\nthe answer to \\\"what is in the knowledge base\\\" comes from recorded state\\nrather than rediscovery. That is the system of record principle applied\\nto a single JSON file.\\n\\n## What survives a restart\\n\\nEverything: the copied document, its index entry, its title and line\\ncount. A fresh process lists the imported document without re-reading the\\noriginal source, which is the whole point of persistence.\\n\"}"
+      }
+    ]
+  },
+  "resume": {
+    "status_matches_session_a": true,
+    "state": "ready",
+    "documents": 4,
+    "answer_grounded": true,
+    "resumed": true
+  }
+}

@@ -61,8 +61,9 @@ Reading the graph:
   [project 01](../projects/project-01-baseline-vs-minimal-harness/) runs the
   harness-vs-no-harness experiment (lectures 01-02),
   [project 02](../projects/project-02-agent-readable-workspace/) makes a
-  workspace agent-readable (lectures 03-04), project 03 makes work survive
-  session boundaries (lectures 05-06).
+  workspace agent-readable (lectures 03-04),
+  [project 03](../projects/project-03-multi-session-continuity/) makes work
+  survive session boundaries (lectures 05-06).
 - The **library feeds every project**: projects instantiate the same
   templates the library ships, and lecture 02 is where those artifacts are
   defined, which is why it points at the library.

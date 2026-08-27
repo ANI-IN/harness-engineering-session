@@ -182,8 +182,10 @@ from the fixture files; none is typed into prose.
 
 Both are graded by shared expected output: `./verify.sh --stack=<yours>`
 exits 0 when your track's implementation is correct. The related project
-for this lecture is Project 03 (multi-session continuity), which lands
-with the projects phase of this course.
+for this lecture is
+[Project 03: multi-session continuity](../../projects/project-03-multi-session-continuity/),
+which proves this lecture's continuity claim across a real process
+boundary.
 
 ## Further exploration
 

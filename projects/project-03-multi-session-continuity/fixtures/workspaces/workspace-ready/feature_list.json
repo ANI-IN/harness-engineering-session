@@ -1,0 +1,18 @@
+{
+  "project": "workspace-ready fixture",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "document-import",
+      "title": "Document import",
+      "behavior": "Importing a file records it in the metadata index.",
+      "verification": "kb import --data-dir kb-data imports/field-guide.md",
+      "status": "passing",
+      "evidence": {
+        "command": "kb import --data-dir kb-data imports/field-guide.md",
+        "observed": "exit 0: one document imported",
+        "date": "2026-08-27"
+      }
+    }
+  ]
+}

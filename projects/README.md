@@ -27,7 +27,7 @@ documented commands; that is verified, not assumed.
 | --- | --- | --- | --- |
 | 01 | [Baseline vs minimal harness](./project-01-baseline-vs-minimal-harness/) | A controlled experiment: the same build task executed prompt-only vs rules-first, with measured results | 01, 02 |
 | 02 | [Agent-readable workspace](./project-02-agent-readable-workspace/) | A repository structured so an agent can navigate it and pick up where the last session left off | 03, 04 |
-| 03 | Multi-session continuity | State files and an init script that keep work moving across session restarts | 05, 06 |
+| 03 | [Multi-session continuity](./project-03-multi-session-continuity/) | State files and an init script that keep work moving across session restarts | 05, 06 |
 
 Projects 04-08 (runtime feedback and scope control, self-verification and
 role separation, the observable-harness capstone, loop engineering, graph
