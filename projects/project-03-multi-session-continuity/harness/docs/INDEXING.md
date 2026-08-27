@@ -1,4 +1,4 @@
-# Indexing, project 03 working copy
+# Indexing, project 03 workspace
 
 The focused doc the router points at when the task touches chunking, the
 index state, or grounded answers.

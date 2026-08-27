@@ -205,7 +205,7 @@ fallback, init idempotency, the evidence-reset control, the
 isolated-directories control, the canonical command splitter, and the
 committed-evidence equality above. Additionally, an **independent
 evidence check** in each suite executes every feature's evidence command
-through the real CLI as a subprocess in a fresh working copy, with the
+through the real CLI as a subprocess in a fresh workspace, with the
 experiment runner and its fake agent entirely out of the loop, and
 asserts the output equals the recorded `observed` string; the committed
 evidence is thereby true on its own, not merely consistent with its

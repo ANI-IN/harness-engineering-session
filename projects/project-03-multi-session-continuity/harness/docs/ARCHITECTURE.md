@@ -1,4 +1,4 @@
-# Architecture, project 03 working copy
+# Architecture, project 03 workspace
 
 Unchanged layering: CLI and loopback HTTP server as surfaces, core
 functions, plain-file storage. Version 3 adds a derived-state layer and a

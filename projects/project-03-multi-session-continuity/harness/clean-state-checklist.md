@@ -1,4 +1,4 @@
-# Clean-state checklist, project 03 working copy
+# Clean-state checklist, project 03 workspace
 
 Walk this before declaring a work stream finished. Every item is a
 command and the outcome that counts as clean; prose impressions do not.

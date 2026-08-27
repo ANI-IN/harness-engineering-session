@@ -164,7 +164,7 @@ def expand_kb(command: str) -> list[str]:
 class TestIndependentEvidence:
     """The committed evidence must be true on its own, not merely match its
     generator: each feature's evidence command is executed through the real
-    CLI as a subprocess in a fresh working copy, with the experiment runner
+    CLI as a subprocess in a fresh workspace, with the experiment runner
     and its fake agent entirely out of the loop, and the output must equal
     the recorded `observed` string."""
 

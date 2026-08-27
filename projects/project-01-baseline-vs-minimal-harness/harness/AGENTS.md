@@ -1,4 +1,4 @@
-# AGENTS.md, project 01 working copy
+# AGENTS.md, project 01 workspace
 
 Rules for any agent working in this directory. The task prompt is vague on
 purpose; this file is what makes it concrete.

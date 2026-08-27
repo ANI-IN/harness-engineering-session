@@ -1,4 +1,4 @@
-# Product, project 03 working copy
+# Product, project 03 workspace
 
 kb v3 keeps the seven project 02 features and adds four: everything is
 re-verified against version 3, nothing is "carried over".

@@ -147,9 +147,8 @@ doctor" in a unit's prose means that unit's instance.
 **Workspace**: the directory an agent session works in, together with its
 harness artifacts (router `AGENTS.md`, state files, docs). The committed
 `harness/` directories are workspace seeds; project 02's
-`kb workspace-check` grades a workspace's readability. Some harness
-artifact headers say "working copy" for the same thing; workspace is the
-canonical term.
+`kb workspace-check` grades a workspace's readability. Workspace is the
+canonical term everywhere, including the harness artifact headers.
 
 **Seeded defect**: a bug placed in a fixture on purpose, whose exact symptom
 and catching stage are declared in SPEC.md so both tracks fail identically.

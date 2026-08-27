@@ -1,4 +1,4 @@
-# Session handoff, project 03 working copy
+# Session handoff, project 03 workspace
 
 ## Verified now
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# init.sh, project 01 working copy: initialize the kb data directory and
+# init.sh, project 01 workspace: initialize the kb data directory and
 # smoke-check the app before any feature work.
 #
 # One file serves both tracks (the course's declared single-file exception

@@ -168,7 +168,7 @@ function expandKb(command: string): string[] {
 }
 
 // Every evidence command in the committed feature list executed through the
-// real CLI as a subprocess, in feature-list order, in a fresh working copy;
+// real CLI as a subprocess, in feature-list order, in a fresh workspace;
 // output must equal the recorded `observed` string.
 describe("independent evidence", () => {
   it(

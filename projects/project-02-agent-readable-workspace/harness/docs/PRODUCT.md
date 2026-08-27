@@ -1,4 +1,4 @@
-# Product, project 02 working copy
+# Product, project 02 workspace
 
 kb v2 keeps the four project 01 features and adds three: everything is
 re-verified against version 2, nothing is "carried over".

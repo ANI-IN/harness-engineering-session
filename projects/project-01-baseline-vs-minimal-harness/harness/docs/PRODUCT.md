@@ -1,4 +1,4 @@
-# Product, project 01 working copy
+# Product, project 01 workspace
 
 kb is a local knowledge base: it holds a small set of text and markdown
 documents and answers questions about them with citations.

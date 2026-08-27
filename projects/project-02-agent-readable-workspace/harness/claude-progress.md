@@ -1,4 +1,4 @@
-# claude-progress.md, project 02 working copy
+# claude-progress.md, project 02 workspace
 
 ## Session 1, 2026-08-27
 

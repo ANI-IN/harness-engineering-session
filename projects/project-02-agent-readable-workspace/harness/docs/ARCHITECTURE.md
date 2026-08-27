@@ -1,4 +1,4 @@
-# Architecture, project 02 working copy
+# Architecture, project 02 workspace
 
 Unchanged layering from project 01: CLI and loopback HTTP server as
 surfaces, core functions, plain-file storage. What version 2 adds is a

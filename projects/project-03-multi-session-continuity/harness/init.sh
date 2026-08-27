@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# init.sh, project 03 working copy: initialize the kb data directory,
+# init.sh, project 03 workspace: initialize the kb data directory,
 # build the chunk index, smoke-check the app, and gate the session on
 # workspace readability.
 #

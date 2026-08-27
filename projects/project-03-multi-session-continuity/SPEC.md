@@ -99,7 +99,7 @@ sentence is unchanged from project 01.
 ## The two-session continuity proof
 
 `kb continuity [--workdir DIR]` (default: a private temp directory,
-removed afterwards) seeds a working copy from this project's fixtures and
+removed afterwards) seeds a workspace from this project's fixtures and
 runs:
 
 - **Session A**: `init` (seeding the corpus), `import` of the field
@@ -113,7 +113,7 @@ runs:
 **The process boundary is a contract, not an implementation detail**:
 every step in both sessions is executed by spawning this track's own CLI
 as a child process (Python: `sys.executable` plus this file; TypeScript:
-the repository's `tsx` binary plus this file), each with the working copy
+the repository's `tsx` binary plus this file), each with the workspace
 as its working directory. In-process function calls are forbidden for
 continuity steps; a fresh interpreter per step is what makes "session B
 resumed from repository state alone" a measured fact rather than a claim.

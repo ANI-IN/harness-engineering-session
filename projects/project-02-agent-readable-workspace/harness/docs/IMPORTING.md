@@ -1,4 +1,4 @@
-# Importing, project 02 working copy
+# Importing, project 02 workspace
 
 The focused doc the router points at when the task touches import or the
 metadata index.

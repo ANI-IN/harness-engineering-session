@@ -1,4 +1,4 @@
-# Architecture, project 01 working copy
+# Architecture, project 01 workspace
 
 The kb tool is a single program with two entry surfaces and one storage
 layer.

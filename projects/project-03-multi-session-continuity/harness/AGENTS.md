@@ -1,4 +1,4 @@
-# AGENTS.md, project 03 working copy
+# AGENTS.md, project 03 workspace
 
 A router, not a manual: this file tells you where answers live and what
 order to establish them in. Read only what the task needs.
