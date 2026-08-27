@@ -159,6 +159,43 @@ def check_units(errors: list[str], root: Path) -> None:
                 errors.append(f"{_rel(directory, root)}: fixtures/+expected/ without SPEC.md")
 
 
+JUSTIFICATION_MARKER = "Starter-divergence justification:"
+
+
+def check_starter_divergence(exercise: Path, rel: str, errors: list[str]) -> None:
+    """The genuine-partial standard: a starter's first divergence must be a
+    value mismatch inside a populated structure. A null-vs-value diff reads
+    as "not implemented" and is rejected outright; a length diff (or a
+    missing/unexpected key) is accepted only when the exercise's SPEC.md
+    carries a one-line justification starting with the marker."""
+    divergence_path = exercise / "expected" / "starter-divergence.txt"
+    if not divergence_path.is_file():
+        return  # missing-file error is reported by the required-files check
+    signature = divergence_path.read_text(encoding="utf-8").strip()
+    spec_path = exercise / "SPEC.md"
+    spec_text = spec_path.read_text(encoding="utf-8") if spec_path.is_file() else ""
+
+    if re.search(r"(^|[ (])None != ", signature) or re.search(r" != None([),]|$)", signature):
+        errors.append(
+            f"{rel}: starter divergence is null-vs-value ({signature!r}); it reads as "
+            "'not implemented' rather than 'wrong', so redesign the starter to produce "
+            "a wrong value inside a populated structure"
+        )
+        return
+    needs_justification = (
+        re.search(r": length \d+ != \d+", signature)
+        or "missing in output" in signature
+        or "unexpected key" in signature
+    )
+    if needs_justification and JUSTIFICATION_MARKER not in spec_text:
+        errors.append(
+            f"{rel}: starter divergence is a structural diff ({signature!r}) with no "
+            f"justification; add a line starting '{JUSTIFICATION_MARKER}' to SPEC.md "
+            "explaining why this is the right signal, or redesign the starter so the "
+            "divergence is a value mismatch"
+        )
+
+
 def check_exercises(errors: list[str], root: Path) -> None:
     base = root / "lectures"
     if not base.is_dir():
@@ -171,6 +208,7 @@ def check_exercises(errors: list[str], root: Path) -> None:
         for required_file in required_files:
             if not (exercise / required_file).is_file():
                 errors.append(f"{rel}: missing {required_file}")
+        check_starter_divergence(exercise, rel, errors)
         for stage in ("starter", "solution"):
             for stack in ("python", "typescript"):
                 if not (exercise / stage / stack).is_dir():

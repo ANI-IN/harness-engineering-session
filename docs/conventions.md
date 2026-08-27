@@ -172,6 +172,16 @@ floors.**
   signature and each solution run to pass. The build session additionally
   records all four runs per exercise in `build_state.json`
   (`tools/check_build_state.py` fails when any are missing).
+- **The genuine-partial standard** (machine-checked by `lint-structure`
+  against the committed divergence signature): a starter must be a partial
+  *implementation*, not a stub, so its first divergence must be a value
+  mismatch inside a populated structure. A null-vs-value divergence reads
+  as "not implemented" and is rejected outright. A structural divergence
+  (a `length N != M` diff, a missing or unexpected key) is accepted only
+  when the exercise's SPEC.md carries a one-line justification starting
+  with `Starter-divergence justification:` explaining why absence is the
+  right signal for that exercise. Prefer naive first drafts with one
+  realistic mistake each, plus fixtures that trap exactly those mistakes.
 - Hints are progressive `<details>` blocks so they do not spoil on sight.
 
 ## Seeded defects

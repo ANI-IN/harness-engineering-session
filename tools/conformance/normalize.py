@@ -89,12 +89,19 @@ def _diff_path(got: Any, want: Any, path: str) -> str | None:
                 return found
         return None
     if isinstance(got, list):
-        if len(got) != len(want):
-            return f"{path}: length {len(got)} != {len(want)}"
-        for index, (g, w) in enumerate(zip(got, want, strict=True)):
+        # Compare the common prefix first: a divergence that names a wrong
+        # element is more actionable than a bare length mismatch.
+        for index, (g, w) in enumerate(zip(got, want, strict=False)):
             found = _diff_path(g, w, f"{path}[{index}]")
             if found:
                 return found
+        if len(got) != len(want):
+            longer, side = (got, "unexpected") if len(got) > len(want) else (want, "missing")
+            element = longer[min(len(got), len(want))]
+            return (
+                f"{path}: length {len(got)} != {len(want)} "
+                f"({side} element: {element!r})"
+            )
         return None
     return None if got == want else f"{path}: {got!r} != {want!r}"
 

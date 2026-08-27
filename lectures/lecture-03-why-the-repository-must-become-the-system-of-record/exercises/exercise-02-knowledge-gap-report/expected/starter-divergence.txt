@@ -1,1 +1,1 @@
-diverges at $.critical_outside: length 1 != 2
+diverges at $.critical_outside[0]: 'k-rate-limits' != 'k-versioning'

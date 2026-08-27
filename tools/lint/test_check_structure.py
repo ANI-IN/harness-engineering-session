@@ -82,3 +82,45 @@ def test_floor_violation_detected(tmp_path):
     errors: list[str] = []
     check_structure.check_floors(errors, tmp_path, {"min_lectures": 1})
     assert any("fail-on-empty" in error for error in errors)
+
+
+def _exercise_with_divergence(tmp_path, signature: str, spec: str = "# spec\n"):
+    exercise = tmp_path / "lectures" / "lecture-01-x" / "exercises" / "exercise-01-y"
+    (exercise / "expected").mkdir(parents=True)
+    (exercise / "expected" / "starter-divergence.txt").write_text(signature, encoding="utf-8")
+    (exercise / "SPEC.md").write_text(spec, encoding="utf-8")
+    return exercise
+
+
+def test_value_mismatch_divergence_passes(tmp_path):
+    exercise = _exercise_with_divergence(tmp_path, "diverges at $.rate: 0.25 != 0.875\n")
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert errors == []
+
+
+def test_null_vs_value_divergence_rejected(tmp_path):
+    exercise = _exercise_with_divergence(tmp_path, "diverges at $.answer: None != 'real'\n")
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert len(errors) == 1
+    assert "null-vs-value" in errors[0]
+
+
+def test_length_diff_without_justification_rejected(tmp_path):
+    exercise = _exercise_with_divergence(tmp_path, "diverges at $.items: length 0 != 3\n")
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert len(errors) == 1
+    assert "no \njustification" in errors[0] or "no justification" in errors[0].replace("\n", " ")
+
+
+def test_length_diff_with_justification_accepted(tmp_path):
+    exercise = _exercise_with_divergence(
+        tmp_path,
+        "diverges at $.items: length 2 != 3 (missing element: 'x')\n",
+        "# spec\n\nStarter-divergence justification: the missing row IS the lesson here.\n",
+    )
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert errors == []

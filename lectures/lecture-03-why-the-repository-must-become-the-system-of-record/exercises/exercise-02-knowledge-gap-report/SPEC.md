@@ -65,9 +65,9 @@ the substring "repo" (case-insensitive) counts as in-repo. The two trap
 entries make it overcount: it reports 8 in-repo, gap 0.2, and drops
 `k-versioning` (a critical decision) from `critical_outside`. Verification
 fails with a report mismatch first diverging at
-`$.critical_outside: length 1 != 2`: a critical decision has silently
-disappeared from the outside list. The starter must run cleanly and fail
-only by producing these wrong values.
+`$.critical_outside[0]: 'k-rate-limits' != 'k-versioning'`: the divergence
+names the critical decision that silently vanished from the outside list.
+The starter must run cleanly and fail only by producing these wrong values.
 
 ## Expected output
 

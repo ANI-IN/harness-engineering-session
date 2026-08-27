@@ -56,7 +56,7 @@ restores `k-versioning` to `critical_outside`.
 Before your change:
 
 ```text
-[FAIL] scattered (python) -- stdout mismatch vs expected/gap-report.json: diverges at $.critical_outside: length 1 != 2
+[FAIL] scattered (python) -- stdout mismatch vs expected/gap-report.json: diverges at $.critical_outside[0]: 'k-rate-limits' != 'k-versioning'
 ```
 
 A critical decision (the API versioning rule, recorded only in Confluence)
@@ -132,8 +132,8 @@ re-verified on every `make verify` (never hand-written):
 
 <!-- generated-block: uv run python tools/run_acceptance.py lectures/lecture-03-why-the-repository-must-become-the-system-of-record/exercises/exercise-02-knowledge-gap-report -->
 ```text
-starter/python: exit 1 (as intended: diverges at $.critical_outside: length 1 != 2)
-starter/typescript: exit 1 (as intended: diverges at $.critical_outside: length 1 != 2)
+starter/python: exit 1 (as intended: diverges at $.critical_outside[0]: 'k-rate-limits' != 'k-versioning')
+starter/typescript: exit 1 (as intended: diverges at $.critical_outside[0]: 'k-rate-limits' != 'k-versioning')
 solution/python: exit 0 (PASS: pass (2 checks))
 solution/typescript: exit 0 (PASS: pass (2 checks))
 4/4 acceptance runs performed

@@ -5,7 +5,7 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-.PHONY: help setup doctor verify conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure
+.PHONY: help setup doctor status verify conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure
 
 help: ## List available targets
 	@grep -E '^[a-z][a-z-]*:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  make %-22s %s\n", $$1, $$2}'
@@ -17,6 +17,9 @@ setup: ## Install both toolchains (uv sync + pnpm install)
 
 doctor: ## Print toolchain versions and check them against the pins
 	@uv run python tools/lint/doctor.py
+
+status: ## Run every gate and print exit codes, floors, and tree counts as one artifact
+	@uv run python tools/report_status.py
 
 verify: ## Run every unit's verify.sh (both stacks) + all test suites
 	@uv run pytest

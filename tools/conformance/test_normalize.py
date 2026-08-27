@@ -82,6 +82,36 @@ class TestNormalizeDispatch:
         assert not looks_like_json("plain text")
 
 
+class TestFirstDivergence:
+    def test_names_the_field_for_scalar_mismatch(self):
+        from tools.conformance.normalize import first_divergence
+
+        got = '{"rate": 0.25}'
+        want = '{"rate": 0.875}'
+        assert first_divergence(got, want) == "$.rate: 0.25 != 0.875"
+
+    def test_list_prefix_mismatch_beats_length(self):
+        from tools.conformance.normalize import first_divergence
+
+        got = '["k-rate-limits"]'
+        want = '["k-versioning", "k-rate-limits"]'
+        assert first_divergence(got, want) == "$[0]: 'k-rate-limits' != 'k-versioning'"
+
+    def test_length_mismatch_names_the_dropped_element(self):
+        from tools.conformance.normalize import first_divergence
+
+        got = '["a"]'
+        want = '["a", "b"]'
+        assert first_divergence(got, want) == "$: length 1 != 2 (missing element: 'b')"
+
+    def test_length_mismatch_names_the_extra_element(self):
+        from tools.conformance.normalize import first_divergence
+
+        got = '["a", "b"]'
+        want = '["a"]'
+        assert first_divergence(got, want) == "$: length 2 != 1 (unexpected element: 'b')"
+
+
 class TestRunnerDiscovery:
     def test_discovery_requires_spec_and_cases(self, tmp_path, monkeypatch):
         from tools.conformance import runner
