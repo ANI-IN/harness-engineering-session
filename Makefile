@@ -44,6 +44,13 @@ endif
 doctor: ## Check toolchain versions against the pins for TRACK=python|typescript|both
 	@uv run python tools/lint/doctor.py --track=$(TRACK)
 
+resume: ## Print the session handoff (if any), the HEAD commit, unpushed count, and tree status
+	@if [ -f session-handoff.md ]; then cat session-handoff.md; else echo "resume: no session-handoff.md at the repo root (nothing in flight)"; fi
+	@echo; echo "--- repository ---"
+	@git log --format='HEAD %h %an %s' -1
+	@echo "unpushed: $$(git rev-list --count @{upstream}..HEAD 2>/dev/null || echo 'n/a (no upstream)') commit(s)"
+	@if [ -z "$$(git status --short)" ]; then echo "tree: clean"; else echo "tree: DIRTY"; git status --short; fi
+
 status: ## Run every gate and print exit codes, floors, and tree counts as one artifact
 	@uv run python tools/report_status.py
 

@@ -8,10 +8,14 @@ entry point. It is a router; depth lives in the linked docs.
 
 ## Startup workflow
 
-1. `make setup`: install both toolchains; `make doctor` confirms the pins.
-2. Read [docs/conventions.md](docs/conventions.md): the standard every
+1. `make resume`: prints `session-handoff.md` when a previous session left
+   work in flight (the exact next unit, the first command, and the
+   standing rules that live nowhere else). Read all of it before anything
+   else; when it is absent, nothing is in flight.
+2. `make setup`: install both toolchains; `make doctor` confirms the pins.
+3. Read [docs/conventions.md](docs/conventions.md): the standard every
    folder follows. It is authoritative.
-3. `make verify`: confirm the tree is green before changing anything.
+4. `make status`: confirm every gate is green before changing anything.
 
 ## Working rules
 
