@@ -1,0 +1,92 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "resume-after-dirty-ending-derails",
+      "args": [
+        "resume",
+        "fixtures/workspace",
+        "--exit=dirty"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/resume-dirty.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "resume-after-clean-ending-continues",
+      "args": [
+        "resume",
+        "fixtures/workspace",
+        "--exit=clean"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/resume-clean.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "dirty-ending-fails-the-checklist",
+      "args": [
+        "first",
+        "fixtures/workspace",
+        "--exit=dirty"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/first-dirty.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "clean-ending-passes-the-checklist",
+      "args": [
+        "first",
+        "fixtures/workspace",
+        "--exit=clean"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/first-clean.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "resume",
+        "fixtures/no-such-workspace",
+        "--exit=clean"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    },
+    {
+      "name": "unknown-exit-discipline",
+      "args": [
+        "resume",
+        "fixtures/workspace",
+        "--exit=tidy"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

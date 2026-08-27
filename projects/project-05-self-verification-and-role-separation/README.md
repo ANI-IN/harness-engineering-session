@@ -276,3 +276,7 @@ rule since project 01; here it becomes a checker's verdict.
 - [Lecture 10: Why end-to-end testing changes results](../../lectures/lecture-10-why-end-to-end-testing-changes-results/):
   why this project's checker runs each feature's verification command
   against the working application rather than reading the code.
+- [Lecture 12: Why every session must leave a clean state](../../lectures/lecture-12-why-every-session-must-leave-a-clean-state/)
+  is not paired with a project, and this is one of the two closest built
+  ones: the rubric's fifth item is that lecture's exit protocol reduced
+  to one executable predicate.

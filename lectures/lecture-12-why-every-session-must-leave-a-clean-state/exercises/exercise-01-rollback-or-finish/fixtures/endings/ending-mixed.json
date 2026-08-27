@@ -1,0 +1,20 @@
+{
+  "session": "003",
+  "edits": [
+    {
+      "path": "src/list.txt",
+      "check": "unit-list",
+      "created": false
+    },
+    {
+      "path": "src/tags.txt",
+      "check": "unit-tags",
+      "created": true
+    },
+    {
+      "path": "config/store.conf",
+      "check": "wiring-store",
+      "created": false
+    }
+  ]
+}

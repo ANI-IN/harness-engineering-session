@@ -273,6 +273,11 @@ state alone. This is lecture 05's claim as a measured fact.
 
 ## Related lectures
 
+- [Lecture 12: Why every session must leave a clean state](../../lectures/lecture-12-why-every-session-must-leave-a-clean-state/)
+  is not paired with a project, and this is one of the two closest built
+  ones: the handoff and clean-state checklist here are the artifacts that
+  lecture's exit protocol writes.
+
 - [Lecture 05: Why long-running tasks lose continuity](../../lectures/lecture-05-why-long-running-tasks-lose-continuity/):
   the continuity proof is that lecture's session simulator, made real.
 - [Lecture 06: Why initialization needs its own phase](../../lectures/lecture-06-why-initialization-needs-its-own-phase/):

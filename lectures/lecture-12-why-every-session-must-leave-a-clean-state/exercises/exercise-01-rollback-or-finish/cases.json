@@ -1,0 +1,60 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "mixed-ending",
+      "args": [
+        "fixtures/workspaces/workspace-open",
+        "fixtures/endings/ending-mixed.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/mixed.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "created-and-unverified",
+      "args": [
+        "fixtures/workspaces/workspace-open",
+        "fixtures/endings/ending-created-only.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/created-only.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "settled-may-end",
+      "args": [
+        "fixtures/workspaces/workspace-settled",
+        "fixtures/endings/ending-mixed.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/settled.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "fixtures/workspaces/no-such-workspace",
+        "fixtures/endings/ending-mixed.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

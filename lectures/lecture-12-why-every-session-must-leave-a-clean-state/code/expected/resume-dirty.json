@@ -1,0 +1,106 @@
+{
+  "workspace": "workspace",
+  "exit_discipline": "dirty",
+  "first_session": {
+    "task": "finish csv export, then open pdf export",
+    "events": [
+      {
+        "step": 1,
+        "action": "implement the csv writer",
+        "outcome": "appended writer=csv to src/export.txt; the file now declares writer once"
+      },
+      {
+        "step": 2,
+        "action": "wire the export directory",
+        "outcome": "config/app.conf now sets export_dir=out/reports"
+      },
+      {
+        "step": 3,
+        "action": "run check unit-csv",
+        "outcome": "executed: pass (src/export.txt declares writer once)"
+      },
+      {
+        "step": 4,
+        "action": "open pdf-export and draft its module",
+        "outcome": "feature_list.json sets pdf-export to in-progress; src/pdf.txt drafted with no writer= line yet"
+      },
+      {
+        "step": 5,
+        "action": "probe the pdf page size by hand",
+        "outcome": "scratch/probe-pdf.txt written"
+      },
+      {
+        "step": 6,
+        "action": "end the session",
+        "outcome": "no exit protocol ran: feature_list.json still calls csv-export in-progress, claude-progress.md has no entry for this session, src/pdf.txt is left half applied, scratch/probe-pdf.txt is left in the tree, and no session-handoff.md was written"
+      }
+    ]
+  },
+  "second_session": {
+    "chose": "csv-export",
+    "events": [
+      {
+        "step": 1,
+        "action": "read session-handoff.md",
+        "outcome": "absent; the previous session wrote down no next best step"
+      },
+      {
+        "step": 2,
+        "action": "read the verified state in claude-progress.md",
+        "outcome": "verified now lists nothing; the log carries no entry for the previous session, so its work is invisible from here"
+      },
+      {
+        "step": 3,
+        "action": "read feature_list.json",
+        "outcome": "csv-export in-progress, pdf-export in-progress; 2 features in flight at once, which breaks WIP=1"
+      },
+      {
+        "step": 4,
+        "action": "choose the feature to work on",
+        "outcome": "csv-export: no handoff, and no progress entry that would let it be skipped; feature_list.json leaves 2 features in progress, so take the first"
+      },
+      {
+        "step": 5,
+        "action": "implement csv-export",
+        "outcome": "appended writer=csv to src/export.txt; the file now declares writer 2 times"
+      },
+      {
+        "step": 6,
+        "action": "run the declared checks",
+        "outcome": "unit-csv fail, wiring-csv pass, unit-pdf fail"
+      },
+      {
+        "step": 7,
+        "action": "close the session",
+        "outcome": "unit-csv went from pass to fail; the work went into a feature that was already finished, and redoing it broke the check"
+      }
+    ],
+    "checks": [
+      {
+        "id": "unit-csv",
+        "feature": "csv-export",
+        "status": "fail",
+        "detail": "src/export.txt declares writer 2 times"
+      },
+      {
+        "id": "wiring-csv",
+        "feature": "csv-export",
+        "status": "pass",
+        "detail": "config/app.conf has a line starting with export_dir="
+      },
+      {
+        "id": "unit-pdf",
+        "feature": "pdf-export",
+        "status": "fail",
+        "detail": "src/pdf.txt has no writer= line"
+      }
+    ]
+  },
+  "outcome": {
+    "completed": [],
+    "regressed": [
+      "unit-csv"
+    ],
+    "result": "derailed"
+  }
+}

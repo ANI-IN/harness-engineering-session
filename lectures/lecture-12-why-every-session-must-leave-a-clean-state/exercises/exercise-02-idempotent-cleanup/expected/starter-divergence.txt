@@ -1,0 +1,1 @@
+diverges at $.passes[0].steps[0].outcome: 'added a session 002 entry to claude-progress.md' != 'claude-progress.md already records session 002'

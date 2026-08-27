@@ -56,6 +56,7 @@ links to a unit that runs today.
 | [09: Why agents declare victory too early](lectures/lecture-09-why-agents-declare-victory-too-early/) | Re-execution, not review, separates an earned claim from a premature one | [Project 05](projects/project-05-self-verification-and-role-separation/) |
 | [10: Why end-to-end testing changes results](lectures/lecture-10-why-end-to-end-testing-changes-results/) | The definition of done decides the result: seams are only exercised assembled | [Project 05](projects/project-05-self-verification-and-role-separation/) |
 | [11: Why observability belongs inside the harness](lectures/lecture-11-why-observability-belongs-inside-the-harness/) | The harness records what the session did, so the next session can repair rather than guess | Closest: [Project 04](projects/project-04-runtime-feedback-and-scope-control/) |
+| [12: Why every session must leave a clean state](lectures/lecture-12-why-every-session-must-leave-a-clean-state/) | The exit protocol: verify, roll back, record, hand off | Closest: [Project 03](projects/project-03-multi-session-continuity/), [Project 05](projects/project-05-self-verification-and-role-separation/) |
 
 | Project | You build |
 | --- | --- |

@@ -1,0 +1,60 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "dirty-one-pass",
+      "args": [
+        "fixtures/workspaces/workspace-dirty",
+        "--passes=1"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/dirty-one-pass.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "half-cleaned-retry",
+      "args": [
+        "fixtures/workspaces/workspace-half-cleaned",
+        "--passes=1"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/half-cleaned-retry.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "dirty-two-passes",
+      "args": [
+        "fixtures/workspaces/workspace-dirty",
+        "--passes=2"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/dirty-two-passes.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "fixtures/workspaces/no-such-workspace",
+        "--passes=1"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

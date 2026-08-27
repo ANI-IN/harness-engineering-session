@@ -1,0 +1,26 @@
+{
+  "task": "finish csv export, then open pdf export",
+  "checks": [
+    {
+      "id": "unit-csv",
+      "feature": "csv-export",
+      "kind": "key-declared-once",
+      "path": "src/export.txt",
+      "key": "writer"
+    },
+    {
+      "id": "wiring-csv",
+      "feature": "csv-export",
+      "kind": "file-has-line",
+      "path": "config/app.conf",
+      "prefix": "export_dir="
+    },
+    {
+      "id": "unit-pdf",
+      "feature": "pdf-export",
+      "kind": "key-declared-once",
+      "path": "src/pdf.txt",
+      "key": "writer"
+    }
+  ]
+}

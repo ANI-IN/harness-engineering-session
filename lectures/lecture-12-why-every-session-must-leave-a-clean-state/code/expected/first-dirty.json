@@ -1,0 +1,65 @@
+{
+  "workspace": "workspace",
+  "exit_discipline": "dirty",
+  "task": "finish csv export, then open pdf export",
+  "events": [
+    {
+      "step": 1,
+      "action": "implement the csv writer",
+      "outcome": "appended writer=csv to src/export.txt; the file now declares writer once"
+    },
+    {
+      "step": 2,
+      "action": "wire the export directory",
+      "outcome": "config/app.conf now sets export_dir=out/reports"
+    },
+    {
+      "step": 3,
+      "action": "run check unit-csv",
+      "outcome": "executed: pass (src/export.txt declares writer once)"
+    },
+    {
+      "step": 4,
+      "action": "open pdf-export and draft its module",
+      "outcome": "feature_list.json sets pdf-export to in-progress; src/pdf.txt drafted with no writer= line yet"
+    },
+    {
+      "step": 5,
+      "action": "probe the pdf page size by hand",
+      "outcome": "scratch/probe-pdf.txt written"
+    },
+    {
+      "step": 6,
+      "action": "end the session",
+      "outcome": "no exit protocol ran: feature_list.json still calls csv-export in-progress, claude-progress.md has no entry for this session, src/pdf.txt is left half applied, scratch/probe-pdf.txt is left in the tree, and no session-handoff.md was written"
+    }
+  ],
+  "clean_state": [
+    {
+      "item": "verification-recorded",
+      "status": "fail",
+      "detail": "unit-pdf fails on a feature in flight and no session-handoff.md records the failure"
+    },
+    {
+      "item": "statuses-true",
+      "status": "fail",
+      "detail": "csv-export is in-progress but every check on it passes"
+    },
+    {
+      "item": "progress-recorded",
+      "status": "fail",
+      "detail": "claude-progress.md does not record csv-export, whose checks all pass"
+    },
+    {
+      "item": "no-stray-artifacts",
+      "status": "fail",
+      "detail": "scratch/probe-pdf.txt left in the workspace"
+    },
+    {
+      "item": "next-step-written",
+      "status": "fail",
+      "detail": "no session-handoff.md names a next best step"
+    }
+  ],
+  "failed": 5
+}

@@ -1,0 +1,85 @@
+{
+  "workspace": "workspace",
+  "exit_discipline": "clean",
+  "task": "finish csv export, then open pdf export",
+  "events": [
+    {
+      "step": 1,
+      "action": "implement the csv writer",
+      "outcome": "appended writer=csv to src/export.txt; the file now declares writer once"
+    },
+    {
+      "step": 2,
+      "action": "wire the export directory",
+      "outcome": "config/app.conf now sets export_dir=out/reports"
+    },
+    {
+      "step": 3,
+      "action": "run check unit-csv",
+      "outcome": "executed: pass (src/export.txt declares writer once)"
+    },
+    {
+      "step": 4,
+      "action": "open pdf-export and draft its module",
+      "outcome": "feature_list.json sets pdf-export to in-progress; src/pdf.txt drafted with no writer= line yet"
+    },
+    {
+      "step": 5,
+      "action": "probe the pdf page size by hand",
+      "outcome": "scratch/probe-pdf.txt written"
+    },
+    {
+      "step": 6,
+      "action": "run the declared checks and record what they observed",
+      "outcome": "unit-csv pass, wiring-csv pass, unit-pdf fail (src/pdf.txt has no writer= line)"
+    },
+    {
+      "step": 7,
+      "action": "roll back the half applied pdf draft",
+      "outcome": "src/pdf.txt removed; feature_list.json returns pdf-export to not-started, so no check is left failing on a feature in flight"
+    },
+    {
+      "step": 8,
+      "action": "write the verified status into feature_list.json",
+      "outcome": "csv-export set to passing with evidence: check unit-csv, exit 0, 2026-08-27"
+    },
+    {
+      "step": 9,
+      "action": "record the session in claude-progress.md",
+      "outcome": "verified now lists csv-export; a session 002 entry names what was done, what was not, and what is next"
+    },
+    {
+      "step": 10,
+      "action": "clear the scratch artifacts and write session-handoff.md",
+      "outcome": "scratch/probe-pdf.txt removed; session-handoff.md names pdf-export as the next best step"
+    }
+  ],
+  "clean_state": [
+    {
+      "item": "verification-recorded",
+      "status": "pass",
+      "detail": "every check on a feature in flight passes, and no failure is left unrecorded"
+    },
+    {
+      "item": "statuses-true",
+      "status": "pass",
+      "detail": "every feature status agrees with its checks, and every passing status carries evidence"
+    },
+    {
+      "item": "progress-recorded",
+      "status": "pass",
+      "detail": "claude-progress.md records every feature whose checks all pass"
+    },
+    {
+      "item": "no-stray-artifacts",
+      "status": "pass",
+      "detail": "no files under scratch/"
+    },
+    {
+      "item": "next-step-written",
+      "status": "pass",
+      "detail": "session-handoff.md names pdf-export, which is not-started"
+    }
+  ],
+  "failed": 0
+}

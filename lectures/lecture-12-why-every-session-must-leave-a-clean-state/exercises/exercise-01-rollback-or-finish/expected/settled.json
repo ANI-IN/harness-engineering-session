@@ -1,0 +1,36 @@
+{
+  "workspace": "workspace-settled",
+  "session": "003",
+  "edits": [
+    {
+      "path": "src/list.txt",
+      "check": "unit-list",
+      "created": false,
+      "actual": "pass",
+      "detail": "src/list.txt declares sort once",
+      "decision": "finish"
+    },
+    {
+      "path": "src/tags.txt",
+      "check": "unit-tags",
+      "created": true,
+      "actual": "pass",
+      "detail": "src/tags.txt declares writer once",
+      "decision": "finish"
+    },
+    {
+      "path": "config/store.conf",
+      "check": "wiring-store",
+      "created": false,
+      "actual": "pass",
+      "detail": "config/store.conf has a line starting with index_path=",
+      "decision": "finish"
+    }
+  ],
+  "summary": {
+    "declare": 0,
+    "finish": 3,
+    "roll_back": 0
+  },
+  "verdict": "may-end"
+}

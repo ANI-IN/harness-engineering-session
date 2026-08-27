@@ -1,0 +1,8 @@
+{
+  "session": "002",
+  "date": "2026-08-27",
+  "verified": [
+    "csv-export"
+  ],
+  "next_step": "pdf-export: add a writer=pdf line to src/pdf.txt"
+}

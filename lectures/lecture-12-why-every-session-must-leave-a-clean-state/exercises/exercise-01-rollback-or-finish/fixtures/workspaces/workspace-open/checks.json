@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "id": "unit-list",
+      "kind": "key-declared-once",
+      "path": "src/list.txt",
+      "key": "sort"
+    },
+    {
+      "id": "unit-tags",
+      "kind": "key-declared-once",
+      "path": "src/tags.txt",
+      "key": "writer"
+    },
+    {
+      "id": "wiring-store",
+      "kind": "file-has-line",
+      "path": "config/store.conf",
+      "prefix": "index_path="
+    }
+  ]
+}

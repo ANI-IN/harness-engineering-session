@@ -1,0 +1,25 @@
+{
+  "project": "report-tool",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "csv-export",
+      "title": "CSV export",
+      "behavior": "the report tool writes the report as csv into the export directory",
+      "verification": "check unit-csv",
+      "status": "passing",
+      "evidence": {
+        "command": "check unit-csv",
+        "observed": "exit 0",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "pdf-export",
+      "title": "PDF export",
+      "behavior": "the report tool writes the report as pdf into the export directory",
+      "verification": "check unit-pdf",
+      "status": "not-started"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "workspace": "workspace-half-cleaned",
+  "session": "002",
+  "passes": [
+    {
+      "pass": 1,
+      "steps": [
+        {
+          "id": "record-progress",
+          "outcome": "claude-progress.md already records session 002"
+        },
+        {
+          "id": "set-statuses",
+          "outcome": "csv-export already passing with evidence"
+        },
+        {
+          "id": "clear-scratch",
+          "outcome": "removed scratch/probe-pdf.txt"
+        },
+        {
+          "id": "write-handoff",
+          "outcome": "wrote session-handoff.md naming pdf-export"
+        }
+      ],
+      "verdict": "changed"
+    }
+  ],
+  "summary": {
+    "handoff_next_step": "pdf-export",
+    "passing": [
+      "csv-export"
+    ],
+    "progress_entries": 1,
+    "scratch_files": 0
+  }
+}

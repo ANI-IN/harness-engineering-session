@@ -1,0 +1,20 @@
+{
+  "workspace": "workspace-open",
+  "session": "004",
+  "edits": [
+    {
+      "path": "src/tags.txt",
+      "check": "unit-tags",
+      "created": true,
+      "actual": "fail",
+      "detail": "src/tags.txt has no writer= line",
+      "decision": "roll-back"
+    }
+  ],
+  "summary": {
+    "declare": 0,
+    "finish": 0,
+    "roll_back": 1
+  },
+  "verdict": "exit-protocol-owed"
+}

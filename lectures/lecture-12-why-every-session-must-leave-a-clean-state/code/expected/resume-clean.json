@@ -1,0 +1,126 @@
+{
+  "workspace": "workspace",
+  "exit_discipline": "clean",
+  "first_session": {
+    "task": "finish csv export, then open pdf export",
+    "events": [
+      {
+        "step": 1,
+        "action": "implement the csv writer",
+        "outcome": "appended writer=csv to src/export.txt; the file now declares writer once"
+      },
+      {
+        "step": 2,
+        "action": "wire the export directory",
+        "outcome": "config/app.conf now sets export_dir=out/reports"
+      },
+      {
+        "step": 3,
+        "action": "run check unit-csv",
+        "outcome": "executed: pass (src/export.txt declares writer once)"
+      },
+      {
+        "step": 4,
+        "action": "open pdf-export and draft its module",
+        "outcome": "feature_list.json sets pdf-export to in-progress; src/pdf.txt drafted with no writer= line yet"
+      },
+      {
+        "step": 5,
+        "action": "probe the pdf page size by hand",
+        "outcome": "scratch/probe-pdf.txt written"
+      },
+      {
+        "step": 6,
+        "action": "run the declared checks and record what they observed",
+        "outcome": "unit-csv pass, wiring-csv pass, unit-pdf fail (src/pdf.txt has no writer= line)"
+      },
+      {
+        "step": 7,
+        "action": "roll back the half applied pdf draft",
+        "outcome": "src/pdf.txt removed; feature_list.json returns pdf-export to not-started, so no check is left failing on a feature in flight"
+      },
+      {
+        "step": 8,
+        "action": "write the verified status into feature_list.json",
+        "outcome": "csv-export set to passing with evidence: check unit-csv, exit 0, 2026-08-27"
+      },
+      {
+        "step": 9,
+        "action": "record the session in claude-progress.md",
+        "outcome": "verified now lists csv-export; a session 002 entry names what was done, what was not, and what is next"
+      },
+      {
+        "step": 10,
+        "action": "clear the scratch artifacts and write session-handoff.md",
+        "outcome": "scratch/probe-pdf.txt removed; session-handoff.md names pdf-export as the next best step"
+      }
+    ]
+  },
+  "second_session": {
+    "chose": "pdf-export",
+    "events": [
+      {
+        "step": 1,
+        "action": "read session-handoff.md",
+        "outcome": "found; the next best step names pdf-export"
+      },
+      {
+        "step": 2,
+        "action": "read the verified state in claude-progress.md",
+        "outcome": "verified now lists csv-export"
+      },
+      {
+        "step": 3,
+        "action": "read feature_list.json",
+        "outcome": "csv-export passing, pdf-export not-started"
+      },
+      {
+        "step": 4,
+        "action": "choose the feature to work on",
+        "outcome": "pdf-export: named by session-handoff.md"
+      },
+      {
+        "step": 5,
+        "action": "implement pdf-export",
+        "outcome": "created src/pdf.txt with writer=pdf; the file now declares writer once"
+      },
+      {
+        "step": 6,
+        "action": "run the declared checks",
+        "outcome": "unit-csv pass, wiring-csv pass, unit-pdf pass"
+      },
+      {
+        "step": 7,
+        "action": "close the session",
+        "outcome": "pdf-export is finished and verified; nothing the previous session left green went red"
+      }
+    ],
+    "checks": [
+      {
+        "id": "unit-csv",
+        "feature": "csv-export",
+        "status": "pass",
+        "detail": "src/export.txt declares writer once"
+      },
+      {
+        "id": "wiring-csv",
+        "feature": "csv-export",
+        "status": "pass",
+        "detail": "config/app.conf has a line starting with export_dir="
+      },
+      {
+        "id": "unit-pdf",
+        "feature": "pdf-export",
+        "status": "pass",
+        "detail": "src/pdf.txt declares writer once"
+      }
+    ]
+  },
+  "outcome": {
+    "completed": [
+      "pdf-export"
+    ],
+    "regressed": [],
+    "result": "resumed"
+  }
+}
