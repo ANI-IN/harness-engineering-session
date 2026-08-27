@@ -154,6 +154,24 @@ fails for its intended reason AND the solution passes). The repo-level
 verify loop (`tools/run_verify.py`) calls exercise scripts with
 `--target=ci`.
 
+### Full matrix, dedup mode, and the inner loop
+
+The conformance runner executes units in a worker pool but prints reports
+in discovery order, so output and failure positions are deterministic
+regardless of completion order. `make verify` is always the full matrix.
+`make status` runs `verify-dedup` instead: scripts whose only work is a
+solution-stage conformance run (lecture demos, the canary, and the
+projects' solution runs plus their own test-suite sub-runs) honor
+`HARNESS_SKIP_UNIT_CONFORMANCE` and skip what the status run's
+conformance gate and root test suites perform themselves. Exercise
+`--target=ci` acceptance runs and the projects' starter-must-fail gates
+never skip. Coverage equality is not assumed: the runner logs every
+executed `(unit, stage, stack, case)` identifier when
+`HARNESS_COVERAGE_LOG` is set, and `tools/test_dedup_coverage.py` fails
+the build if the deduplicated path could ever cover fewer cases than the
+full one. `make quick U=<unit-dir>` (doctor plus that unit's `verify.sh`)
+is the inner loop only; the commit gate remains `make status`.
+
 ### Fail-on-empty floors
 
 `tools/expected_counts.json` records the minimum number of conformance
