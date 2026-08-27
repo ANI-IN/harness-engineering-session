@@ -1,0 +1,10 @@
+{
+  "documents": 2,
+  "indexed": 2,
+  "total_chunks": 5,
+  "state": "corrupt",
+  "stale": [],
+  "corrupt": [
+    "team-meeting"
+  ]
+}

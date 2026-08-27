@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "id": "router-targets",
+      "passed": false,
+      "detail": "unresolved router target(s): docs/IMPORTING.md"
+    },
+    {
+      "id": "session-handoff",
+      "passed": false,
+      "detail": "missing required section(s): Next best step"
+    },
+    {
+      "id": "feature-evidence",
+      "passed": false,
+      "detail": "passing without evidence: document-import"
+    },
+    {
+      "id": "wip-limit",
+      "passed": false,
+      "detail": "2 features in-progress (detail-view, chunk-preview); the WIP limit is 1"
+    }
+  ],
+  "ready": false
+}

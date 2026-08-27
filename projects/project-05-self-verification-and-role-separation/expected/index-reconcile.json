@@ -1,0 +1,17 @@
+{
+  "indexed": [],
+  "skipped": [
+    {
+      "document": "architecture-notes",
+      "reason": "up-to-date"
+    },
+    {
+      "document": "retrieval-plan",
+      "reason": "up-to-date"
+    }
+  ],
+  "dropped": [
+    "team-meeting"
+  ],
+  "total_chunks": 5
+}

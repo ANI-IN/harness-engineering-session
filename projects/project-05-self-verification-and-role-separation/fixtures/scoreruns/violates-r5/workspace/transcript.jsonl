@@ -1,0 +1,4 @@
+{"turn":1,"role":"planner","type":"plan","detail":{"scope":["kb-data","workspace"],"artifact":"workspace/plan.json"}}
+{"turn":2,"role":"maker","type":"edit","detail":{"target":"kb-data"}}
+{"turn":3,"role":"checker","type":"verification","detail":{"feature":"listing"},"command":"kb list --data-dir kb-data","exit":0,"observed":"exit 0: {\"documents\":[{\"id\":\"architecture-notes\",\"title\":\"Architecture notes\",\"filename\":\"architecture-notes.md\",\"lines\":25,\"origin\":\"seeded\"}]}"}
+{"turn":4,"role":"maker","type":"done","detail":{"checked_by":"checker"}}

@@ -1,0 +1,27 @@
+{
+  "project": "workspace-stale fixture",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "document-import",
+      "title": "Document import",
+      "behavior": "Importing a file records it in the metadata index.",
+      "verification": "kb import --data-dir kb-data imports/field-guide.md",
+      "status": "passing"
+    },
+    {
+      "id": "detail-view",
+      "title": "Detail view",
+      "behavior": "Show a document in full.",
+      "verification": "kb show --data-dir kb-data field-guide",
+      "status": "in-progress"
+    },
+    {
+      "id": "chunk-preview",
+      "title": "Chunk preview",
+      "behavior": "Preview a document's chunks.",
+      "verification": "kb status --data-dir kb-data",
+      "status": "in-progress"
+    }
+  ]
+}

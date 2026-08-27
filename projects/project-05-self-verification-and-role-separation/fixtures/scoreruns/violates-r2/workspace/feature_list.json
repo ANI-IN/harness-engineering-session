@@ -1,0 +1,18 @@
+{
+  "project": "scorerun fixture",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "listing",
+      "title": "Listing",
+      "behavior": "kb list serves the corpus.",
+      "verification": "kb list --data-dir kb-data",
+      "status": "passing",
+      "evidence": {
+        "command": "kb list --data-dir kb-data",
+        "observed": "exit 0: (assumed)",
+        "date": "2026-08-27"
+      }
+    }
+  ]
+}

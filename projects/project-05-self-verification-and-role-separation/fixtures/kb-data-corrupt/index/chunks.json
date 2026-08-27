@@ -1,0 +1,62 @@
+[
+  {
+    "document": "architecture-notes",
+    "sha256": "e6310e0323b461c2a3eadc8e84efe1a87b5e861b33a4e6e2c882a2f3319ed53b",
+    "chunks": [
+      {
+        "index": 0,
+        "chars": 0,
+        "words": 0,
+        "text": ""
+      },
+      {
+        "index": 1,
+        "chars": 307,
+        "words": 52,
+        "text": "All state lives in a data directory that the init command creates. Inside\nit, a documents folder holds the imported text and markdown files, and an\nindex folder is reserved for derived structures. Nothing is stored outside\nthe data directory, and deleting it returns the tool to a clean state.\n\n## Answering"
+      },
+      {
+        "index": 2,
+        "chars": 452,
+        "words": 79,
+        "text": "Answers carry citations that name the source document and the exact line\nthey quote. An answer without a citation is treated as a bug, not a\nfeature. The composer that turns citations into prose is deliberately\nsimple; it marks the seam where a language model would sit in a real\nassistant.\n\n## Boundaries\n\nThe HTTP server binds to the loopback interface only and talks to the same\nstorage layer as the command line. No network calls leave the machine."
+      }
+    ]
+  },
+  {
+    "document": "retrieval-plan",
+    "sha256": "e7954912daf55033aad87873abe8e6892f0ba369e9a6c783e24e546a8c85b541",
+    "chunks": [
+      {
+        "index": 0,
+        "chars": 482,
+        "words": 79,
+        "text": "# Retrieval plan\n\nRetrieval works on lines, not on whole files. Every non-empty line of every\ndocument is a candidate, and a candidate is judged only by the words it\nshares with the question.\n\n## Scoring\n\nQuestions and candidates are tokenized the same way: lowercase alphanumeric\nruns, keeping tokens of four characters or more. A candidate's score is the\nnumber of distinct question tokens it contains. Repeating a word buys\nnothing; overlap is counted once per token.\n\n## Ranking"
+      },
+      {
+        "index": 1,
+        "chars": 396,
+        "words": 67,
+        "text": "The ranking keeps the two best scoring lines and returns them as citations.\nTies break first by document identifier, then by line number, so equal\nscores always resolve the same way on every machine.\n\n## Grounding\n\nA generated answer must quote its best citation directly. When no candidate\nscores at all, the tool says so instead of inventing prose. That refusal is\nthe whole point of grounding."
+      }
+    ]
+  },
+  {
+    "document": "team-meeting",
+    "sha256": "75cf8e478cd8d9d6676f411e34f091f9c6f74aa8d6eaa6cd1c8a0fe334d904be",
+    "chunks": [
+      {
+        "index": 0,
+        "chars": 457,
+        "words": 71,
+        "text": "Team meeting summary, sprint twelve\n\nAttendees agreed the first milestone is the smallest useful slice: create\nthe data directory, load the document set, answer one grounded question,\nand prove the server starts. Each item must be demonstrated by a command\nand its captured output before it is called finished.\n\nDecisions recorded:\n\nPersistence stays plain files in a single data directory. A database adds\noperational surface the project does not need yet."
+      },
+      {
+        "index": 1,
+        "chars": 287,
+        "words": 48,
+        "text": "The question answering path ships with a deterministic composer. Plugging\nin a real model is a later milestone and must not change the citation\ncontract.\n\nVerification is part of the definition of done. A feature with no recorded\ncommand output is not done, whatever the code looks like."
+      }
+    ]
+  }
+]

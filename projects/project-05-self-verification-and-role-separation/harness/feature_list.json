@@ -1,0 +1,249 @@
+{
+  "project": "Project 05: kb workspace",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "data-directory",
+      "title": "Data directory",
+      "behavior": "kb init creates the data directory, seeds the sample documents, records metadata, and writes its first log event.",
+      "verification": "kb init --data-dir kb-data --seed data/sample-documents",
+      "status": "passing",
+      "evidence": {
+        "command": "kb init --data-dir kb-data --seed data/sample-documents",
+        "observed": "exit 0: {\"data_dir\":\"kb-data\",\"created\":[\"kb-data\",\"kb-data/documents\",\"kb-data/index\"],\"seeded\":[\"architecture-notes.md\",\"retrieval-plan.md\",\"team-meeting.txt\"],\"metadata_entries\":3}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "document-list",
+      "title": "Document list",
+      "behavior": "kb list reports every known document with id, title, filename, line count, and origin, from the metadata index alone.",
+      "verification": "kb list --data-dir kb-data",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb list --data-dir kb-data",
+        "observed": "exit 0: {\"documents\":[{\"id\":\"architecture-notes\",\"title\":\"Architecture notes\",\"filename\":\"architecture-notes.md\",\"lines\":25,\"origin\":\"seeded\"},{\"id\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"filename\":\"retrieval-plan.md\",\"lines\":24,\"origin\":\"seeded\"},{\"id\":\"team-meeting\",\"title\":\"team-meeting.txt\",\"filename\":\"team-meeting.txt\",\"lines\":18,\"origin\":\"seeded\"}]}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "document-import",
+      "title": "Document import",
+      "behavior": "kb import copies a new file into the data directory, records it with metadata, and logs what it did.",
+      "verification": "kb import --data-dir kb-data imports/field-guide.md",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb import --data-dir kb-data imports/field-guide.md",
+        "observed": "exit 0: {\"imported\":[{\"id\":\"field-guide\",\"title\":\"Field guide to importing\",\"filename\":\"field-guide.md\",\"lines\":20,\"origin\":\"imported\",\"metadata\":{\"chars\":841,\"words\":142,\"paragraphs\":6}}],\"skipped\":[]}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "document-detail",
+      "title": "Document detail",
+      "behavior": "kb show returns the imported document's metadata entry plus its full content.",
+      "verification": "kb show --data-dir kb-data field-guide",
+      "status": "passing",
+      "depends_on": [
+        "document-import"
+      ],
+      "evidence": {
+        "command": "kb show --data-dir kb-data field-guide",
+        "observed": "exit 0: {\"id\":\"field-guide\",\"title\":\"Field guide to importing\",\"filename\":\"field-guide.md\",\"lines\":20,\"origin\":\"imported\",\"metadata\":{\"chars\":841,\"words\":142,\"paragraphs\":6},\"content\":\"# Field guide to importing\\n\\nImporting is the moment a document becomes part of the knowledge base\\ninstead of a file that happens to sit nearby. The import command copies\\nthe file into the documents folder and, just as important, records it in\\nthe metadata index.\\n\\n## Why the metadata index exists\\n\\nA directory scan tells you what files exist; the metadata index tells you\\nwhat the system knows. Listing reads the index, never the directory, so\\nthe answer to \\\"what is in the knowledge base\\\" comes from recorded state\\nrather than rediscovery. That is the system of record principle applied\\nto a single JSON file.\\n\\n## What survives a restart\\n\\nEverything: the copied document, its index entry, its title and line\\ncount. A fresh process lists the imported document without re-reading the\\noriginal source, which is the whole point of persistence.\\n\"}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "metadata-extraction",
+      "title": "Metadata extraction",
+      "behavior": "Every recorded entry carries chars, words, and paragraph counts extracted from its content.",
+      "verification": "kb show --data-dir kb-data architecture-notes",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb show --data-dir kb-data architecture-notes",
+        "observed": "exit 0: {\"id\":\"architecture-notes\",\"title\":\"Architecture notes\",\"filename\":\"architecture-notes.md\",\"lines\":25,\"origin\":\"seeded\",\"metadata\":{\"chars\":1017,\"words\":175,\"paragraphs\":8},\"content\":\"# Architecture notes\\n\\nThe kb tool is one program with two faces: a command line interface for\\nscripted use and a small local HTTP server for interactive use. Both faces\\ncall the same functions, so behavior never depends on the invoking face.\\n\\n## Storage\\n\\nAll state lives in a data directory that the init command creates. Inside\\nit, a documents folder holds the imported text and markdown files, and an\\nindex folder is reserved for derived structures. Nothing is stored outside\\nthe data directory, and deleting it returns the tool to a clean state.\\n\\n## Answering\\n\\nAnswers carry citations that name the source document and the exact line\\nthey quote. An answer without a citation is treated as a bug, not a\\nfeature. The composer that turns citations into prose is deliberately\\nsimple; it marks the seam where a language model would sit in a real\\nassistant.\\n\\n## Boundaries\\n\\nThe HTTP server binds to the loopback interface only and talks to the same\\nstorage layer as the command line. No network calls leave the machine.\\n\"}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "metadata-persistence",
+      "title": "Metadata persistence",
+      "behavior": "A fresh process lists the imported document from index/documents-meta.json alone.",
+      "verification": "kb list --data-dir kb-data",
+      "status": "passing",
+      "depends_on": [
+        "document-import"
+      ],
+      "evidence": {
+        "command": "kb list --data-dir kb-data",
+        "observed": "exit 0: {\"documents\":[{\"id\":\"architecture-notes\",\"title\":\"Architecture notes\",\"filename\":\"architecture-notes.md\",\"lines\":25,\"origin\":\"seeded\"},{\"id\":\"field-guide\",\"title\":\"Field guide to importing\",\"filename\":\"field-guide.md\",\"lines\":20,\"origin\":\"imported\"},{\"id\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"filename\":\"retrieval-plan.md\",\"lines\":24,\"origin\":\"seeded\"},{\"id\":\"team-meeting\",\"title\":\"team-meeting.txt\",\"filename\":\"team-meeting.txt\",\"lines\":18,\"origin\":\"seeded\"}]}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "document-chunking",
+      "title": "Document chunking",
+      "behavior": "kb index chunks every known document deterministically into index/chunks.json with per-document sha256.",
+      "verification": "kb index --data-dir kb-data",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb index --data-dir kb-data",
+        "observed": "exit 0: {\"indexed\":[{\"document\":\"architecture-notes\",\"chunks\":3},{\"document\":\"field-guide\",\"chunks\":3},{\"document\":\"retrieval-plan\",\"chunks\":2},{\"document\":\"team-meeting\",\"chunks\":2}],\"skipped\":[],\"dropped\":[],\"total_chunks\":10}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "index-status",
+      "title": "Index status",
+      "behavior": "kb status reports documents, indexed count, total chunks, state (including corrupt), and the offending documents, from disk only.",
+      "verification": "kb status --data-dir kb-data",
+      "status": "passing",
+      "depends_on": [
+        "document-chunking"
+      ],
+      "evidence": {
+        "command": "kb status --data-dir kb-data",
+        "observed": "exit 0: {\"documents\":4,\"indexed\":4,\"total_chunks\":10,\"state\":\"ready\",\"stale\":[],\"corrupt\":[]}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "question-answer",
+      "title": "Question answering",
+      "behavior": "kb ask answers with at most two chunk citations from the ready index, refuses otherwise, and logs both outcomes.",
+      "verification": "kb ask --data-dir kb-data \"Which lines become citations in the ranking?\"",
+      "status": "passing",
+      "depends_on": [
+        "document-chunking"
+      ],
+      "evidence": {
+        "command": "kb ask --data-dir kb-data \"Which lines become citations in the ranking?\"",
+        "observed": "exit 0: {\"question\":\"Which lines become citations in the ranking?\",\"citations\":[{\"document\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"chunk\":1,\"excerpt\":\"The ranking keeps the two best scoring lines and returns them as citations.\",\"score\":3},{\"document\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"chunk\":0,\"excerpt\":\"# Retrieval plan\",\"score\":2}],\"answer\":\"Based on \\\"Retrieval plan\\\" (chunk 1): The ranking keeps the two best scoring lines and returns them as citations. See also \\\"Retrieval plan\\\" (chunk 0).\"}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "app-starts",
+      "title": "App starts",
+      "behavior": "kb serve --self-check binds the loopback HTTP server, answers /health, /documents, the first detail, and /status, and shuts down cleanly.",
+      "verification": "kb serve --data-dir kb-data --self-check",
+      "status": "passing",
+      "depends_on": [
+        "document-chunking"
+      ],
+      "evidence": {
+        "command": "kb serve --data-dir kb-data --self-check",
+        "observed": "exit 0: {\"self_check\":{\"health\":{\"status\":\"ok\",\"documents\":4},\"documents\":4,\"detail\":{\"id\":\"architecture-notes\",\"lines\":25},\"status\":\"ready\"}}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "structured-logging",
+      "title": "Structured logging",
+      "behavior": "Mutating commands and ask append sequence-numbered events to log/events.jsonl; kb logs filters them by level and event.",
+      "verification": "kb logs --data-dir kb-data --level INFO --event done",
+      "status": "passing",
+      "depends_on": [
+        "document-chunking"
+      ],
+      "evidence": {
+        "command": "kb logs --data-dir kb-data --level INFO --event done",
+        "observed": "exit 0: {\"entries\":[{\"seq\":1,\"level\":\"INFO\",\"command\":\"init\",\"event\":\"done\",\"detail\":{\"created\":3,\"seeded\":3}},{\"seq\":2,\"level\":\"INFO\",\"command\":\"import\",\"event\":\"done\",\"detail\":{\"imported\":[\"field-guide\"],\"skipped\":[]}},{\"seq\":7,\"level\":\"INFO\",\"command\":\"index\",\"event\":\"done\",\"detail\":{\"indexed\":4,\"skipped\":0,\"dropped\":0,\"rebuild\":false}}],\"total\":3}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "corruption-recovery",
+      "title": "Corruption recovery",
+      "behavior": "kb index --rebuild re-chunks every document regardless of the sha gate, the recovery for empty-chunk corruption.",
+      "verification": "kb index --data-dir kb-data --rebuild",
+      "status": "passing",
+      "depends_on": [
+        "document-chunking"
+      ],
+      "evidence": {
+        "command": "kb index --data-dir kb-data --rebuild",
+        "observed": "exit 0: {\"indexed\":[{\"document\":\"architecture-notes\",\"chunks\":3},{\"document\":\"field-guide\",\"chunks\":3},{\"document\":\"retrieval-plan\",\"chunks\":2},{\"document\":\"team-meeting\",\"chunks\":2}],\"skipped\":[],\"dropped\":[],\"total_chunks\":10}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "architecture-guard",
+      "title": "Architecture guard",
+      "behavior": "kb guard executes the layer rules as behavior: read-only server, storage containment, disposable derived state.",
+      "verification": "kb guard --data-dir kb-data",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb guard --data-dir kb-data",
+        "observed": "exit 0: {\"checks\":[{\"id\":\"server-read-only\",\"passed\":true,\"detail\":\"POST refused with 405 and the data directory is bit-identical\"},{\"id\":\"storage-containment\",\"passed\":true,\"detail\":\"an import wrote only inside the data directory\"},{\"id\":\"derived-rebuildable\",\"passed\":true,\"detail\":\"deleting the chunk index loses nothing; kb index restored state ready\"}],\"sound\":true}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "wip-limit",
+      "title": "WIP limit",
+      "behavior": "The workspace doctor fails a workspace holding more than one in-progress feature.",
+      "verification": "kb workspace-check --workspace workspace",
+      "status": "passing",
+      "evidence": {
+        "command": "kb workspace-check --workspace workspace",
+        "observed": "exit 0: {\"checks\":[{\"id\":\"router-targets\",\"passed\":true,\"detail\":\"13 router target(s), all resolve\"},{\"id\":\"session-handoff\",\"passed\":true,\"detail\":\"5 section(s); required sections present\"},{\"id\":\"feature-evidence\",\"passed\":true,\"detail\":\"17 feature(s); evidence rules hold\"},{\"id\":\"wip-limit\",\"passed\":true,\"detail\":\"0 feature(s) in-progress; within the WIP limit of 1\"}],\"ready\":true}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "session-continuity",
+      "title": "Session continuity",
+      "behavior": "kb continuity proves a fresh chain of child processes resumes this workspace from disk state alone.",
+      "verification": "kb continuity --workdir runs",
+      "status": "passing",
+      "evidence": {
+        "command": "kb continuity --workdir runs",
+        "observed": "exit 0: {\"protocol\":\"two sessions; every step is a fresh child process of this track's CLI\",\"session_a\":{\"steps\":[{\"command\":\"kb init --data-dir kb-data --seed data/sample-documents\",\"exit\":0,\"observed\":\"exit 0: {\\\"data_dir\\\":\\\"kb-data\\\",\\\"created\\\":[\\\"kb-data\\\",\\\"kb-data/documents\\\",\\\"kb-data/index\\\"],\\\"seeded\\\":[\\\"architecture-notes.md\\\",\\\"retrieval-plan.md\\\",\\\"team-meeting.txt\\\"],\\\"metadata_entries\\\":3}\"},{\"command\":\"kb import --data-dir kb-data imports/field-guide.md\",\"exit\":0,\"observed\":\"exit 0: {\\\"imported\\\":[{\\\"id\\\":\\\"field-guide\\\",\\\"title\\\":\\\"Field guide to importing\\\",\\\"filename\\\":\\\"field-guide.md\\\",\\\"lines\\\":20,\\\"origin\\\":\\\"imported\\\",\\\"metadata\\\":{\\\"chars\\\":841,\\\"words\\\":142,\\\"paragraphs\\\":6}}],\\\"skipped\\\":[]}\"},{\"command\":\"kb index --data-dir kb-data\",\"exit\":0,\"observed\":\"exit 0: {\\\"indexed\\\":[{\\\"document\\\":\\\"architecture-notes\\\",\\\"chunks\\\":3},{\\\"document\\\":\\\"field-guide\\\",\\\"chunks\\\":3},{\\\"document\\\":\\\"retrieval-plan\\\",\\\"chunks\\\":2},{\\\"document\\\":\\\"team-meeting\\\",\\\"chunks\\\":2}],\\\"skipped\\\":[],\\\"dropped\\\":[],\\\"total_chunks\\\":10}\"},{\"command\":\"kb status --data-dir kb-data\",\"exit\":0,\"observed\":\"exit 0: {\\\"documents\\\":4,\\\"indexed\\\":4,\\\"total_chunks\\\":10,\\\"state\\\":\\\"ready\\\",\\\"stale\\\":[],\\\"corrupt\\\":[]}\"}],\"handoff_written\":true},\"session_b\":{\"handoff_sections\":3,\"steps\":[{\"command\":\"kb status --data-dir kb-data\",\"exit\":0,\"observed\":\"exit 0: {\\\"documents\\\":4,\\\"indexed\\\":4,\\\"total_chunks\\\":10,\\\"state\\\":\\\"ready\\\",\\\"stale\\\":[],\\\"corrupt\\\":[]}\"},{\"command\":\"kb ask --data-dir kb-data \\\"Which lines become citations in the ranking?\\\"\",\"exit\":0,\"observed\":\"exit 0: {\\\"question\\\":\\\"Which lines become citations in the ranking?\\\",\\\"citations\\\":[{\\\"document\\\":\\\"retrieval-plan\\\",\\\"title\\\":\\\"Retrieval plan\\\",\\\"chunk\\\":1,\\\"excerpt\\\":\\\"The ranking keeps the two best scoring lines and returns them as citations.\\\",\\\"score\\\":3},{\\\"document\\\":\\\"retrieval-plan\\\",\\\"title\\\":\\\"Retrieval plan\\\",\\\"chunk\\\":0,\\\"excerpt\\\":\\\"# Retrieval plan\\\",\\\"score\\\":2}],\\\"answer\\\":\\\"Based on \\\\\\\"Retrieval plan\\\\\\\" (chunk 1): The ranking keeps the two best scoring lines and returns them as citations. See also \\\\\\\"Retrieval plan\\\\\\\" (chunk 0).\\\"}\"},{\"command\":\"kb show --data-dir kb-data field-guide\",\"exit\":0,\"observed\":\"exit 0: {\\\"id\\\":\\\"field-guide\\\",\\\"title\\\":\\\"Field guide to importing\\\",\\\"filename\\\":\\\"field-guide.md\\\",\\\"lines\\\":20,\\\"origin\\\":\\\"imported\\\",\\\"metadata\\\":{\\\"chars\\\":841,\\\"words\\\":142,\\\"paragraphs\\\":6},\\\"content\\\":\\\"# Field guide to importing\\\\n\\\\nImporting is the moment a document becomes part of the knowledge base\\\\ninstead of a file that happens to sit nearby. The import command copies\\\\nthe file into the documents folder and, just as important, records it in\\\\nthe metadata index.\\\\n\\\\n## Why the metadata index exists\\\\n\\\\nA directory scan tells you what files exist; the metadata index tells you\\\\nwhat the system knows. Listing reads the index, never the directory, so\\\\nthe answer to \\\\\\\"what is in the knowledge base\\\\\\\" comes from recorded state\\\\nrather than rediscovery. That is the system of record principle applied\\\\nto a single JSON file.\\\\n\\\\n## What survives a restart\\\\n\\\\nEverything: the copied document, its index entry, its title and line\\\\ncount. A fresh process lists the imported document without re-reading the\\\\noriginal source, which is the whole point of persistence.\\\\n\\\"}\"}]},\"resume\":{\"status_matches_session_a\":true,\"state\":\"ready\",\"documents\":4,\"answer_grounded\":true,\"resumed\":true}}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "document-delete",
+      "title": "Document delete",
+      "behavior": "kb delete removes the document file, the index entry, and the chunk record, and logs it; kb index reconciles any orphan a half-done delete leaves.",
+      "verification": "kb delete --data-dir kb-data team-meeting",
+      "status": "passing",
+      "depends_on": [
+        "document-chunking"
+      ],
+      "evidence": {
+        "command": "kb delete --data-dir kb-data team-meeting",
+        "observed": "exit 0: {\"deleted\":{\"id\":\"team-meeting\",\"filename\":\"team-meeting.txt\"},\"removed_chunk_record\":true}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "verified-work-ladder",
+      "title": "Verified-work ladder",
+      "behavior": "kb ladder replays the scripted work item under three role configurations and exits 0 only when the rubric scores strictly climb.",
+      "verification": "kb ladder --workdir ladder-runs",
+      "status": "passing",
+      "evidence": {
+        "command": "kb ladder --workdir ladder-runs",
+        "observed": "exit 0: {\"runs\":{\"single-role\":{\"score\":0,\"items\":[{\"id\":\"verification-before-done\",\"passed\":false,\"detail\":\"no passing pre-done verification for: delete-command, surviving-detail\"},{\"id\":\"evidence-true\",\"passed\":false,\"detail\":\"evidence not true for: delete-command (does not reproduce), surviving-detail (no evidence)\"},{\"id\":\"findings-addressed\",\"passed\":false,\"detail\":\"no checker events: nothing was checked\"},{\"id\":\"scope-fidelity\",\"passed\":false,\"detail\":\"no plan artifact: nothing declared the scope\"},{\"id\":\"clean-state\",\"passed\":false,\"detail\":\"kb workspace-check fails on the final workspace\"}]},\"gen-eval\":{\"score\":4,\"items\":[{\"id\":\"verification-before-done\",\"passed\":true,\"detail\":\"every feature verified with exit 0 before done\"},{\"id\":\"evidence-true\",\"passed\":true,\"detail\":\"every recorded evidence reproduces through the real commands\"},{\"id\":\"findings-addressed\",\"passed\":true,\"detail\":\"every finding has a later fix and a later passing verification\"},{\"id\":\"scope-fidelity\",\"passed\":false,\"detail\":\"no plan artifact: nothing declared the scope\"},{\"id\":\"clean-state\",\"passed\":true,\"detail\":\"the workspace passes its own doctor\"}]},\"plan-gen-eval\":{\"score\":5,\"items\":[{\"id\":\"verification-before-done\",\"passed\":true,\"detail\":\"every feature verified with exit 0 before done\"},{\"id\":\"evidence-true\",\"passed\":true,\"detail\":\"every recorded evidence reproduces through the real commands\"},{\"id\":\"findings-addressed\",\"passed\":true,\"detail\":\"every finding has a later fix and a later passing verification\"},{\"id\":\"scope-fidelity\",\"passed\":true,\"detail\":\"every edit inside the declared scope (or flagged and reverted)\"},{\"id\":\"clean-state\",\"passed\":true,\"detail\":\"the workspace passes its own doctor\"}]}},\"scores\":[0,4,5],\"monotonic\":true}",
+        "date": "2026-08-27"
+      }
+    }
+  ]
+}

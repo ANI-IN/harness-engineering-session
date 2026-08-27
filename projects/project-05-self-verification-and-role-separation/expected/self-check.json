@@ -1,0 +1,14 @@
+{
+  "self_check": {
+    "health": {
+      "status": "ok",
+      "documents": 3
+    },
+    "documents": 3,
+    "detail": {
+      "id": "architecture-notes",
+      "lines": 25
+    },
+    "status": "ready"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "id": "verification-before-done",
+      "passed": true,
+      "detail": "every feature verified with exit 0 before done"
+    },
+    {
+      "id": "evidence-true",
+      "passed": false,
+      "detail": "evidence not true for: listing (does not reproduce)"
+    },
+    {
+      "id": "findings-addressed",
+      "passed": true,
+      "detail": "every finding has a later fix and a later passing verification"
+    },
+    {
+      "id": "scope-fidelity",
+      "passed": true,
+      "detail": "every edit inside the declared scope (or flagged and reverted)"
+    },
+    {
+      "id": "clean-state",
+      "passed": true,
+      "detail": "the workspace passes its own doctor"
+    }
+  ],
+  "score": 4,
+  "max": 5
+}

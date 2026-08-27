@@ -58,6 +58,7 @@ links to a unit that runs today.
 | [02: Agent-readable workspace](projects/project-02-agent-readable-workspace/) | A repository an agent can navigate and resume |
 | [03: Multi-session continuity](projects/project-03-multi-session-continuity/) | State files and init scripts that survive session boundaries |
 | [04: Runtime feedback and scope control](projects/project-04-runtime-feedback-and-scope-control/) | Structured logs, corrupt-state recovery, an executable architecture guard, and WIP=1 |
+| [05: Self-verification and role separation](projects/project-05-self-verification-and-role-separation/) | Maker, checker, and planner roles graded by a rubric of executable predicates |
 
 ## Quick start
 

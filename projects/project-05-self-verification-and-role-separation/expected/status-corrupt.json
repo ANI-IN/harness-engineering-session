@@ -1,0 +1,10 @@
+{
+  "documents": 3,
+  "indexed": 2,
+  "total_chunks": 4,
+  "state": "corrupt",
+  "stale": [],
+  "corrupt": [
+    "architecture-notes"
+  ]
+}

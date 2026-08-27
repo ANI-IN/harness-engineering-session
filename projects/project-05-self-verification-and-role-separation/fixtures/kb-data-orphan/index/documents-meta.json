@@ -1,0 +1,26 @@
+[
+  {
+    "id": "architecture-notes",
+    "title": "Architecture notes",
+    "filename": "architecture-notes.md",
+    "lines": 25,
+    "origin": "seeded",
+    "metadata": {
+      "chars": 1017,
+      "words": 175,
+      "paragraphs": 8
+    }
+  },
+  {
+    "id": "retrieval-plan",
+    "title": "Retrieval plan",
+    "filename": "retrieval-plan.md",
+    "lines": 24,
+    "origin": "seeded",
+    "metadata": {
+      "chars": 881,
+      "words": 146,
+      "paragraphs": 8
+    }
+  }
+]

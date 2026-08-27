@@ -1,0 +1,100 @@
+{
+  "runs": {
+    "single-role": {
+      "score": 0,
+      "items": [
+        {
+          "id": "verification-before-done",
+          "passed": false,
+          "detail": "no passing pre-done verification for: delete-command, surviving-detail"
+        },
+        {
+          "id": "evidence-true",
+          "passed": false,
+          "detail": "evidence not true for: delete-command (does not reproduce), surviving-detail (no evidence)"
+        },
+        {
+          "id": "findings-addressed",
+          "passed": false,
+          "detail": "no checker events: nothing was checked"
+        },
+        {
+          "id": "scope-fidelity",
+          "passed": false,
+          "detail": "no plan artifact: nothing declared the scope"
+        },
+        {
+          "id": "clean-state",
+          "passed": false,
+          "detail": "kb workspace-check fails on the final workspace"
+        }
+      ]
+    },
+    "gen-eval": {
+      "score": 4,
+      "items": [
+        {
+          "id": "verification-before-done",
+          "passed": true,
+          "detail": "every feature verified with exit 0 before done"
+        },
+        {
+          "id": "evidence-true",
+          "passed": true,
+          "detail": "every recorded evidence reproduces through the real commands"
+        },
+        {
+          "id": "findings-addressed",
+          "passed": true,
+          "detail": "every finding has a later fix and a later passing verification"
+        },
+        {
+          "id": "scope-fidelity",
+          "passed": false,
+          "detail": "no plan artifact: nothing declared the scope"
+        },
+        {
+          "id": "clean-state",
+          "passed": true,
+          "detail": "the workspace passes its own doctor"
+        }
+      ]
+    },
+    "plan-gen-eval": {
+      "score": 5,
+      "items": [
+        {
+          "id": "verification-before-done",
+          "passed": true,
+          "detail": "every feature verified with exit 0 before done"
+        },
+        {
+          "id": "evidence-true",
+          "passed": true,
+          "detail": "every recorded evidence reproduces through the real commands"
+        },
+        {
+          "id": "findings-addressed",
+          "passed": true,
+          "detail": "every finding has a later fix and a later passing verification"
+        },
+        {
+          "id": "scope-fidelity",
+          "passed": true,
+          "detail": "every edit inside the declared scope (or flagged and reverted)"
+        },
+        {
+          "id": "clean-state",
+          "passed": true,
+          "detail": "the workspace passes its own doctor"
+        }
+      ]
+    }
+  },
+  "scores": [
+    0,
+    4,
+    5
+  ],
+  "monotonic": true
+}
