@@ -1,4 +1,4 @@
-# Importing, project 02 working copy
+# Importing, project 03 working copy
 
 The focused doc the router points at when the task touches import or the
 metadata index.
@@ -21,3 +21,5 @@ metadata index.
   a fresh session could misread.
 - Import is the only way a document acquires origin `imported`; `init`
   seeding is the only way it acquires `seeded`.
+- Version 3 note: an import leaves the chunk index behind; `kb status`
+  reports the workspace `partial` until `kb index` runs again.
