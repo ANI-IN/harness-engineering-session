@@ -1,0 +1,20 @@
+{
+  "question": "Which lines become citations in the ranking?",
+  "citations": [
+    {
+      "document": "retrieval-plan",
+      "title": "Retrieval plan",
+      "chunk": 1,
+      "excerpt": "The ranking keeps the two best scoring lines and returns them as citations.",
+      "score": 3
+    },
+    {
+      "document": "retrieval-plan",
+      "title": "Retrieval plan",
+      "chunk": 0,
+      "excerpt": "# Retrieval plan",
+      "score": 2
+    }
+  ],
+  "answer": "Based on \"Retrieval plan\" (chunk 1): The ranking keeps the two best scoring lines and returns them as citations. See also \"Retrieval plan\" (chunk 0)."
+}

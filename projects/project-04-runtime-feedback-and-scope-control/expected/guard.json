@@ -1,0 +1,20 @@
+{
+  "checks": [
+    {
+      "id": "server-read-only",
+      "passed": true,
+      "detail": "POST refused with 405 and the data directory is bit-identical"
+    },
+    {
+      "id": "storage-containment",
+      "passed": true,
+      "detail": "an import wrote only inside the data directory"
+    },
+    {
+      "id": "derived-rebuildable",
+      "passed": true,
+      "detail": "deleting the chunk index loses nothing; kb index restored state ready"
+    }
+  ],
+  "sound": true
+}

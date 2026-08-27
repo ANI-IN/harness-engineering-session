@@ -1,0 +1,18 @@
+{
+  "indexed": [
+    {
+      "document": "architecture-notes",
+      "chunks": 3
+    },
+    {
+      "document": "retrieval-plan",
+      "chunks": 2
+    },
+    {
+      "document": "team-meeting",
+      "chunks": 2
+    }
+  ],
+  "skipped": [],
+  "total_chunks": 7
+}

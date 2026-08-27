@@ -40,9 +40,9 @@ draws how everything connects.
 
 ## Curriculum
 
-First release: the foundation sequence, lectures 01-06 and projects 01-03.
+First release: the foundation sequence, lectures 01-06 and projects 01-04.
 The remaining curriculum (lectures 07-14 on scope control, feature lists,
-verification, observability, clean state, loops, and graphs; projects 04-08;
+verification, observability, clean state, loops, and graphs; projects 05-08;
 the harness-creator skill) follows the same conventions and lands next.
 
 | Lecture | Teaches | Builds toward |
@@ -59,6 +59,7 @@ the harness-creator skill) follows the same conventions and lands next.
 | [01: Baseline vs minimal harness](projects/project-01-baseline-vs-minimal-harness/) | A controlled experiment: the same task with and without a harness |
 | [02: Agent-readable workspace](projects/project-02-agent-readable-workspace/) | A repository an agent can navigate and resume |
 | [03: Multi-session continuity](projects/project-03-multi-session-continuity/) | State files and init scripts that survive session boundaries |
+| [04: Runtime feedback and scope control](projects/project-04-runtime-feedback-and-scope-control/) | Structured logs, corrupt-state recovery, an executable architecture guard, and WIP=1 |
 
 ## Quick start
 

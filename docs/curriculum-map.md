@@ -6,7 +6,9 @@ mechanisms of two lectures into a working system. The library holds the
 copy-ready templates those systems are built from.
 
 This map covers the curriculum's **first pass**: lectures 01-06 and projects
-01-03, the foundation sequence. Later lectures (scope control, feature lists,
+01-03, the foundation sequence. Project 04 (runtime feedback and scope
+control) is also built; its lectures (07-08) arrive with the next pass,
+which is why it does not appear in the graph yet. Later lectures (scope control, feature lists,
 verification, observability, clean state, loops, graphs) and their projects
 extend this graph in the same pattern.
 

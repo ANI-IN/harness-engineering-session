@@ -1,0 +1,18 @@
+{
+  "entries": [
+    {
+      "seq": 1,
+      "level": "WARN",
+      "command": "ask",
+      "event": "refused",
+      "detail": {
+        "state": "corrupt",
+        "corrupt": [
+          "architecture-notes"
+        ],
+        "stale": []
+      }
+    }
+  ],
+  "total": 1
+}

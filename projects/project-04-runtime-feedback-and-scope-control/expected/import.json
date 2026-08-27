@@ -1,0 +1,17 @@
+{
+  "imported": [
+    {
+      "id": "field-guide",
+      "title": "Field guide to importing",
+      "filename": "field-guide.md",
+      "lines": 20,
+      "origin": "imported",
+      "metadata": {
+        "chars": 841,
+        "words": 142,
+        "paragraphs": 6
+      }
+    }
+  ],
+  "skipped": []
+}
