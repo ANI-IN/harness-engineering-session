@@ -42,23 +42,27 @@ to write back without loss.
 
 Work only in your track's starter file.
 
-1. Fix `parse`: store each item without the "- " bullet prefix; the
-   marker is markdown syntax, not content.
-2. Fix `render`: emit the blank line between a section heading and its
-   items, per the canonical format.
+1. Fix `parse`: keep every section, in document order; delete the
+   "core sections" whitelist, which silently drops anything it does not
+   recognize.
+2. Fix `render`: preserve the document's own section order; delete the
+   alphabetical sort.
 3. Re-run verification until it exits 0.
 
-What makes `verify.sh` flip to 0: the stripped prefix corrects every item
-value in the parse case, and the restored blank line makes the render case
-byte-identical to the canonical markdown.
+What makes `verify.sh` flip to 0: the parser stops dropping the
+`Broken or unverified` section and the renderer stops reordering, so both
+directions preserve the whole document and the round trip closes.
 
 ## Expected outcome
 
 Before your change:
 
 ```text
-[FAIL] parse (python) -- stdout mismatch vs expected/handoff.json: diverges at $.sections[0].items[0]: '- `./verify.sh import-notes`: exit 0' != '`./verify.sh import-notes`: exit 0'
+[FAIL] parse (python) -- stdout mismatch vs expected/handoff.json: diverges at $.sections[2].heading: 'Next best step' != 'Broken or unverified'
 ```
+
+A whole section of the handoff, the one naming what is known to be
+broken, vanished between markdown and JSON.
 
 After your change both cases pass, `render(parse(x)) == x` holds byte for
 byte, and:
@@ -84,11 +88,11 @@ verify: PASS (starter)
 ## Hints
 
 <details>
-<summary>Hint 1: each fix is one line</summary>
+<summary>Hint 1: both fixes are deletions</summary>
 
-The parser's fix changes what is pushed into `items`; the renderer's fix
-adds one `parts.append("")` / `parts.push("")` in the right place. The
-solution's structure is already in the starter.
+The parser's fix removes the whitelist branch so every section heading
+opens a section; the renderer's fix removes the sort so sections come out
+the way they went in. The correct code is smaller than the naive code.
 
 </details>
 
@@ -103,17 +107,21 @@ definition, byte for byte.
 
 ## Solution walkthrough
 
-Two one-line fixes, one law:
+Two deletions, one law:
 
-- **Markers are syntax.** Storing "- " inside the data means every
-  consumer must strip it (or double it on re-render, which is exactly what
-  the naive pair does on a second round-trip). Content and serialization
-  stay separable or the format rots.
-- **Canonical form is what makes byte-identity meaningful.** The blank
-  line is not cosmetic: without a single canonical rendering, "round-trips
-  exactly" degrades to "round-trips approximately", and approximate state
-  files are how session 2 mistrusts session 1. The committed expected
-  files pin the law so neither track can drift from it.
+- **A round trip must carry everything, known or not.** The whitelist
+  encodes an opinion about which sections matter, and the section it
+  drops (`Broken or unverified`) is exactly the one whose loss makes the
+  next session re-discover a failure the last session already isolated.
+  Parsers preserve; policies about relevance belong to readers, not to the
+  serialization layer.
+- **Order is content.** A handoff is read top to bottom under time
+  pressure, so its section order is a priority ranking; sorting it
+  alphabetically is a quiet form of data loss. Without a single canonical
+  rendering, "round-trips exactly" degrades to "round-trips
+  approximately", and approximate state files are how session 2 mistrusts
+  session 1. The committed expected files pin the law so neither track can
+  drift from it.
 
 Cross-track note: both parsers are the same three-branch line scanner;
 Python slices with `line[2:]`, TypeScript with `line.slice(2)`, and the
@@ -126,8 +134,8 @@ re-verified on every `make verify` (never hand-written):
 
 <!-- generated-block: uv run python tools/run_acceptance.py lectures/lecture-05-why-long-running-tasks-lose-continuity/exercises/exercise-01-handoff-roundtrip -->
 ```text
-starter/python: exit 1 (as intended: diverges at $.sections[0].items[0]: '- `./verify.sh import-notes`: exit 0' != '`./verify.sh import-notes`: exit 0')
-starter/typescript: exit 1 (as intended: diverges at $.sections[0].items[0]: '- `./verify.sh import-notes`: exit 0' != '`./verify.sh import-notes`: exit 0')
+starter/python: exit 1 (as intended: diverges at $.sections[2].heading: 'Next best step' != 'Broken or unverified')
+starter/typescript: exit 1 (as intended: diverges at $.sections[2].heading: 'Next best step' != 'Broken or unverified')
 solution/python: exit 0 (PASS: pass (2 checks))
 solution/typescript: exit 0 (PASS: pass (2 checks))
 4/4 acceptance runs performed

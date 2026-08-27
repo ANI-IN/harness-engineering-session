@@ -115,6 +115,59 @@ def test_length_diff_without_justification_rejected(tmp_path):
     assert "no \njustification" in errors[0] or "no justification" in errors[0].replace("\n", " ")
 
 
+def test_formatting_only_divergence_rejected(tmp_path):
+    # The exact signature lecture 05's first exercise shipped with: a markdown
+    # bullet prefix. Identical content on both sides, so the learner would be
+    # trimming a string, not learning round-trips.
+    exercise = _exercise_with_divergence(
+        tmp_path,
+        "diverges at $.sections[0].items[0]: "
+        "'- `./verify.sh import-notes`: exit 0' != '`./verify.sh import-notes`: exit 0'\n",
+    )
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert len(errors) == 1
+    assert "formatting-only" in errors[0]
+
+
+def test_formatting_only_whitespace_divergence_rejected(tmp_path):
+    exercise = _exercise_with_divergence(tmp_path, "diverges at $.name: 'a  b' != 'a b'\n")
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert len(errors) == 1
+    assert "formatting-only" in errors[0]
+
+
+def test_formatting_only_with_justification_accepted(tmp_path):
+    exercise = _exercise_with_divergence(
+        tmp_path,
+        "diverges at $.rendered: '-item' != '- item'\n",
+        "# spec\n\nStarter-divergence justification: this exercise IS about the marker syntax.\n",
+    )
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert errors == []
+
+
+def test_content_string_divergence_still_passes(tmp_path):
+    exercise = _exercise_with_divergence(
+        tmp_path,
+        "diverges at $.checks[0].detail: 'pyproject.toml' != 'pyproject.toml + .python-version'\n",
+    )
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert errors == []
+
+
+def test_numeric_sign_flip_not_treated_as_formatting(tmp_path):
+    # -2 != 2 have equal alphanumeric skeletons, but numbers are unquoted in
+    # signatures and a sign flip is content; the rule must not touch it.
+    exercise = _exercise_with_divergence(tmp_path, "diverges at $.savings.drift_events: -2 != 2\n")
+    errors: list[str] = []
+    check_structure.check_starter_divergence(exercise, "x", errors)
+    assert errors == []
+
+
 def test_length_diff_with_justification_accepted(tmp_path):
     exercise = _exercise_with_divergence(
         tmp_path,

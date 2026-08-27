@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 REPO_ROOT="$(cd ../../../.. && pwd)"
 RUNNER="$REPO_ROOT/tools/conformance/runner.py"
 NAME="exercise-01-handoff-roundtrip"
-TASK_HINT="fix the parser bullet prefix and the renderer blank line"
+TASK_HINT="remove the parser's section whitelist and the renderer's sort"
 
 STACK="both"
 TARGET="starter"

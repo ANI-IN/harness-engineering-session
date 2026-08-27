@@ -175,13 +175,23 @@ floors.**
 - **The genuine-partial standard** (machine-checked by `lint-structure`
   against the committed divergence signature): a starter must be a partial
   *implementation*, not a stub, so its first divergence must be a value
-  mismatch inside a populated structure. A null-vs-value divergence reads
-  as "not implemented" and is rejected outright. A structural divergence
-  (a `length N != M` diff, a missing or unexpected key) is accepted only
-  when the exercise's SPEC.md carries a one-line justification starting
-  with `Starter-divergence justification:` explaining why absence is the
-  right signal for that exercise. Prefer naive first drafts with one
-  realistic mistake each, plus fixtures that trap exactly those mistakes.
+  mismatch inside a populated structure, and the mismatch must change
+  content. A null-vs-value divergence reads as "not implemented" and is
+  rejected outright. A formatting-only divergence (two strings identical
+  once every non-alphanumeric character is removed, such as a markdown
+  bullet prefix or collapsed whitespace) makes the learner debug
+  punctuation instead of the exercise's concept and is rejected the same
+  way; the rule covers quoted strings only, since a numeric sign flip like
+  `-2 != 2` is content. A structural divergence (a `length N != M` diff, a
+  missing or unexpected key) and a formatting divergence in an exercise
+  that is genuinely about formatting are accepted only when the exercise's
+  SPEC.md carries a one-line justification starting with
+  `Starter-divergence justification:` explaining why that signal is the
+  right one for that exercise. The working test: the first divergence
+  should name the concept (a dropped section, a wrong classification, a
+  missing pin), never a formatting artifact. Prefer naive first drafts
+  with one realistic mistake each, plus fixtures that trap exactly those
+  mistakes.
 - Hints are progressive `<details>` blocks so they do not spoil on sight.
 
 ## Seeded defects

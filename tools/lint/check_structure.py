@@ -162,12 +162,23 @@ def check_units(errors: list[str], root: Path) -> None:
 JUSTIFICATION_MARKER = "Starter-divergence justification:"
 
 
+def _formatting_skeleton(value: str) -> str:
+    """Strip everything except alphanumerics; two values with equal skeletons
+    differ only in punctuation, markers, or whitespace."""
+    return re.sub(r"[^0-9A-Za-z]+", "", value)
+
+
 def check_starter_divergence(exercise: Path, rel: str, errors: list[str]) -> None:
     """The genuine-partial standard: a starter's first divergence must be a
-    value mismatch inside a populated structure. A null-vs-value diff reads
-    as "not implemented" and is rejected outright; a length diff (or a
+    value mismatch inside a populated structure, and the mismatch must change
+    content. A null-vs-value diff reads as "not implemented" and is rejected
+    outright; a string diff whose two sides are equal once formatting
+    characters are removed makes the learner debug punctuation, not the
+    concept, and is rejected unless justified; a length diff (or a
     missing/unexpected key) is accepted only when the exercise's SPEC.md
-    carries a one-line justification starting with the marker."""
+    carries a one-line justification starting with the marker. The
+    formatting rule deliberately covers strings only: numeric diffs like
+    -2 != 2 are sign flips, which are content."""
     divergence_path = exercise / "expected" / "starter-divergence.txt"
     if not divergence_path.is_file():
         return  # missing-file error is reported by the required-files check
@@ -182,6 +193,19 @@ def check_starter_divergence(exercise: Path, rel: str, errors: list[str]) -> Non
             "a wrong value inside a populated structure"
         )
         return
+    quoted_pair = re.search(r": '(.*)' != '(.*)'$", signature)
+    if quoted_pair is not None:
+        left, right = quoted_pair.group(1), quoted_pair.group(2)
+        if left != right and _formatting_skeleton(left) == _formatting_skeleton(right):
+            if JUSTIFICATION_MARKER not in spec_text:
+                errors.append(
+                    f"{rel}: starter divergence is formatting-only ({signature!r}); the two "
+                    "values are identical once formatting characters are removed, so the "
+                    "learner would debug punctuation, not the exercise's concept. Redesign "
+                    "the starter so the divergence changes content, or add a line starting "
+                    f"'{JUSTIFICATION_MARKER}' to SPEC.md if formatting IS the concept"
+                )
+            return
     needs_justification = (
         re.search(r": length \d+ != \d+", signature)
         or "missing in output" in signature

@@ -38,19 +38,22 @@ case's expected markdown equals the parse case's fixture, byte for byte).
 
 ## Starter state (the intended failure)
 
-Both directions run, each with one naive mistake:
+Both directions run, each with one naive mistake that loses handoff
+meaning rather than handoff formatting:
 
-| Direction | Its mistake | Divergence it produces |
+| Direction | Its mistake | What the round trip loses |
 | --- | --- | --- |
-| parse | keeps the "- " bullet prefix on items | the first item value carries the prefix |
-| render | omits the blank line after each heading | `line 4: '- ...' != ''` |
+| parse | keeps only a whitelist of "core" section headings | the `Broken or unverified` section, silently |
+| render | sorts sections alphabetically | the document's priority order |
 
 Verification fails first at:
 
 ```text
-diverges at $.sections[0].items[0]: '- `./verify.sh import-notes`: exit 0' != '`./verify.sh import-notes`: exit 0'
+diverges at $.sections[2].heading: 'Next best step' != 'Broken or unverified'
 ```
 
+The dropped section is the one that tells the next session what is known
+to be broken, which is precisely the content whose loss costs a re-derive.
 The starter must run cleanly and fail only by producing these wrong
 values.
 

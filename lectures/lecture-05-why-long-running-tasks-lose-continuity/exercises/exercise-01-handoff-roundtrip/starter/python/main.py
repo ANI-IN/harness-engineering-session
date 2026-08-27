@@ -1,9 +1,9 @@
 """handoff-roundtrip exercise, Python starter.
 
 Both directions run, but each carries a naive mistake (see SPEC.md
-"Starter state"): the parser keeps the "- " bullet prefix on items, and
-the renderer omits the blank line after each section heading. Fix both
-until parse and render round-trip byte-identically. Run
+"Starter state"): the parser keeps only a whitelist of "core" sections and
+silently drops the rest, and the renderer sorts sections alphabetically.
+Fix both until parse and render round-trip byte-identically. Run
 ../../verify.sh --stack=python until it exits 0.
 """
 
@@ -12,6 +12,11 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+
+# Naive draft: the handoff template's "core" sections. Exercise: a
+# round-trip must preserve every section; the parser is not the place to
+# decide which parts of a handoff matter.
+CORE_SECTIONS = ("Verified now", "Changed this session", "Next best step", "Commands")
 
 
 def parse(text: str) -> dict:
@@ -22,22 +27,26 @@ def parse(text: str) -> dict:
         if line.startswith("# ") and title is None:
             title = line[2:].strip()
         elif line.startswith("## "):
-            current = {"heading": line[3:].strip(), "items": []}
-            sections.append(current)
+            heading = line[3:].strip()
+            if heading in CORE_SECTIONS:
+                current = {"heading": heading, "items": []}
+                sections.append(current)
+            else:
+                current = None
         elif line.startswith("- ") and current is not None:
-            # Naive draft: the bullet marker is markdown syntax, not item
-            # content. Exercise: store the item text without the "- " prefix.
-            current["items"].append(line.strip())
+            current["items"].append(line[2:].strip())
     return {"title": title, "sections": sections}
 
 
 def render(document: dict) -> str:
     parts = [f"# {document['title']}"]
-    for section in document["sections"]:
+    # Naive draft: sorted output looked tidy and deterministic. Exercise: a
+    # handoff's section order is meaning (read order is priority order), so
+    # render must preserve the document's own order.
+    for section in sorted(document["sections"], key=lambda section: section["heading"]):
         parts.append("")
         parts.append(f"## {section['heading']}")
-        # Naive draft: canonical form separates a heading from its items
-        # with a blank line. Exercise: emit it, or the round-trip drifts.
+        parts.append("")
         for item in section["items"]:
             parts.append(f"- {item}")
     return "\n".join(parts) + "\n"
