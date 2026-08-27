@@ -1,0 +1,7 @@
+{
+  "feature": "auth",
+  "from": "passing",
+  "to": "in-progress",
+  "decision": "refused",
+  "reason": "passing is final: auth cannot leave passing"
+}

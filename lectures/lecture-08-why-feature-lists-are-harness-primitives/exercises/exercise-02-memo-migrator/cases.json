@@ -1,0 +1,32 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "migrate-fresh",
+      "args": ["fixtures/scope.json", "fixtures/notes-fresh.md"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/fresh.json", "kind": "json" }
+    },
+    {
+      "name": "migrate-midway",
+      "args": ["fixtures/scope.json", "fixtures/notes-midway.md"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/midway.json", "kind": "json" }
+    },
+    {
+      "name": "unknown-mention",
+      "args": ["fixtures/scope.json", "fixtures/notes-unknown.md"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": null, "kind": "text" }
+    },
+    {
+      "name": "usage",
+      "args": ["fixtures/scope.json"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}

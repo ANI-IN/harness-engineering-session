@@ -1,0 +1,7 @@
+{
+  "feature": "cart",
+  "from": "in-progress",
+  "to": "passing",
+  "decision": "refused",
+  "reason": "evidence records a failing run ('exit 1: 3 of 12 tests failed'), not a pass"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "cart",
+  "from": "in-progress",
+  "to": "passing",
+  "decision": "refused",
+  "reason": "no evidence recorded; passing requires evidence"
+}

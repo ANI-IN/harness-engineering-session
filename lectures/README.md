@@ -34,6 +34,7 @@ minutes per lecture including exercises.
 | 05 | [Why long-running tasks lose continuity](./lecture-05-why-long-running-tasks-lose-continuity/) | Continuity comes from externalized state, not context windows | [Project 03](../projects/project-03-multi-session-continuity/) |
 | 06 | [Why initialization needs its own phase](./lecture-06-why-initialization-needs-its-own-phase/) | Sessions that start by improvising end by guessing | [Project 03](../projects/project-03-multi-session-continuity/) |
 | 07 | [Why agents overreach and under-finish](./lecture-07-why-agents-overreach-and-under-finish/) | Overreach and under-finish are one budget seen from two sides | [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
+| 08 | [Why feature lists are harness primitives](./lecture-08-why-feature-lists-are-harness-primitives/) | A feature list is a data structure the harness executes against, not a memo | [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
 
 This index lists every lecture the course currently contains; the
 [curriculum map](../docs/curriculum-map.md) shows how they connect.

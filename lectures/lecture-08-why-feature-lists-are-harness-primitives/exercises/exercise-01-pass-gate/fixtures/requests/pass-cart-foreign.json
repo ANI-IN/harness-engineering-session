@@ -1,0 +1,9 @@
+{
+  "feature": "cart",
+  "to": "passing",
+  "evidence": {
+    "command": "echo done",
+    "observed": "done",
+    "date": "2026-08-27"
+  }
+}

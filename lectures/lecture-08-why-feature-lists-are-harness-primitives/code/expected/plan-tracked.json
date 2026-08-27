@@ -1,0 +1,35 @@
+{
+  "workspace": "workspace-tracked",
+  "tracker": "feature_list.json",
+  "entries": [
+    {
+      "id": "auth",
+      "state": "passing",
+      "verification": "./verify.sh auth",
+      "grounded": true
+    },
+    {
+      "id": "cart",
+      "state": "in-progress",
+      "verification": "./verify.sh cart",
+      "grounded": true
+    },
+    {
+      "id": "payments",
+      "state": "passing",
+      "verification": "./verify.sh payments",
+      "grounded": true
+    },
+    {
+      "id": "csv-export",
+      "state": "not-started",
+      "verification": "./verify.sh csv-export",
+      "grounded": true
+    }
+  ],
+  "next": [
+    "cart",
+    "csv-export"
+  ],
+  "grounded": true
+}

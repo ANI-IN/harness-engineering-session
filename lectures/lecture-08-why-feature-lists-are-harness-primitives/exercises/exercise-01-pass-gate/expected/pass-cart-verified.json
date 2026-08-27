@@ -1,0 +1,7 @@
+{
+  "feature": "cart",
+  "from": "in-progress",
+  "to": "passing",
+  "decision": "allowed",
+  "reason": "evidence matches the verification command (./verify.sh cart)"
+}

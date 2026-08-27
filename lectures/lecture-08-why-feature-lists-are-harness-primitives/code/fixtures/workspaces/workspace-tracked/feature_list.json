@@ -1,0 +1,45 @@
+{
+  "project": "minishop",
+  "updated": "2026-08-26",
+  "features": [
+    {
+      "id": "auth",
+      "title": "Account signup and login",
+      "behavior": "A visitor can create an account and sign in.",
+      "verification": "./verify.sh auth",
+      "status": "passing",
+      "evidence": {
+        "command": "./verify.sh auth",
+        "observed": "exit 0: 9 tests passed, 0 failed",
+        "date": "2026-08-24"
+      }
+    },
+    {
+      "id": "cart",
+      "title": "Shopping cart",
+      "behavior": "A signed-in user can add items and see a correct total.",
+      "verification": "./verify.sh cart",
+      "status": "in-progress",
+      "notes": "totals logic still under work; verification has not passed yet"
+    },
+    {
+      "id": "payments",
+      "title": "Checkout payment",
+      "behavior": "A user can pay for the cart and receives a confirmation.",
+      "verification": "./verify.sh payments",
+      "status": "passing",
+      "evidence": {
+        "command": "./verify.sh payments",
+        "observed": "exit 0: 7 tests passed, 0 failed",
+        "date": "2026-08-26"
+      }
+    },
+    {
+      "id": "csv-export",
+      "title": "Order export",
+      "behavior": "An operator can export the day's orders as CSV.",
+      "verification": "./verify.sh csv-export",
+      "status": "not-started"
+    }
+  ]
+}

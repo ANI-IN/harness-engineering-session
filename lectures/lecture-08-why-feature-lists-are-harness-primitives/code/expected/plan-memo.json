@@ -1,0 +1,28 @@
+{
+  "workspace": "workspace-memo",
+  "tracker": "notes.md",
+  "entries": [
+    {
+      "id": "auth",
+      "state": "done (interpreted from prose)",
+      "verification": "none recorded",
+      "grounded": false
+    },
+    {
+      "id": "cart",
+      "state": "done (interpreted from prose)",
+      "verification": "none recorded",
+      "grounded": false
+    },
+    {
+      "id": "payments",
+      "state": "remaining (interpreted from prose)",
+      "verification": "none recorded",
+      "grounded": false
+    }
+  ],
+  "next": [
+    "payments"
+  ],
+  "grounded": false
+}

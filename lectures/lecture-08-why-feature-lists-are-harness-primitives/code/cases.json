@@ -1,0 +1,38 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "replay-memo-false-done",
+      "args": ["replay", "fixtures/workspaces/workspace-memo"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/replay-memo.json", "kind": "json" }
+    },
+    {
+      "name": "replay-tracked-verified-done",
+      "args": ["replay", "fixtures/workspaces/workspace-tracked"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/replay-tracked.json", "kind": "json" }
+    },
+    {
+      "name": "plan-memo-ungrounded",
+      "args": ["plan", "fixtures/workspaces/workspace-memo"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/plan-memo.json", "kind": "json" }
+    },
+    {
+      "name": "plan-tracked-grounded",
+      "args": ["plan", "fixtures/workspaces/workspace-tracked"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/plan-tracked.json", "kind": "json" }
+    },
+    {
+      "name": "missing-workspace",
+      "args": ["replay", "fixtures/workspaces/no-such-workspace"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}

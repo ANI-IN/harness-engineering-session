@@ -1,0 +1,78 @@
+{
+  "workspace": "workspace-memo",
+  "tracker": "notes.md",
+  "events": [
+    {
+      "step": 1,
+      "action": "read notes.md",
+      "outcome": "3 features mentioned; states are prose; no verification commands recorded"
+    },
+    {
+      "step": 2,
+      "action": "interpret 'auth'",
+      "outcome": "'done, login and signup work' reads as done; skipped"
+    },
+    {
+      "step": 3,
+      "action": "interpret 'cart'",
+      "outcome": "'mostly done, totals still buggy' reads as done; skipped"
+    },
+    {
+      "step": 4,
+      "action": "interpret 'payments'",
+      "outcome": "'still need to do this' reads as remaining; planned"
+    },
+    {
+      "step": 5,
+      "action": "implement payments",
+      "outcome": "code written; the workspace already had this feature built"
+    },
+    {
+      "step": 6,
+      "action": "self-check payments",
+      "outcome": "looks complete; the memo records no verification command to run"
+    },
+    {
+      "step": 7,
+      "action": "update notes.md",
+      "outcome": "payments marked done in prose"
+    },
+    {
+      "step": 8,
+      "action": "declare done",
+      "outcome": "the memo shows nothing remaining"
+    }
+  ],
+  "steps_spent": 8,
+  "wasted_steps": 3,
+  "claimed_done": true,
+  "features_required": 4,
+  "features_verified": 2,
+  "audit": [
+    {
+      "id": "auth",
+      "believed": "done",
+      "verified": true,
+      "note": "verification passes"
+    },
+    {
+      "id": "cart",
+      "believed": "done",
+      "verified": false,
+      "note": "verification fails: the code carries a defect no session run exposed"
+    },
+    {
+      "id": "payments",
+      "believed": "done",
+      "verified": true,
+      "note": "verification passes; the session rebuilt a feature that already passed"
+    },
+    {
+      "id": "csv-export",
+      "believed": "untracked",
+      "verified": false,
+      "note": "never attempted: absent from the tracker"
+    }
+  ],
+  "done_claim_honest": false
+}

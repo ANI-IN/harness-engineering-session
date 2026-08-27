@@ -5,9 +5,9 @@ its exercises make you build that mechanism, and each project composes the
 mechanisms of two lectures into a working system. The library holds the
 copy-ready templates those systems are built from.
 
-This map covers lectures 01-07 and projects 01-04: the foundation sequence
-(lectures 01-06, projects 01-03) and the scope-control lecture that
-project 04 industrializes. Project 05 (self-verification and role
+This map covers lectures 01-08 and projects 01-04: the foundation sequence
+(lectures 01-06, projects 01-03) and the scope-control and feature-list
+lectures that project 04 industrializes. Project 05 (self-verification and role
 separation) is also built; it sits outside this map because its paired
 lectures are outside the map's scope.
 
@@ -21,6 +21,7 @@ flowchart LR
     L05["05 Continuity across sessions"]
     L06["06 Initialization as its own phase"]
     L07["07 Overreach and under-finish"]
+    L08["08 Feature lists as primitives"]
   end
 
   subgraph Projects
@@ -40,6 +41,7 @@ flowchart LR
   L04 --> L05
   L05 --> L06
   L06 --> L07
+  L07 --> L08
 
   L01 --> P01
   L02 --> P01
@@ -48,6 +50,7 @@ flowchart LR
   L05 --> P03
   L06 --> P03
   L07 --> P04
+  L08 --> P04
 
   T --> P01
   T --> P02
@@ -71,7 +74,8 @@ Reading the graph:
   [project 03](../projects/project-03-multi-session-continuity/) makes work
   survive session boundaries (lectures 05-06),
   [project 04](../projects/project-04-runtime-feedback-and-scope-control/)
-  turns scope control into a doctor check and a guard (lecture 07).
+  turns scope control and the feature list's evidence law into a doctor
+  check and a guard (lectures 07-08).
 - The **library feeds every project**: projects instantiate the same
   templates the library ships, and lecture 02 is where those artifacts are
   defined, which is why it points at the library.

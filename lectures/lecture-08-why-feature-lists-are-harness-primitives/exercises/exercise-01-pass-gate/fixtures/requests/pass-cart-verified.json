@@ -1,0 +1,9 @@
+{
+  "feature": "cart",
+  "to": "passing",
+  "evidence": {
+    "command": "./verify.sh cart",
+    "observed": "exit 0: 12 tests passed, 0 failed",
+    "date": "2026-08-27"
+  }
+}

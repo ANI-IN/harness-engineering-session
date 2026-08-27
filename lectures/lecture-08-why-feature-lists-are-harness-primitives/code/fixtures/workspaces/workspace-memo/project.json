@@ -1,0 +1,9 @@
+{
+  "project": "minishop",
+  "features": [
+    { "id": "auth", "built": true, "hidden_defect": false },
+    { "id": "cart", "built": true, "hidden_defect": true },
+    { "id": "payments", "built": true, "hidden_defect": false },
+    { "id": "csv-export", "built": false, "hidden_defect": false }
+  ]
+}

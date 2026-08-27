@@ -1,0 +1,7 @@
+{
+  "feature": "csv-export",
+  "from": "not-started",
+  "to": "in-progress",
+  "decision": "allowed",
+  "reason": "WIP=1 holds: no other feature in-progress"
+}

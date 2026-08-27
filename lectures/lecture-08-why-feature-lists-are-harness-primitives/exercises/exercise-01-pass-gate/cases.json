@@ -1,0 +1,56 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "start-work",
+      "args": ["fixtures/lists/fresh/feature_list.json", "fixtures/requests/start-csv-export.json"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/start-work.json", "kind": "json" }
+    },
+    {
+      "name": "wip-limit",
+      "args": ["fixtures/lists/mid-task/feature_list.json", "fixtures/requests/start-csv-export.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/wip-limit.json", "kind": "json" }
+    },
+    {
+      "name": "pass-cart-verified",
+      "args": ["fixtures/lists/mid-task/feature_list.json", "fixtures/requests/pass-cart-verified.json"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/pass-cart-verified.json", "kind": "json" }
+    },
+    {
+      "name": "pass-cart-foreign",
+      "args": ["fixtures/lists/mid-task/feature_list.json", "fixtures/requests/pass-cart-foreign.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/pass-cart-foreign.json", "kind": "json" }
+    },
+    {
+      "name": "pass-cart-failing",
+      "args": ["fixtures/lists/mid-task/feature_list.json", "fixtures/requests/pass-cart-failing.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/pass-cart-failing.json", "kind": "json" }
+    },
+    {
+      "name": "passing-is-final",
+      "args": ["fixtures/lists/mid-task/feature_list.json", "fixtures/requests/resume-auth.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/passing-is-final.json", "kind": "json" }
+    },
+    {
+      "name": "no-evidence",
+      "args": ["fixtures/lists/mid-task/feature_list.json", "fixtures/requests/pass-cart-bare.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/no-evidence.json", "kind": "json" }
+    },
+    {
+      "name": "usage",
+      "args": ["fixtures/lists/mid-task/feature_list.json"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}

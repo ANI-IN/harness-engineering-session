@@ -1,0 +1,30 @@
+{
+  "project": "minishop",
+  "as_of": "2026-08-27",
+  "features": [
+    {
+      "id": "auth",
+      "title": "Account signup and login",
+      "behavior": "A visitor can create an account and sign in.",
+      "verification": "./verify.sh auth"
+    },
+    {
+      "id": "cart",
+      "title": "Shopping cart",
+      "behavior": "A signed-in user can add items and see a correct total.",
+      "verification": "./verify.sh cart"
+    },
+    {
+      "id": "payments",
+      "title": "Checkout payment",
+      "behavior": "A user can pay for the cart and receives a confirmation.",
+      "verification": "./verify.sh payments"
+    },
+    {
+      "id": "csv-export",
+      "title": "Order export",
+      "behavior": "An operator can export the day's orders as CSV.",
+      "verification": "./verify.sh csv-export"
+    }
+  ]
+}
