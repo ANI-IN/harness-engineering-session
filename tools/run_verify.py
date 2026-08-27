@@ -12,7 +12,9 @@ calls it (after the pytest and vitest suites).
 
 from __future__ import annotations
 
+import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -20,6 +22,15 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SEARCH_ROOTS = ("lectures", "projects", "tools/conformance/selftest")
 COUNTS_MANIFEST = REPO_ROOT / "tools" / "expected_counts.json"
+
+# --skip-unit-conformance exports this variable to every verify.sh; scripts
+# whose only work is a solution-stage conformance run (lecture demos, the
+# canary, and the projects' solution runs plus their own test-suite
+# sub-runs) skip that work because `make status` runs the conformance gate
+# and the root test suites itself. Exercise scripts never honor it: their
+# --target=ci four-run acceptance discipline is not a duplicate.
+# tools/test_dedup_coverage.py proves the skipped set is covered.
+SKIP_ENV = "HARNESS_SKIP_UNIT_CONFORMANCE"
 
 
 EXEMPT_PARTS = {"fixtures", "expected", "starter", "solution"}
@@ -40,7 +51,7 @@ def discover_scripts(root: Path) -> list[Path]:
     return scripts
 
 
-def run_all(root: Path, floor: int) -> int:
+def run_all(root: Path, floor: int, skip_unit_conformance: bool = False) -> int:
     scripts = discover_scripts(root)
     if len(scripts) < floor:
         print(
@@ -50,6 +61,9 @@ def run_all(root: Path, floor: int) -> int:
         )
         return 1
 
+    env = dict(os.environ)
+    if skip_unit_conformance:
+        env[SKIP_ENV] = "1"
     failures = 0
     for script in scripts:
         label = script.relative_to(root) if script.is_relative_to(root) else script
@@ -60,7 +74,7 @@ def run_all(root: Path, floor: int) -> int:
         if "exercises" in script.parts:
             command.append("--target=ci")
         print(f"verify: running {label}")
-        proc = subprocess.run(command, cwd=script.parent)
+        proc = subprocess.run(command, cwd=script.parent, env=env)
         if proc.returncode != 0:
             print(f"verify: FAIL: {label} exited {proc.returncode}")
             failures += 1
@@ -70,8 +84,16 @@ def run_all(root: Path, floor: int) -> int:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="run every curriculum verify.sh")
+    parser.add_argument(
+        "--skip-unit-conformance", action="store_true",
+        help="dedup mode for make status: scripts skip work the conformance "
+        "gate and root test suites perform themselves (coverage equality is "
+        "proven by tools/test_dedup_coverage.py)",
+    )
+    args = parser.parse_args()
     floor = int(json.loads(COUNTS_MANIFEST.read_text(encoding="utf-8"))["min_verify_scripts"])
-    return run_all(REPO_ROOT, floor)
+    return run_all(REPO_ROOT, floor, skip_unit_conformance=args.skip_unit_conformance)
 
 
 if __name__ == "__main__":

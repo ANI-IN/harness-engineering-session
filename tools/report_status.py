@@ -19,7 +19,10 @@ from tools import run_verify  # noqa: E402
 from tools.conformance import runner  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-GATES = ("doctor", "verify", "conformance", "lint", "lint-links", "lint-mermaid", "lint-structure")
+GATES = (
+    "doctor", "verify-dedup", "conformance",
+    "lint", "lint-links", "lint-mermaid", "lint-structure",
+)
 
 
 def main() -> int:

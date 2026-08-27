@@ -45,10 +45,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -59,6 +62,22 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SEARCH_ROOTS = ("lectures", "projects", "tools/conformance/selftest")
 ALL_STACKS = ("python", "typescript")
 COUNTS_MANIFEST = REPO_ROOT / "tools" / "expected_counts.json"
+
+# When HARNESS_COVERAGE_LOG names a file, every executed case appends one
+# tab-separated identifier line (unit, stage, stack, case). The dedup
+# coverage proof compares these sets between the full and deduplicated
+# verification paths; see tools/test_dedup_coverage.py.
+COVERAGE_LOG_ENV = "HARNESS_COVERAGE_LOG"
+_coverage_lock = threading.Lock()
+
+
+def log_coverage(unit: Path, stage_label: str, stack: str, case_name: str) -> None:
+    log_path = os.environ.get(COVERAGE_LOG_ENV)
+    if not log_path:
+        return
+    line = f"{unit_label(unit)}\t{stage_label}\t{stack}\t{case_name}\n"
+    with _coverage_lock, open(log_path, "a", encoding="utf-8") as handle:
+        handle.write(line)
 
 
 @dataclass
@@ -201,6 +220,8 @@ def run_unit(
     report = UnitReport(unit_label(unit))
     by_case: dict[str, dict[str, CaseResult]] = {}
 
+    staged = (unit / "solution").is_dir() and (unit / "starter").is_dir()
+    stage_label = (stage or "solution") if staged else "plain"
     for stack in stacks:
         entry = resolve_entry(unit, config["entry"][stack], stage)
         for case in config["cases"]:
@@ -210,6 +231,7 @@ def run_unit(
                 if fixtures.is_dir():
                     shutil.copytree(fixtures, workdir / "fixtures")
                 result = run_case(unit, entry, case, stack, workdir)
+            log_coverage(unit, stage_label, stack, case["name"])
             report.results.append(result)
             by_case.setdefault(case["name"], {})[stack] = result
 
@@ -241,6 +263,14 @@ def main() -> int:
         "--stage", choices=["starter", "solution"], default=None,
         help="for staged units (exercises): which stage to execute (default solution)",
     )
+    parser.add_argument(
+        "--jobs", type=int, default=0,
+        help="parallel unit workers (default: min(8, cpu count); 1 = sequential)",
+    )
+    parser.add_argument(
+        "--root", default=None,
+        help="discovery root override (tests only; skips the unit-count floor)",
+    )
     args = parser.parse_args()
     stacks = ALL_STACKS if args.stack == "both" else (args.stack,)
 
@@ -250,20 +280,33 @@ def main() -> int:
             print(f"conformance: {args.unit} is not a unit (needs SPEC.md + cases.json)")
             return 1
     else:
-        units = discover_units(REPO_ROOT)
-        floor = minimum_units()
-        if len(units) < floor:
-            print(
-                f"conformance: FAIL: discovered {len(units)} unit(s) but "
-                f"tools/expected_counts.json requires at least {floor}. "
-                "Either discovery is broken or the manifest is stale."
-            )
-            return 1
+        root = Path(args.root).resolve() if args.root else REPO_ROOT
+        units = discover_units(root)
+        if args.root is None:
+            floor = minimum_units()
+            if len(units) < floor:
+                print(
+                    f"conformance: FAIL: discovered {len(units)} unit(s) but "
+                    f"tools/expected_counts.json requires at least {floor}. "
+                    "Either discovery is broken or the manifest is stale."
+                )
+                return 1
+
+    # Units run in a worker pool (each unit's cases stay sequential inside
+    # it), but reports are collected and printed strictly in discovery
+    # order, so output and failure positions are deterministic regardless
+    # of completion order.
+    jobs = args.jobs if args.jobs > 0 else min(8, os.cpu_count() or 2)
+    if jobs == 1 or len(units) <= 1:
+        reports = [run_unit(unit, stacks, args.stage) for unit in units]
+    else:
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            futures = [pool.submit(run_unit, unit, stacks, args.stage) for unit in units]
+            reports = [future.result() for future in futures]
 
     failures = 0
     checked = 0
-    for unit in units:
-        report = run_unit(unit, stacks, args.stage)
+    for report in reports:
         checked += len(report.results)
         status = "OK" if report.ok else "FAIL"
         print(f"conformance: {report.unit}: {status}")

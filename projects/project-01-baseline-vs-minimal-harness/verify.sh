@@ -21,6 +21,16 @@ for arg in "$@"; do
 done
 
 echo "verify(project-01 baseline-vs-minimal-harness): stack=${STACK}"
+
+# Dedup mode (make status): the solution-stage conformance run and this
+# project's test suites are performed by the root conformance gate and the
+# root pytest/vitest runs; coverage equality is proven by
+# tools/test_dedup_coverage.py.
+if [ "${HARNESS_SKIP_UNIT_CONFORMANCE:-0}" = "1" ]; then
+  echo "verify: skipped (unit conformance + suites covered by root gates in dedup mode)"
+  exit 0
+fi
+
 uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py" \
   --unit "$(pwd)" --stack "$STACK"
 

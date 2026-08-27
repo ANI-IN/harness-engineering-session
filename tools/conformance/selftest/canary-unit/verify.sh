@@ -16,6 +16,14 @@ for arg in "$@"; do
   esac
 done
 
+# Dedup mode (make status): this script's only work is a solution-stage
+# conformance run, which `make conformance` performs itself; coverage
+# equality is proven by tools/test_dedup_coverage.py.
+if [ "${HARNESS_SKIP_UNIT_CONFORMANCE:-0}" = "1" ]; then
+  echo "verify: skipped (unit conformance covered by make conformance in dedup mode)"
+  exit 0
+fi
+
 echo "verify(canary-unit): stack=${STACK}"
 uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py" \
   --unit "$(pwd)" --stack "$STACK"

@@ -23,7 +23,7 @@ NODE := node
 PNPM := pnpm
 endif
 
-.PHONY: help setup doctor status verify conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure
+.PHONY: help setup doctor status quick verify verify-dedup conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure
 
 help: ## List available targets
 	@grep -E '^[a-z][a-z-]*:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  make %-22s %s\n", $$1, $$2}'
@@ -46,6 +46,20 @@ verify: ## Run every unit's verify.sh (both stacks) + all test suites
 	@uv run python tools/check_build_state.py
 	@uv run python tools/gen_readme_blocks.py --check
 	@echo "verify: OK"
+
+verify-dedup: ## Verify for make status: unit conformance runs once, in the conformance gate
+	@uv run pytest
+	@$(PNPM) run --silent test
+	@uv run python tools/run_verify.py --skip-unit-conformance
+	@uv run python tools/check_build_state.py
+	@uv run python tools/gen_readme_blocks.py --check
+	@echo "verify-dedup: OK (unit conformance covered by the conformance gate)"
+
+quick: ## Inner loop for ONE unit: doctor + U=<dir>/verify.sh. NOT the commit gate; run make status before committing
+	@test -n "$(U)" || { echo "usage: make quick U=<unit-dir>   (e.g. U=projects/project-03-multi-session-continuity)"; exit 2; }
+	@uv run python tools/lint/doctor.py
+	@bash "$(U)/verify.sh"
+	@echo "quick: OK ($(U)); the commit gate is still 'make status'"
 
 conformance: ## Diff python vs typescript vs expected/ for every SPEC.md unit
 	@uv run python tools/conformance/runner.py

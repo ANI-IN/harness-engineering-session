@@ -22,8 +22,16 @@ for arg in "$@"; do
 done
 
 echo "verify(project-03 multi-session-continuity): stack=${STACK}"
-uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py" \
-  --unit "$(pwd)" --stack "$STACK"
+
+# Dedup mode (make status): the solution-stage conformance run and this
+# project's test suites are performed by the root conformance gate and the
+# root pytest/vitest runs. The starter-must-fail gate below is unique to
+# this script and runs in every mode; coverage equality is proven by
+# tools/test_dedup_coverage.py.
+if [ "${HARNESS_SKIP_UNIT_CONFORMANCE:-0}" != "1" ]; then
+  uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py" \
+    --unit "$(pwd)" --stack "$STACK"
+fi
 
 if uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py" \
   --unit "$(pwd)" --stack "$STACK" --stage starter >/dev/null 2>&1; then
@@ -32,10 +40,12 @@ if uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py"
 fi
 echo "verify: starter stage fails the v3 cases as intended (genuine starting point)"
 
-if [ "$STACK" = "python" ] || [ "$STACK" = "both" ]; then
-  (cd "$REPO_ROOT" && uv run pytest projects/project-03-multi-session-continuity -q)
-fi
-if [ "$STACK" = "typescript" ] || [ "$STACK" = "both" ]; then
-  (cd "$REPO_ROOT" && "$NODE20_BIN/pnpm" exec vitest run --silent=true \
-    projects/project-03-multi-session-continuity)
+if [ "${HARNESS_SKIP_UNIT_CONFORMANCE:-0}" != "1" ]; then
+  if [ "$STACK" = "python" ] || [ "$STACK" = "both" ]; then
+    (cd "$REPO_ROOT" && uv run pytest projects/project-03-multi-session-continuity -q)
+  fi
+  if [ "$STACK" = "typescript" ] || [ "$STACK" = "both" ]; then
+    (cd "$REPO_ROOT" && "$NODE20_BIN/pnpm" exec vitest run --silent=true \
+      projects/project-03-multi-session-continuity)
+  fi
 fi
