@@ -20,6 +20,16 @@ def test_broken_relative_link_detected(tmp_path):
     assert errors[0].startswith("a.md")
 
 
+def test_fixture_markdown_is_not_collected(tmp_path):
+    # fixtures/ and expected/ hold unit test data; a seeded-defect fixture
+    # may deliberately contain a broken link for a doctor to catch, so the
+    # collector must never hand those files to the checker.
+    _md(tmp_path, "unit/fixtures/workspaces/stale/AGENTS.md", "[ghost](docs/GHOST.md)\n")
+    _md(tmp_path, "unit/expected/report.md", "[ghost](docs/GHOST.md)\n")
+    real = _md(tmp_path, "unit/README.md", "plain text, no links\n")
+    assert check_links.markdown_files(tmp_path) == [real]
+
+
 def test_broken_anchor_detected(tmp_path):
     _md(tmp_path, "target.md", "# Title\n\n## Real section\n")
     md = _md(tmp_path, "a.md", "See [anchor](./target.md#no-such-heading).\n")

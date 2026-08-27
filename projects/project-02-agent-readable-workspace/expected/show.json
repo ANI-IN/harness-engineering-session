@@ -1,0 +1,8 @@
+{
+  "id": "retrieval-plan",
+  "title": "Retrieval plan",
+  "filename": "retrieval-plan.md",
+  "lines": 24,
+  "origin": "seeded",
+  "content": "# Retrieval plan\n\nRetrieval works on lines, not on whole files. Every non-empty line of every\ndocument is a candidate, and a candidate is judged only by the words it\nshares with the question.\n\n## Scoring\n\nQuestions and candidates are tokenized the same way: lowercase alphanumeric\nruns, keeping tokens of four characters or more. A candidate's score is the\nnumber of distinct question tokens it contains. Repeating a word buys\nnothing; overlap is counted once per token.\n\n## Ranking\n\nThe ranking keeps the two best scoring lines and returns them as citations.\nTies break first by document identifier, then by line number, so equal\nscores always resolve the same way on every machine.\n\n## Grounding\n\nA generated answer must quote its best citation directly. When no candidate\nscores at all, the tool says so instead of inventing prose. That refusal is\nthe whole point of grounding.\n"
+}

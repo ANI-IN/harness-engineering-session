@@ -1,0 +1,147 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "init-creates-and-records",
+      "args": ["init", "--data-dir", "kb-data", "--seed", "fixtures/kb-data/documents"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/init.json",
+        "kind": "json",
+        "files": [
+          {
+            "path": "kb-data/index/documents-meta.json",
+            "expected": "fixtures/kb-data/index/documents-meta.json",
+            "kind": "json"
+          }
+        ]
+      }
+    },
+    {
+      "name": "list-from-metadata",
+      "args": ["list", "--data-dir", "fixtures/kb-data"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/list.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "list-before-init",
+      "args": ["list", "--data-dir", "missing-dir"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": null,
+        "kind": "text"
+      }
+    },
+    {
+      "name": "ask-grounded",
+      "args": ["ask", "--data-dir", "fixtures/kb-data", "Which lines become citations in the ranking?"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/ask-ranking.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "import-records-metadata",
+      "args": ["import", "--data-dir", "fixtures/kb-data", "fixtures/imports/field-guide.md"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/import.json",
+        "kind": "json",
+        "files": [
+          {
+            "path": "fixtures/kb-data/index/documents-meta.json",
+            "expected": "expected/meta-after-import.json",
+            "kind": "json"
+          },
+          {
+            "path": "fixtures/kb-data/documents/field-guide.md",
+            "expected": "fixtures/imports/field-guide.md",
+            "kind": "text"
+          }
+        ]
+      }
+    },
+    {
+      "name": "import-duplicate-skipped",
+      "args": ["import", "--data-dir", "fixtures/kb-data", "fixtures/kb-data/documents/architecture-notes.md"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/import-duplicate.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "show-detail",
+      "args": ["show", "--data-dir", "fixtures/kb-data", "retrieval-plan"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/show.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "show-unknown-id",
+      "args": ["show", "--data-dir", "fixtures/kb-data", "no-such-document"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": null,
+        "kind": "text"
+      }
+    },
+    {
+      "name": "serve-self-check",
+      "args": ["serve", "--data-dir", "fixtures/kb-data", "--self-check"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/self-check.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "workspace-ready",
+      "args": ["workspace-check", "--workspace", "fixtures/workspaces/workspace-ready"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/workspace-ready.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "workspace-stale",
+      "args": ["workspace-check", "--workspace", "fixtures/workspaces/workspace-stale"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/workspace-stale.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "usage-error",
+      "args": ["frobnicate"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "project": "Project 02: kb working copy",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "data-directory",
+      "title": "Data directory",
+      "behavior": "kb init creates the data directory, seeds the sample documents, and records every seeded document in the metadata index.",
+      "verification": "kb init --data-dir kb-data --seed data/sample-documents",
+      "status": "passing",
+      "evidence": {
+        "command": "kb init --data-dir kb-data --seed data/sample-documents",
+        "observed": "exit 0: {\"data_dir\":\"kb-data\",\"created\":[\"kb-data\",\"kb-data/documents\",\"kb-data/index\"],\"seeded\":[\"architecture-notes.md\",\"retrieval-plan.md\",\"team-meeting.txt\"],\"metadata_entries\":3}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "document-list",
+      "title": "Document list",
+      "behavior": "kb list reports every known document with id, title, filename, line count, and origin, from the metadata index alone.",
+      "verification": "kb list --data-dir kb-data",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb list --data-dir kb-data",
+        "observed": "exit 0: {\"documents\":[{\"id\":\"architecture-notes\",\"title\":\"Architecture notes\",\"filename\":\"architecture-notes.md\",\"lines\":25,\"origin\":\"seeded\"},{\"id\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"filename\":\"retrieval-plan.md\",\"lines\":24,\"origin\":\"seeded\"},{\"id\":\"team-meeting\",\"title\":\"team-meeting.txt\",\"filename\":\"team-meeting.txt\",\"lines\":18,\"origin\":\"seeded\"}]}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "question-answer",
+      "title": "Question answering",
+      "behavior": "kb ask answers a question with at most two cited lines, or says nothing matched; the citation contract is unchanged from project 01.",
+      "verification": "kb ask --data-dir kb-data \"Which lines become citations in the ranking?\"",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb ask --data-dir kb-data \"Which lines become citations in the ranking?\"",
+        "observed": "exit 0: {\"question\":\"Which lines become citations in the ranking?\",\"citations\":[{\"document\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"line\":16,\"excerpt\":\"The ranking keeps the two best scoring lines and returns them as citations.\",\"score\":3},{\"document\":\"architecture-notes\",\"title\":\"Architecture notes\",\"line\":16,\"excerpt\":\"Answers carry citations that name the source document and the exact line\",\"score\":1}],\"answer\":\"Based on \\\"Retrieval plan\\\" (line 16): The ranking keeps the two best scoring lines and returns them as citations. See also \\\"Architecture notes\\\" (line 16).\"}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "app-starts",
+      "title": "App starts",
+      "behavior": "kb serve --self-check binds the loopback HTTP server, answers /health, /documents, and the first document's /documents/{id}, and shuts down cleanly.",
+      "verification": "kb serve --data-dir kb-data --self-check",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb serve --data-dir kb-data --self-check",
+        "observed": "exit 0: {\"self_check\":{\"health\":{\"status\":\"ok\",\"documents\":3},\"documents\":3,\"detail\":{\"id\":\"architecture-notes\",\"lines\":25}}}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "document-import",
+      "title": "Document import",
+      "behavior": "kb import copies a new file into the data directory and records it in the metadata index with origin imported.",
+      "verification": "kb import --data-dir kb-data imports/field-guide.md",
+      "status": "passing",
+      "depends_on": [
+        "data-directory"
+      ],
+      "evidence": {
+        "command": "kb import --data-dir kb-data imports/field-guide.md",
+        "observed": "exit 0: {\"imported\":[{\"id\":\"field-guide\",\"title\":\"Field guide to importing\",\"filename\":\"field-guide.md\",\"lines\":20,\"origin\":\"imported\"}],\"skipped\":[]}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "document-detail",
+      "title": "Document detail",
+      "behavior": "kb show returns the imported document's metadata entry plus its full content.",
+      "verification": "kb show --data-dir kb-data field-guide",
+      "status": "passing",
+      "depends_on": [
+        "document-import"
+      ],
+      "evidence": {
+        "command": "kb show --data-dir kb-data field-guide",
+        "observed": "exit 0: {\"id\":\"field-guide\",\"title\":\"Field guide to importing\",\"filename\":\"field-guide.md\",\"lines\":20,\"origin\":\"imported\",\"content\":\"# Field guide to importing\\n\\nImporting is the moment a document becomes part of the knowledge base\\ninstead of a file that happens to sit nearby. The import command copies\\nthe file into the documents folder and, just as important, records it in\\nthe metadata index.\\n\\n## Why the metadata index exists\\n\\nA directory scan tells you what files exist; the metadata index tells you\\nwhat the system knows. Listing reads the index, never the directory, so\\nthe answer to \\\"what is in the knowledge base\\\" comes from recorded state\\nrather than rediscovery. That is the system of record principle applied\\nto a single JSON file.\\n\\n## What survives a restart\\n\\nEverything: the copied document, its index entry, its title and line\\ncount. A fresh process lists the imported document without re-reading the\\noriginal source, which is the whole point of persistence.\\n\"}",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "metadata-persistence",
+      "title": "Metadata persistence",
+      "behavior": "A fresh process lists the imported document from index/documents-meta.json alone; nothing depends on process memory.",
+      "verification": "kb list --data-dir kb-data",
+      "status": "passing",
+      "depends_on": [
+        "document-import"
+      ],
+      "evidence": {
+        "command": "kb list --data-dir kb-data",
+        "observed": "exit 0: {\"documents\":[{\"id\":\"architecture-notes\",\"title\":\"Architecture notes\",\"filename\":\"architecture-notes.md\",\"lines\":25,\"origin\":\"seeded\"},{\"id\":\"field-guide\",\"title\":\"Field guide to importing\",\"filename\":\"field-guide.md\",\"lines\":20,\"origin\":\"imported\"},{\"id\":\"retrieval-plan\",\"title\":\"Retrieval plan\",\"filename\":\"retrieval-plan.md\",\"lines\":24,\"origin\":\"seeded\"},{\"id\":\"team-meeting\",\"title\":\"team-meeting.txt\",\"filename\":\"team-meeting.txt\",\"lines\":18,\"origin\":\"seeded\"}]}",
+        "date": "2026-08-27"
+      }
+    }
+  ]
+}

@@ -21,7 +21,14 @@ import urllib.request
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SKIP_DIRS = {"node_modules", "_reference", ".git", ".venv", "__pycache__", "dist"}
+# fixtures/ and expected/ are unit test DATA, not documentation: a fixture
+# may deliberately contain a broken link for a checker to catch (a seeded
+# defect), and its relative paths resolve against the unit's temp working
+# copy, not the repository tree.
+SKIP_DIRS = {
+    "node_modules", "_reference", ".git", ".venv", "__pycache__", "dist",
+    "fixtures", "expected",
+}
 SKIP_FILES = {"RESEARCH.md", "PROPOSAL.md", "BUILD_PROGRESS.md"}
 
 LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")

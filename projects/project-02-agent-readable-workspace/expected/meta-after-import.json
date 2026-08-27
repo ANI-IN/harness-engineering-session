@@ -1,0 +1,30 @@
+[
+  {
+    "id": "architecture-notes",
+    "title": "Architecture notes",
+    "filename": "architecture-notes.md",
+    "lines": 25,
+    "origin": "seeded"
+  },
+  {
+    "id": "field-guide",
+    "title": "Field guide to importing",
+    "filename": "field-guide.md",
+    "lines": 20,
+    "origin": "imported"
+  },
+  {
+    "id": "retrieval-plan",
+    "title": "Retrieval plan",
+    "filename": "retrieval-plan.md",
+    "lines": 24,
+    "origin": "seeded"
+  },
+  {
+    "id": "team-meeting",
+    "title": "team-meeting.txt",
+    "filename": "team-meeting.txt",
+    "lines": 18,
+    "origin": "seeded"
+  }
+]

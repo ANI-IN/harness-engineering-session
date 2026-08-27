@@ -242,8 +242,10 @@ line, a progress file). Against `repo-mapped` the same command reports
 
 Both are graded by shared expected output: `./verify.sh --stack=<yours>`
 exits 0 when your track's implementation is correct. The related project
-for this lecture is Project 02 (agent-readable workspace), which lands
-with the projects phase of this course.
+for this lecture is
+[Project 02: agent-readable workspace](../../projects/project-02-agent-readable-workspace/),
+which turns this lecture's mechanism into a working, doctor-checked
+workspace.
 
 ## Further exploration
 

@@ -5,14 +5,22 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-# Resolve the pinned Node 20 toolchain once and put it first on PATH for
-# every recipe, so a newer Node elsewhere (e.g. /usr/local/bin) cannot
-# shadow the pin. The corepack pnpm shims live in the same directory. If no
-# Node 20 exists anywhere, PATH is left alone and `make doctor` fails hard
-# against the .nvmrc pin.
+# Resolve the pinned Node 20 toolchain once. Recipes invoke $(NODE) and
+# $(PNPM), the resolved absolute binaries, never bare `node`/`pnpm`, so a
+# newer Node elsewhere (e.g. /usr/local/bin) cannot shadow the pin; PATH is
+# also exported for child processes (test runners spawning node, doctor's
+# probes). GNU make 3.81 resolves bare recipe commands with its own original
+# PATH, which is why the explicit variables are load-bearing, not style. If
+# no Node 20 exists anywhere, the bare names are used and `make doctor`
+# fails hard against the .nvmrc pin.
 NODE20_BIN := $(shell bash tools/find_node20.sh 2>/dev/null)
 ifneq ($(NODE20_BIN),)
 export PATH := $(NODE20_BIN):$(PATH)
+NODE := $(NODE20_BIN)/node
+PNPM := $(NODE20_BIN)/pnpm
+else
+NODE := node
+PNPM := pnpm
 endif
 
 .PHONY: help setup doctor status verify conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure
@@ -22,7 +30,7 @@ help: ## List available targets
 
 setup: ## Install both toolchains (uv sync + pnpm install)
 	uv sync
-	pnpm install --frozen-lockfile || pnpm install
+	$(PNPM) install --frozen-lockfile || $(PNPM) install
 	@echo "setup: OK (python + typescript toolchains installed)"
 
 doctor: ## Print toolchain versions and check them against the pins
@@ -33,7 +41,7 @@ status: ## Run every gate and print exit codes, floors, and tree counts as one a
 
 verify: ## Run every unit's verify.sh (both stacks) + all test suites
 	@uv run pytest
-	@pnpm run --silent test
+	@$(PNPM) run --silent test
 	@uv run python tools/run_verify.py
 	@uv run python tools/check_build_state.py
 	@uv run python tools/gen_readme_blocks.py --check
@@ -52,11 +60,11 @@ lint-py: ## ruff over all Python sources
 	uv run ruff check .
 
 lint-ts: ## eslint + tsc --noEmit over all TypeScript sources
-	pnpm run --silent lint
-	pnpm run --silent typecheck
+	$(PNPM) run --silent lint
+	$(PNPM) run --silent typecheck
 
 lint-md: ## markdownlint over all Markdown
-	pnpm exec markdownlint-cli2
+	$(PNPM) exec markdownlint-cli2
 
 lint-sh: ## shellcheck over every shell script
 	@set -e; \
@@ -71,7 +79,7 @@ lint-links-external: ## Also fetch external URLs (network; run before committing
 	@uv run python tools/lint/check_links.py --external
 
 lint-mermaid: ## Parse every mermaid block in every markdown file
-	@node tools/lint/mermaid-parse.mjs
+	@$(NODE) tools/lint/mermaid-parse.mjs
 
 lint-structure: ## Check README section order, unit completeness, dir READMEs
 	@uv run python tools/lint/check_structure.py

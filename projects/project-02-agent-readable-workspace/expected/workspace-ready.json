@@ -1,0 +1,20 @@
+{
+  "checks": [
+    {
+      "id": "router-targets",
+      "passed": true,
+      "detail": "3 router target(s), all resolve"
+    },
+    {
+      "id": "session-handoff",
+      "passed": true,
+      "detail": "3 section(s); required sections present"
+    },
+    {
+      "id": "feature-evidence",
+      "passed": true,
+      "detail": "1 feature(s); evidence rules hold"
+    }
+  ],
+  "ready": true
+}

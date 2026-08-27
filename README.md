@@ -49,15 +49,15 @@ the harness-creator skill) follows the same conventions and lands next.
 | --- | --- | --- |
 | [01: Why capable agents still fail](lectures/lecture-01-why-capable-agents-still-fail/) | Capability is not reliable execution; failures live in five subsystems | [Project 01](projects/project-01-baseline-vs-minimal-harness/) |
 | [02: What a harness actually is](lectures/lecture-02-what-a-harness-actually-is/) | Instructions, tools, environment, state, feedback, as one system | [Project 01](projects/project-01-baseline-vs-minimal-harness/) |
-| [03: Why the repository must become the system of record](lectures/lecture-03-why-the-repository-must-become-the-system-of-record/) | If it's not in the repo, it doesn't exist for the agent | Project 02 |
-| [04: Why one giant instruction file fails](lectures/lecture-04-why-one-giant-instruction-file-fails/) | Map, not manual: progressive disclosure | Project 02 |
+| [03: Why the repository must become the system of record](lectures/lecture-03-why-the-repository-must-become-the-system-of-record/) | If it's not in the repo, it doesn't exist for the agent | [Project 02](projects/project-02-agent-readable-workspace/) |
+| [04: Why one giant instruction file fails](lectures/lecture-04-why-one-giant-instruction-file-fails/) | Map, not manual: progressive disclosure | [Project 02](projects/project-02-agent-readable-workspace/) |
 | [05: Why long-running tasks lose continuity](lectures/lecture-05-why-long-running-tasks-lose-continuity/) | Context decay; externalized state across sessions | Project 03 |
 | [06: Why initialization needs its own phase](lectures/lecture-06-why-initialization-needs-its-own-phase/) | init.sh as a first-class phase | Project 03 |
 
 | Project | You build |
 | --- | --- |
 | [01: Baseline vs minimal harness](projects/project-01-baseline-vs-minimal-harness/) | A controlled experiment: the same task with and without a harness |
-| 02: Agent-readable workspace | A repository an agent can navigate and resume |
+| [02: Agent-readable workspace](projects/project-02-agent-readable-workspace/) | A repository an agent can navigate and resume |
 | 03: Multi-session continuity | State files and init scripts that survive session boundaries |
 
 ## Quick start
