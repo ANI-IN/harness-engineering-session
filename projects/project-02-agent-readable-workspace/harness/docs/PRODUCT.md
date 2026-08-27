@@ -21,5 +21,6 @@ re-verified against version 2, nothing is "carried over".
 ## Non-goals for this milestone
 
 Chunking, index structures beyond the metadata index, deletion, and model
-answer generation are later projects. The citation and metadata contracts
-are fixed now so those can arrive without breaking callers.
+answer generation are later projects. Contracts are frozen within this
+milestone; the surface is pre-1.0 across projects, and any break a
+successor makes is declared in its SPEC's delta table, never silent.

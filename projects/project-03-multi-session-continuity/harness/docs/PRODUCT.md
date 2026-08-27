@@ -29,5 +29,6 @@ re-verified against version 3, nothing is "carried over".
 ## Non-goals for this milestone
 
 Structured logging, architecture guards, scope control, and model answer
-generation are later projects. The chunk and citation contracts are fixed
-now so those can arrive without breaking callers.
+generation are later projects. Contracts are frozen within this
+milestone; the surface is pre-1.0 across projects, and any break a
+successor makes is declared in its SPEC's delta table, never silent.

@@ -14,6 +14,11 @@ paths below expand against this directory.
 
 ## Delta from project 02
 
+Contract evolution follows
+[project 01's pre-1.0 declaration](../project-01-baseline-vs-minimal-harness/SPEC.md#contract-evolution-pre-10):
+rows marked **Breaking** change what a caller of the previous surface
+observes; everything else is additive.
+
 The starter IS project 02's solution app, verbatim (v2: `init`, `list`,
 `ask`, `show`, `import`, `serve`, `workspace-check`). Everything v2 does,
 v3 still does; `workspace-check` is carried unchanged (its cases must
@@ -25,7 +30,7 @@ keep passing against the starter). The delta:
 | `show` | entry plus content | entry (with `metadata`) plus content |
 | `index` | absent (usage error) | chunks every document into `index/chunks.json`; idempotent via per-document content sha256; re-chunks only what changed |
 | `status` | absent (usage error) | `{documents, indexed, total_chunks, state, stale}` with state `empty`, `partial`, `ready`, or `stale`, computed from disk only |
-| `ask` | line-grounded, works without an index | **chunk-grounded**; refuses (exit 1, pinned error) unless state is `ready` |
+| `ask` | line-grounded, works without an index | **Breaking** twice over: citations change shape (chunk-grounded: `chunk` replaces `line`, excerpts come from chunks) and the command refuses (exit 1, pinned error) unless state is `ready`, where v2 answered from any initialized directory |
 | `serve` | `/health`, `/documents`, `/documents/{id}`, `/ask` | adds `/status`; `/ask` returns 503 when the index is not ready; `--self-check` also reports the index `status` state |
 | `continuity` | absent (usage error) | the two-session resume proof (below) |
 | `list`, `import`, `init` surfaces | v2 shapes | unchanged output shapes except `import` echoing entries now includes `metadata`, and the metadata index `init` records carries it |

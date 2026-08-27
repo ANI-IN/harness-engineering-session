@@ -34,6 +34,18 @@ resolves tools from the root workspace). The conformance cases execute the same
 subcommands through both real CLIs, which is what makes the notation
 honest.
 
+## Contract evolution (pre-1.0)
+
+The `kb` surface is **pre-1.0 by declaration**: the course evolves it
+deliberately from project to project, because deciding what may break and
+saying so is itself part of the harness discipline being taught. The
+rules: within one project, every output shape, exit code, and pinned
+error string is frozen and conformance-enforced; between projects, a
+successor MAY break a surface, and its SPEC's "Delta from project N"
+table marks every such row with **Breaking**, stating what a caller of
+the old surface observes. Nothing breaks silently, and nothing claims
+stability the next project does not honor.
+
 ## CLI surface
 
 ```text

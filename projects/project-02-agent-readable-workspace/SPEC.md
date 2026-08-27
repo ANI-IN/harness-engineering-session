@@ -13,6 +13,11 @@ paths below expand against this directory.
 
 ## Delta from project 01
 
+Contract evolution follows
+[project 01's pre-1.0 declaration](../project-01-baseline-vs-minimal-harness/SPEC.md#contract-evolution-pre-10):
+rows marked **Breaking** change what a caller of the previous surface
+observes; everything else is additive.
+
 The starter IS project 01's solution app (v1: `init`, `list`, `ask`,
 `serve`) with the project 01 experiment apparatus removed; that apparatus
 was project 01's study harness, not product, and stays there. Everything
@@ -21,7 +26,7 @@ v1 does, v2 still does. The delta:
 | Area | v1 (starter) | v2 (solution) |
 | --- | --- | --- |
 | `init` | creates dirs, copies seed files | also records every document in `index/documents-meta.json` (origin `seeded`); reports `metadata_entries` |
-| `list` | scans `documents/` | reads the **metadata index only** (the system of record; a directory scan is rediscovery); adds `origin` per document; exit 1 with a pinned error when the index is missing |
+| `list` | scans `documents/` | **Breaking**: reads the metadata index only (the system of record; a directory scan is rediscovery); adds `origin` per document; a v1 data directory without the index now exits 1 with a pinned error where v1 listed it |
 | `ask` | scans `documents/` | reads documents via the metadata index; output shape unchanged |
 | `import` | absent (usage error) | copies files in, records them (origin `imported`), skips already-imported ids; the index stays sorted by id |
 | `show` | absent (usage error) | detail view: the metadata entry plus full `content`; exit 1 for unknown ids |
