@@ -330,13 +330,37 @@ def check_section_orders(errors: list[str], root: Path) -> None:
 
 
 def check_orphans(errors: list[str], root: Path) -> None:
+    """An empty curriculum directory is a build mistake; empty scratch is not.
+
+    The check is about committed content, so it asks only about directories
+    git tracks. A project's gitignored `kb-data/` is learner scratch that
+    the verification gates create and remove as they run, and an empty one
+    left behind by that traffic is noise, not a missing README. Judging it
+    made `make status` non-deterministic: the same tree passed or failed
+    depending on what a previous gate had just finished doing.
+    """
     for top in ("lectures", "projects", "skills", "library", "docs", "tools"):
         base = root / top
         if not base.is_dir():
             continue
         for directory in _iter_dirs(base):
-            if not any(p.is_file() for p in directory.rglob("*")):
-                errors.append(f"{_rel(directory, root)}: orphan directory (no files)")
+            if any(p.is_file() for p in directory.rglob("*")):
+                continue
+            if is_git_ignored(directory, root):
+                continue
+            errors.append(f"{_rel(directory, root)}: orphan directory (no files)")
+
+
+def is_git_ignored(directory: Path, root: Path) -> bool:
+    """True when git ignores this path. False when git is unavailable."""
+    try:
+        proc = subprocess.run(
+            ["git", "check-ignore", "-q", "--", str(directory)],
+            cwd=root, capture_output=True, text=True, timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return proc.returncode == 0
 
 
 GRADING_AUTHORITY_DIRS = ("fixtures", "expected")

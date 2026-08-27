@@ -358,3 +358,23 @@ def test_outside_a_git_work_tree_is_a_no_op(tmp_path):
     errors: list[str] = []
     check_structure.check_ignored_content(errors, tmp_path)
     assert errors == []
+
+
+def test_empty_gitignored_scratch_dir_is_not_an_orphan(tmp_path):
+    """Gates create and remove a project's kb-data as they run; an empty one
+    left behind must not make the tree's verdict depend on timing."""
+    _git_repo(tmp_path, "/projects/*/kb-data/\n")
+    (tmp_path / "projects/project-01-x/kb-data/index").mkdir(parents=True)
+    (tmp_path / "projects/project-01-x/README.md").write_text("x\n", encoding="utf-8")
+    errors: list[str] = []
+    check_structure.check_orphans(errors, tmp_path)
+    assert not any("kb-data" in error for error in errors)
+
+
+def test_empty_tracked_dir_is_still_an_orphan(tmp_path):
+    _git_repo(tmp_path, "/projects/*/kb-data/\n")
+    (tmp_path / "projects/project-01-x/fixtures/empty").mkdir(parents=True)
+    (tmp_path / "projects/project-01-x/README.md").write_text("x\n", encoding="utf-8")
+    errors: list[str] = []
+    check_structure.check_orphans(errors, tmp_path)
+    assert any("fixtures/empty" in error for error in errors)
