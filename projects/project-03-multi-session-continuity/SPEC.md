@@ -30,6 +30,10 @@ keep passing against the starter). The delta:
 | `continuity` | absent (usage error) | the two-session resume proof (below) |
 | `list`, `import`, `init` surfaces | v2 shapes | unchanged output shapes except `import` echoing entries now includes `metadata`, and the metadata index `init` records carries it |
 
+Corpus-divergence: kb-data/index/documents-meta.json (project 03's
+committed metadata index carries the v3 `metadata` object per entry; the
+document corpus itself stays byte-identical across projects)
+
 Harness artifacts accrete monotonically over project 02; nothing is
 dropped (the reference's fullest-harness project drops CLAUDE.md at this
 stage, which this project deliberately does not):

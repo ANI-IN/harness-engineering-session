@@ -199,6 +199,46 @@ def check_units(errors: list[str], root: Path) -> None:
 
 JUSTIFICATION_MARKER = "Starter-divergence justification:"
 NON_CODE_STARTER_MARKER = "Starter-shape: non-code"
+CORPUS_DIVERGENCE_MARKER = "Corpus-divergence:"
+
+
+def check_corpus_copies(errors: list[str], root: Path) -> None:
+    """Projects are self-contained, so shared fixtures exist as committed
+    copies. A copy that silently diverges shifts one project's expected
+    outputs alone, so every fixture path that appears in more than one
+    project must be byte-identical to the earliest project's copy unless
+    the later project's SPEC.md declares
+    `Corpus-divergence: <fixtures-relative-path> (<reason>)`."""
+    groups: dict = {}
+    for project in sorted(root.glob("projects/project-*")):
+        fixtures = project / "fixtures"
+        if not fixtures.is_dir():
+            continue
+        for path in sorted(fixtures.rglob("*")):
+            if path.is_file():
+                rel = path.relative_to(fixtures).as_posix()
+                groups.setdefault(rel, []).append((project, path))
+    for rel, copies in sorted(groups.items()):
+        if len({project for project, _ in copies}) < 2:
+            continue
+        canonical_project, canonical_path = copies[0]
+        canonical_bytes = canonical_path.read_bytes()
+        for project, path in copies[1:]:
+            if path.read_bytes() == canonical_bytes:
+                continue
+            spec = project / "SPEC.md"
+            spec_text = spec.read_text(encoding="utf-8") if spec.is_file() else ""
+            declared = any(
+                line.strip().startswith(f"{CORPUS_DIVERGENCE_MARKER} {rel}")
+                for line in spec_text.split("\n")
+            )
+            if not declared:
+                errors.append(
+                    f"{_rel(path, root)}: fixture copy diverges from "
+                    f"{_rel(canonical_path, root)}; make them byte-identical or declare "
+                    f"'{CORPUS_DIVERGENCE_MARKER} {rel} (<reason>)' in "
+                    f"{_rel(spec, root)}"
+                )
 
 
 def _formatting_skeleton(value: str) -> str:
@@ -326,6 +366,7 @@ def check_tree(root: Path, floors: dict[str, int] | None = None) -> list[str]:
     check_units(errors, root)
     check_exercises(errors, root)
     check_section_orders(errors, root)
+    check_corpus_copies(errors, root)
     check_orphans(errors, root)
     if floors is not None:
         check_floors(errors, root, floors)

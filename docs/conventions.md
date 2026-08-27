@@ -235,6 +235,18 @@ after the behavioral run under a heading that says so. Lecture 04's
 budgeted reader replacing its metric-first demo is the reference example;
 lectures 07-14 inherit this rule from day one.
 
+## Fixture copies across projects
+
+Projects are self-contained, so shared fixtures exist as committed
+copies. `lint-structure` requires every fixture path appearing in more
+than one project to be byte-identical to the earliest project's copy; a
+deliberate divergence (a later kb version changing a recorded state
+file's shape) is declared with a
+`Corpus-divergence: <fixtures-relative-path> (<reason>)` line in that
+project's SPEC.md. A silent partial edit of one copy would shift a single
+project's expected outputs, which is the failure mode this rule exists to
+make impossible.
+
 ## Seeded defects
 
 When a fixture is deliberately broken (a bug the learner must find or a

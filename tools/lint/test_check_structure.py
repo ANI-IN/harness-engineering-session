@@ -260,3 +260,48 @@ def test_length_diff_with_justification_accepted(tmp_path):
     errors: list[str] = []
     check_structure.check_starter_divergence(exercise, "x", errors)
     assert errors == []
+
+
+def _project_fixture(tmp_path, project: str, rel: str, content: str, spec: str = "# spec\n"):
+    unit = tmp_path / "projects" / project
+    path = unit / "fixtures" / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+    (unit / "SPEC.md").write_text(spec, encoding="utf-8")
+    return unit
+
+
+def test_identical_corpus_copies_pass(tmp_path):
+    _project_fixture(tmp_path, "project-01-a", "docs/corpus.md", "same\n")
+    _project_fixture(tmp_path, "project-02-b", "docs/corpus.md", "same\n")
+    errors: list[str] = []
+    check_structure.check_corpus_copies(errors, tmp_path)
+    assert errors == []
+
+
+def test_silently_diverged_corpus_copy_detected(tmp_path):
+    _project_fixture(tmp_path, "project-01-a", "docs/corpus.md", "same\n")
+    _project_fixture(tmp_path, "project-02-b", "docs/corpus.md", "shifted\n")
+    errors: list[str] = []
+    check_structure.check_corpus_copies(errors, tmp_path)
+    assert len(errors) == 1
+    assert "diverges from" in errors[0]
+    assert "Corpus-divergence: docs/corpus.md" in errors[0]
+
+
+def test_declared_corpus_divergence_accepted(tmp_path):
+    _project_fixture(tmp_path, "project-01-a", "docs/corpus.md", "same\n")
+    _project_fixture(
+        tmp_path, "project-02-b", "docs/corpus.md", "diverged on purpose\n",
+        spec="# spec\n\nCorpus-divergence: docs/corpus.md (this project mutates it)\n",
+    )
+    errors: list[str] = []
+    check_structure.check_corpus_copies(errors, tmp_path)
+    assert errors == []
+
+
+def test_single_project_fixture_is_not_grouped(tmp_path):
+    _project_fixture(tmp_path, "project-01-a", "docs/only-here.md", "unique\n")
+    errors: list[str] = []
+    check_structure.check_corpus_copies(errors, tmp_path)
+    assert errors == []
