@@ -11,8 +11,11 @@ network, so the default CI path skips it).
 from __future__ import annotations
 
 import argparse
+import datetime as dt
+import json
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -109,8 +112,91 @@ def fetch_status(url: str) -> int | str:
             return response.status
     except urllib.error.HTTPError as error:
         return error.code
-    except Exception as error:  # noqa: BLE001 — report, don't crash the sweep
+    except Exception as error:  # noqa: BLE001 -- report, don't crash the sweep
         return type(error).__name__
+
+
+RETRY_ATTEMPTS = 3
+RETRY_DELAY_SECONDS = 2.0
+
+
+def fetch_with_retries(url: str) -> tuple[int | str, int]:
+    """Fetch up to RETRY_ATTEMPTS times; return (last_status, attempts_used).
+
+    Returns early on the first success, so an exception entry is only ever
+    consulted after every attempt failed; an intermittent block clears
+    itself, and a permanent skip never hides a genuinely dead link.
+    """
+    status: int | str = "unfetched"
+    for attempt in range(1, RETRY_ATTEMPTS + 1):
+        status = fetch_status(url)
+        if isinstance(status, int) and 200 <= status < 400:
+            return status, attempt
+        if attempt < RETRY_ATTEMPTS:
+            time.sleep(RETRY_DELAY_SECONDS)
+    return status, RETRY_ATTEMPTS
+
+
+EXCEPTION_MAX_AGE_DAYS = 30
+REQUIRED_EXCEPTION_FIELDS = ("expect", "reason", "added", "removal_trigger")
+
+
+def load_exceptions() -> dict:
+    path = Path(__file__).parent / "link_exceptions.json"
+    return json.loads(path.read_text(encoding="utf-8"))["exceptions"]
+
+
+def check_exception_hygiene(exceptions: dict, today: dt.date) -> list[str]:
+    """No-network gates: entry shape and the 30-day age limit."""
+    errors = []
+    for url, entry in exceptions.items():
+        missing = [field for field in REQUIRED_EXCEPTION_FIELDS if field not in entry]
+        if missing:
+            errors.append(
+                f"link exception {url}: missing field(s) {', '.join(missing)} "
+                "(see link_exceptions.json comment for the required shape)"
+            )
+            continue
+        added = dt.date.fromisoformat(entry["added"])
+        age = (today - added).days
+        if age > EXCEPTION_MAX_AGE_DAYS:
+            errors.append(
+                f"link exception {url}: {age} days old (limit {EXCEPTION_MAX_AGE_DAYS}); "
+                "re-verify the condition and update 'added', or remove the entry"
+            )
+    return errors
+
+
+def repo_is_public(repo: str) -> bool | str:
+    """Anonymous probe: 200 = public, 404 = private/missing, else unknown."""
+    status = fetch_status(f"https://api.github.com/repos/{repo}")
+    if status == 200:
+        return True
+    if status == 404:
+        return False
+    return f"probe inconclusive ({status})"
+
+
+def check_removal_triggers(exceptions: dict) -> list[str]:
+    """Network gates: fail when a machine-checkable trigger condition holds."""
+    errors = []
+    probed: dict[str, bool | str] = {}
+    for url, entry in exceptions.items():
+        trigger = entry.get("removal_trigger", {})
+        if trigger.get("type") != "repo_public":
+            continue
+        repo = trigger["repo"]
+        if repo not in probed:
+            probed[repo] = repo_is_public(repo)
+        result = probed[repo]
+        if result is True:
+            errors.append(
+                f"link exception {url}: repo {repo} is now PUBLIC but the exception "
+                "is still present; remove it (its 404 justification no longer holds)"
+            )
+        elif result is not False:
+            print(f"  note: removal-trigger probe for {repo}: {result}")
+    return errors
 
 
 def main() -> int:
@@ -122,25 +208,27 @@ def main() -> int:
     errors = check_relative(files, REPO_ROOT)
     print(f"lint-links: {len(files)} markdown files scanned (relative links + anchors)")
 
-    if args.external:
-        import json
+    exceptions = load_exceptions()
+    errors.extend(check_exception_hygiene(exceptions, dt.date.today()))
 
-        exceptions_path = Path(__file__).parent / "link_exceptions.json"
-        exceptions = json.loads(exceptions_path.read_text(encoding="utf-8"))["exceptions"]
+    if args.external:
         urls = external_urls(files)
-        print(f"lint-links: fetching {len(urls)} external URL(s)")
+        print(f"lint-links: fetching {len(urls)} external URL(s) "
+              f"(up to {RETRY_ATTEMPTS} attempts each)")
         for url in sorted(urls):
-            status = fetch_status(url)
+            status, attempts = fetch_with_retries(url)
             ok = isinstance(status, int) and 200 <= status < 400
             exception = exceptions.get(url)
             if not ok and exception and status == exception["expect"]:
-                print(f"  [{status}*] {url} (bot-shielded; kept per link_exceptions.json, "
-                      f"verified {exception['verified']})")
+                print(f"  [{status}*] {url} (excused after {attempts} attempts per "
+                      f"link_exceptions.json, added {exception['added']})")
                 continue
-            print(f"  [{status}] {url}")
+            suffix = "" if attempts == 1 else f" (attempt {attempts})"
+            print(f"  [{status}] {url}{suffix}")
             if not ok:
                 sources = ", ".join(str(p.relative_to(REPO_ROOT)) for p in urls[url])
                 errors.append(f"external URL failed ({status}): {url} (in {sources})")
+        errors.extend(check_removal_triggers(exceptions))
 
     for error in errors:
         print(f"  FAIL {error}")

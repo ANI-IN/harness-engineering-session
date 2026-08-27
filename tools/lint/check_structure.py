@@ -164,7 +164,10 @@ def check_exercises(errors: list[str], root: Path) -> None:
         return
     for exercise in sorted(base.glob("lecture-*/exercises/exercise-*")):
         rel = _rel(exercise, root)
-        for required_file in ("README.md", "SPEC.md", "verify.sh"):
+        required_files = (
+            "README.md", "SPEC.md", "verify.sh", "expected/starter-divergence.txt",
+        )
+        for required_file in required_files:
             if not (exercise / required_file).is_file():
                 errors.append(f"{rel}: missing {required_file}")
         for stage in ("starter", "solution"):

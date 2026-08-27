@@ -49,3 +49,73 @@ def test_valid_links_pass(tmp_path):
 def test_links_inside_code_fences_ignored(tmp_path):
     md = _md(tmp_path, "a.md", "```text\n[not a link](./missing.md)\n```\n")
     assert check_links.check_relative([md], tmp_path) == []
+
+
+# ---- link-exception gates -------------------------------------------------
+
+import datetime as dt  # noqa: E402
+
+VALID_ENTRY = {
+    "expect": 403,
+    "reason": "bot protection",
+    "added": "2026-08-27",
+    "removal_trigger": {"type": "manual", "condition": "serves 2xx consistently"},
+}
+
+
+def test_exception_older_than_30_days_fails():
+    exceptions = {"https://example.com/": {**VALID_ENTRY, "added": "2026-07-01"}}
+    errors = check_links.check_exception_hygiene(exceptions, dt.date(2026, 8, 27))
+    assert len(errors) == 1
+    assert "57 days old" in errors[0]
+
+
+def test_exception_within_30_days_passes():
+    exceptions = {"https://example.com/": VALID_ENTRY}
+    assert check_links.check_exception_hygiene(exceptions, dt.date(2026, 8, 27)) == []
+
+
+def test_exception_missing_fields_fails():
+    exceptions = {"https://example.com/": {"expect": 403, "reason": "x"}}
+    errors = check_links.check_exception_hygiene(exceptions, dt.date(2026, 8, 27))
+    assert len(errors) == 1
+    assert "added" in errors[0] and "removal_trigger" in errors[0]
+
+
+def test_repo_public_trigger_fails_once_repo_is_public(monkeypatch):
+    exceptions = {
+        "https://github.com/x/y/issues": {
+            **VALID_ENTRY,
+            "expect": 404,
+            "removal_trigger": {"type": "repo_public", "repo": "x/y"},
+        }
+    }
+    monkeypatch.setattr(check_links, "repo_is_public", lambda _repo: True)
+    errors = check_links.check_removal_triggers(exceptions)
+    assert len(errors) == 1
+    assert "now PUBLIC" in errors[0]
+
+    monkeypatch.setattr(check_links, "repo_is_public", lambda _repo: False)
+    assert check_links.check_removal_triggers(exceptions) == []
+
+
+def test_retries_stop_on_first_success(monkeypatch):
+    statuses = iter([403, 200])
+    monkeypatch.setattr(check_links, "fetch_status", lambda _url: next(statuses))
+    monkeypatch.setattr(check_links.time, "sleep", lambda _s: None)
+    status, attempts = check_links.fetch_with_retries("https://example.com/")
+    assert status == 200
+    assert attempts == 2
+
+
+def test_retries_exhaust_then_report_last_status(monkeypatch):
+    monkeypatch.setattr(check_links, "fetch_status", lambda _url: 403)
+    monkeypatch.setattr(check_links.time, "sleep", lambda _s: None)
+    status, attempts = check_links.fetch_with_retries("https://example.com/")
+    assert status == 403
+    assert attempts == check_links.RETRY_ATTEMPTS
+
+
+def test_committed_exception_file_is_hygienic():
+    exceptions = check_links.load_exceptions()
+    assert check_links.check_exception_hygiene(exceptions, dt.date.today()) == []

@@ -1,20 +1,34 @@
 {
-  "comment": "URLs that are live for humans but return an error to automated fetchers (bot protection). Each entry records the status automation receives, why the link is kept anyway, and when a human-equivalent check last confirmed the page. lint-links --external treats a listed URL answering its expected status as pass-with-note; anything else still fails.",
+  "comment": "URLs that are live for humans but fail automated fetching. Every entry needs: expect (the status automation receives), reason, added (date), and removal_trigger. Gates: lint-links fails when an entry is older than 30 days (re-verify and re-date, or remove); lint-links-external retries every URL 3 times before consulting this list, and probes machine-checkable removal triggers (a repo_public trigger fails the build once the repo is public and the exception is still present).",
   "exceptions": {
     "https://github.com/ANI-IN/harness/issues": {
       "expect": 404,
-      "reason": "This repository is currently private, so GitHub serves 404 to unauthenticated clients for all of its pages. Issues are enabled (verified via authenticated API). Drop this entry when the repo goes public.",
-      "verified": "2026-08-27"
+      "reason": "The repository is currently private; GitHub serves 404 to unauthenticated clients for all of its pages. Issues are enabled (verified via authenticated API).",
+      "added": "2026-08-27",
+      "removal_trigger": {
+        "type": "repo_public",
+        "repo": "ANI-IN/harness",
+        "note": "remove this entry when the repository is public"
+      }
     },
     "https://github.com/ANI-IN/harness/security/advisories/new": {
       "expect": 404,
-      "reason": "Same as above: private repo, 404 to unauthenticated clients; also requires login even on public repos. Drop when the repo goes public.",
-      "verified": "2026-08-27"
+      "reason": "Same as above: private repo, 404 to unauthenticated clients. The /new page additionally requires login even on public repos, so after the repo goes public this link must be re-verified and this entry replaced or removed.",
+      "added": "2026-08-27",
+      "removal_trigger": {
+        "type": "repo_public",
+        "repo": "ANI-IN/harness",
+        "note": "remove or re-justify when the repository is public"
+      }
     },
     "https://openai.com/index/harness-engineering/": {
       "expect": 403,
-      "reason": "openai.com serves HTTP 403 to non-browser fetchers (curl, urllib, headless fetch all blocked). Page confirmed live via search index and multiple mirrors.",
-      "verified": "2026-08-27"
+      "reason": "openai.com intermittently serves HTTP 403 to non-browser fetchers (bot protection); the page itself is live (it has also answered 200 to this checker). The exception only excuses a 403 that persists across all retry attempts; a dead link would return 404/410 and still fail.",
+      "added": "2026-08-27",
+      "removal_trigger": {
+        "type": "manual",
+        "condition": "openai.com answers 2xx to this checker consistently, or the article moves"
+      }
     }
   }
 }

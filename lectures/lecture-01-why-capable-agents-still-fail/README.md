@@ -128,9 +128,11 @@ L=lectures/lecture-01-why-capable-agents-still-fail
 pnpm exec tsx $L/code/typescript/main.ts $L/code/fixtures/runs.jsonl
 ```
 
-Both tracks print the same report (output below is from a real run; the
-middle four run entries are elided here, marked with `...`):
+Both tracks print the same report. The block below is generated from the
+Python run by `make verify` (the TypeScript run is held identical to it by
+`make conformance`), so it cannot drift from the committed fixtures:
 
+<!-- generated-block: uv run python lectures/lecture-01-why-capable-agents-still-fail/code/python/main.py lectures/lecture-01-why-capable-agents-still-fail/code/fixtures/runs.jsonl -->
 ```json
 {
   "runs": [
@@ -141,7 +143,34 @@ middle four run entries are elided here, marked with `...`):
       "rule": "asked-for-repo-fact",
       "evidence": "agent_question: \"Which web framework does this service use?\""
     },
-    ...
+    {
+      "id": "run-2",
+      "task": "fix the flaky login test",
+      "subsystem": "tools",
+      "rule": "command-unavailable",
+      "evidence": "shell_error: \"bash: pnpm: command not found\""
+    },
+    {
+      "id": "run-3",
+      "task": "regenerate the weekly report",
+      "subsystem": "environment",
+      "rule": "dependency-or-runtime-missing",
+      "evidence": "shell_error: \"ModuleNotFoundError: No module named 'jinja2'\""
+    },
+    {
+      "id": "run-4",
+      "task": "continue the pagination work from yesterday",
+      "subsystem": "state",
+      "rule": "repeated-prior-work",
+      "evidence": "rework: \"re-mapped the API layout that the previous session had already documented\""
+    },
+    {
+      "id": "run-5",
+      "task": "add CSV export",
+      "subsystem": "feedback",
+      "rule": "claim-without-passing-verification",
+      "evidence": "claim: \"export implemented and working\""
+    },
     {
       "id": "run-6",
       "task": "rename the config key",
@@ -162,6 +191,7 @@ middle four run entries are elided here, marked with `...`):
   "harness_failure_rate": 0.8333333333333334
 }
 ```
+<!-- /generated-block -->
 
 The interpretation is the lecture's claim in miniature: five of these six
 "agent failures" never touch model capability. Each one names the subsystem

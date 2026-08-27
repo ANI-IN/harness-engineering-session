@@ -22,6 +22,8 @@ verify: ## Run every unit's verify.sh (both stacks) + all test suites
 	@uv run pytest
 	@pnpm run --silent test
 	@uv run python tools/run_verify.py
+	@uv run python tools/check_build_state.py
+	@uv run python tools/gen_readme_blocks.py --check
 	@echo "verify: OK"
 
 conformance: ## Diff python vs typescript vs expected/ for every SPEC.md unit
