@@ -1,0 +1,41 @@
+{
+  "project": "notes-api",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "search-endpoint",
+      "title": "Search endpoint",
+      "behavior": "GET /api/search returns ranked, paginated results.",
+      "verification": "./verify.sh --feature search-endpoint",
+      "status": "in-progress"
+    },
+    {
+      "id": "delete-endpoint",
+      "title": "Delete endpoint",
+      "behavior": "DELETE /api/notes/:id removes a note after confirmation.",
+      "verification": "./verify.sh --feature delete-endpoint",
+      "status": "not-started"
+    },
+    {
+      "id": "error-shapes",
+      "title": "Consistent error responses",
+      "behavior": "Every handler returns the shared error shape.",
+      "verification": "./verify.sh --feature error-shapes",
+      "status": "not-started"
+    },
+    {
+      "id": "rate-limiting",
+      "title": "Rate limiting",
+      "behavior": "Repeated queries are throttled per client.",
+      "verification": "./verify.sh --feature rate-limiting",
+      "status": "not-started"
+    },
+    {
+      "id": "test-layout",
+      "title": "Test layout cleanup",
+      "behavior": "Route tests live next to the routes they cover.",
+      "verification": "./verify.sh --feature test-layout",
+      "status": "not-started"
+    }
+  ]
+}

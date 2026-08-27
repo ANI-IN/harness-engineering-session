@@ -1,0 +1,8 @@
+{
+  "changes": [
+    { "step": 1, "file": "src/routes/search.ts", "feature": "search-endpoint" },
+    { "step": 2, "file": "src/search/query.ts", "feature": "search-endpoint" },
+    { "step": 3, "file": "src/search/rank.ts", "feature": "search-endpoint" },
+    { "step": 4, "file": "tests/routes/search.test.ts", "feature": "search-endpoint" }
+  ]
+}

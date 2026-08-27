@@ -1,0 +1,94 @@
+{
+  "workspace": "open-scope",
+  "wip_limit": null,
+  "assigned": "search-endpoint",
+  "budget": 12,
+  "events": [
+    {
+      "step": 1,
+      "feature": "search-endpoint",
+      "action": "wire the search route skeleton",
+      "outcome": "progress on the assigned feature (step 1)"
+    },
+    {
+      "step": 2,
+      "feature": "search-endpoint",
+      "action": "parse and validate the query parameters",
+      "outcome": "progress on the assigned feature (step 2)"
+    },
+    {
+      "step": 3,
+      "feature": "delete-endpoint",
+      "action": "start the delete route handler",
+      "outcome": "scope crossed: 2 features in flight"
+    },
+    {
+      "step": 4,
+      "feature": "search-endpoint",
+      "action": "implement result ranking",
+      "outcome": "progress on the assigned feature (step 3)"
+    },
+    {
+      "step": 5,
+      "feature": "error-shapes",
+      "action": "rework the error response shape",
+      "outcome": "scope crossed: 3 features in flight"
+    },
+    {
+      "step": 6,
+      "feature": "delete-endpoint",
+      "action": "add the delete confirmation flow",
+      "outcome": "the tangent deepens; the assigned feature waits"
+    },
+    {
+      "step": 7,
+      "feature": "search-endpoint",
+      "action": "add result pagination",
+      "outcome": "progress on the assigned feature (step 4)"
+    },
+    {
+      "step": 8,
+      "feature": "rate-limiting",
+      "action": "add a rate limiter to the router",
+      "outcome": "scope crossed: 4 features in flight"
+    },
+    {
+      "step": 9,
+      "feature": "test-layout",
+      "action": "move the route tests next to the routes",
+      "outcome": "scope crossed: 5 features in flight"
+    },
+    {
+      "step": 10,
+      "feature": "search-endpoint",
+      "action": "format the response payload",
+      "outcome": "progress on the assigned feature (step 5)"
+    },
+    {
+      "step": 11,
+      "feature": "error-shapes",
+      "action": "apply the new error shape to the search route",
+      "outcome": "the tangent deepens; the assigned feature waits"
+    },
+    {
+      "step": 12,
+      "feature": "search-endpoint",
+      "action": "add the search endpoint tests",
+      "outcome": "progress on the assigned feature (step 6)"
+    }
+  ],
+  "parked": [],
+  "steps_spent": 12,
+  "steps_on_assigned": 6,
+  "steps_on_tangents": 6,
+  "features_started": 5,
+  "features_passing": 0,
+  "in_progress_at_end": [
+    "search-endpoint",
+    "delete-endpoint",
+    "error-shapes",
+    "rate-limiting",
+    "test-layout"
+  ],
+  "assigned_verified": false
+}

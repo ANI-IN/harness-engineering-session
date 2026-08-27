@@ -1,0 +1,87 @@
+{
+  "workspace": "bounded-scope",
+  "wip_limit": 1,
+  "assigned": "search-endpoint",
+  "budget": 12,
+  "events": [
+    {
+      "step": 1,
+      "feature": "search-endpoint",
+      "action": "wire the search route skeleton",
+      "outcome": "progress on the assigned feature (step 1)"
+    },
+    {
+      "step": 2,
+      "feature": "search-endpoint",
+      "action": "parse and validate the query parameters",
+      "outcome": "progress on the assigned feature (step 2)"
+    },
+    {
+      "step": 3,
+      "feature": "search-endpoint",
+      "action": "implement result ranking",
+      "outcome": "progress on the assigned feature (step 3)"
+    },
+    {
+      "step": 4,
+      "feature": "search-endpoint",
+      "action": "add result pagination",
+      "outcome": "progress on the assigned feature (step 4)"
+    },
+    {
+      "step": 5,
+      "feature": "search-endpoint",
+      "action": "format the response payload",
+      "outcome": "progress on the assigned feature (step 5)"
+    },
+    {
+      "step": 6,
+      "feature": "search-endpoint",
+      "action": "add the search endpoint tests",
+      "outcome": "progress on the assigned feature (step 6)"
+    },
+    {
+      "step": 7,
+      "feature": "search-endpoint",
+      "action": "run the verification command (./verify.sh --feature search-endpoint)",
+      "outcome": "pass: search-endpoint moves to passing with evidence"
+    }
+  ],
+  "parked": [
+    {
+      "feature": "delete-endpoint",
+      "action": "start the delete route handler",
+      "noticed": "the routes file has no delete handler",
+      "noticed_at_step": 2,
+      "times_provoked": 2
+    },
+    {
+      "feature": "error-shapes",
+      "action": "rework the error response shape",
+      "noticed": "two handlers return different error shapes",
+      "noticed_at_step": 3,
+      "times_provoked": 2
+    },
+    {
+      "feature": "rate-limiting",
+      "action": "add a rate limiter to the router",
+      "noticed": "nothing throttles repeated queries",
+      "noticed_at_step": 4,
+      "times_provoked": 1
+    },
+    {
+      "feature": "test-layout",
+      "action": "move the route tests next to the routes",
+      "noticed": "test files sit in three different places",
+      "noticed_at_step": 4,
+      "times_provoked": 1
+    }
+  ],
+  "steps_spent": 7,
+  "steps_on_assigned": 7,
+  "steps_on_tangents": 0,
+  "features_started": 1,
+  "features_passing": 1,
+  "in_progress_at_end": [],
+  "assigned_verified": true
+}

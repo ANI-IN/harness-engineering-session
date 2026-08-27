@@ -1,0 +1,82 @@
+{
+  "impulses": [
+    {
+      "feature": "search-endpoint",
+      "kind": "step",
+      "action": "wire the search route skeleton",
+      "noticed": null
+    },
+    {
+      "feature": "search-endpoint",
+      "kind": "step",
+      "action": "parse and validate the query parameters",
+      "noticed": null
+    },
+    {
+      "feature": "delete-endpoint",
+      "kind": "step",
+      "action": "start the delete route handler",
+      "noticed": "the routes file has no delete handler"
+    },
+    {
+      "feature": "search-endpoint",
+      "kind": "step",
+      "action": "implement result ranking",
+      "noticed": null
+    },
+    {
+      "feature": "error-shapes",
+      "kind": "step",
+      "action": "rework the error response shape",
+      "noticed": "two handlers return different error shapes"
+    },
+    {
+      "feature": "delete-endpoint",
+      "kind": "step",
+      "action": "add the delete confirmation flow",
+      "noticed": "the new delete handler has no confirmation"
+    },
+    {
+      "feature": "search-endpoint",
+      "kind": "step",
+      "action": "add result pagination",
+      "noticed": null
+    },
+    {
+      "feature": "rate-limiting",
+      "kind": "step",
+      "action": "add a rate limiter to the router",
+      "noticed": "nothing throttles repeated queries"
+    },
+    {
+      "feature": "test-layout",
+      "kind": "step",
+      "action": "move the route tests next to the routes",
+      "noticed": "test files sit in three different places"
+    },
+    {
+      "feature": "search-endpoint",
+      "kind": "step",
+      "action": "format the response payload",
+      "noticed": null
+    },
+    {
+      "feature": "error-shapes",
+      "kind": "step",
+      "action": "apply the new error shape to the search route",
+      "noticed": "the search route still returns the old error shape"
+    },
+    {
+      "feature": "search-endpoint",
+      "kind": "step",
+      "action": "add the search endpoint tests",
+      "noticed": null
+    },
+    {
+      "feature": "search-endpoint",
+      "kind": "verify",
+      "action": null,
+      "noticed": null
+    }
+  ]
+}

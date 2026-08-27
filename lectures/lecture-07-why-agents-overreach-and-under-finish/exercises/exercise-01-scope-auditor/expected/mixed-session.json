@@ -1,0 +1,58 @@
+{
+  "active": [
+    "search-endpoint"
+  ],
+  "changes": [
+    {
+      "step": 1,
+      "file": "src/routes/search.ts",
+      "feature": "search-endpoint",
+      "in_scope": true,
+      "reason": "targets the active feature"
+    },
+    {
+      "step": 2,
+      "file": "src/routes/delete.ts",
+      "feature": "delete-endpoint",
+      "in_scope": false,
+      "reason": "delete-endpoint is in the queue, not active"
+    },
+    {
+      "step": 3,
+      "file": "src/search/rank.ts",
+      "feature": "search-endpoint",
+      "in_scope": true,
+      "reason": "targets the active feature"
+    },
+    {
+      "step": 4,
+      "file": "src/metrics/collect.ts",
+      "feature": "session-metrics",
+      "in_scope": false,
+      "reason": "session-metrics is not in the feature list"
+    },
+    {
+      "step": 5,
+      "file": "src/middleware/errors.ts",
+      "feature": "error-shapes",
+      "in_scope": false,
+      "reason": "error-shapes is in the queue, not active"
+    },
+    {
+      "step": 6,
+      "file": "tests/routes/search.test.ts",
+      "feature": "search-endpoint",
+      "in_scope": true,
+      "reason": "targets the active feature"
+    }
+  ],
+  "drift": {
+    "count": 3,
+    "features": [
+      "delete-endpoint",
+      "session-metrics",
+      "error-shapes"
+    ]
+  },
+  "clean": false
+}

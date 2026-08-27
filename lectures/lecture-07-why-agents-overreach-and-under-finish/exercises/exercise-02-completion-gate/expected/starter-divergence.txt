@@ -1,0 +1,1 @@
+diverges at $.claims[1].detail: 'verified: ./verify.sh --feature delete-endpoint reported exit 0' != 'evidence names a different command (npx tsc --noEmit, not ./verify.sh --feature delete-endpoint)'

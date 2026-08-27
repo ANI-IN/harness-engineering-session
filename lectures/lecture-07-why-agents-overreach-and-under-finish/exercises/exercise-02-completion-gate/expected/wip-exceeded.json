@@ -1,0 +1,19 @@
+{
+  "claims": [
+    {
+      "id": "search-endpoint",
+      "evidence_ok": true,
+      "detail": "verified: ./verify.sh --feature search-endpoint reported exit 0"
+    }
+  ],
+  "may_activate": false,
+  "unbacked": [],
+  "verdict": "wip-exceeded",
+  "wip": {
+    "in_progress": [
+      "delete-endpoint",
+      "error-shapes"
+    ],
+    "limit": 1
+  }
+}

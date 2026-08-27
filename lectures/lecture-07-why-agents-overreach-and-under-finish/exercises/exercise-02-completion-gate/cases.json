@@ -1,0 +1,32 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "ready",
+      "args": ["fixtures/ready.json"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/ready.json", "kind": "json" }
+    },
+    {
+      "name": "hollow-evidence",
+      "args": ["fixtures/hollow-evidence.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/hollow-evidence.json", "kind": "json" }
+    },
+    {
+      "name": "wip-exceeded",
+      "args": ["fixtures/wip-exceeded.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/wip-exceeded.json", "kind": "json" }
+    },
+    {
+      "name": "missing-file",
+      "args": ["fixtures/no-such-list.json"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}

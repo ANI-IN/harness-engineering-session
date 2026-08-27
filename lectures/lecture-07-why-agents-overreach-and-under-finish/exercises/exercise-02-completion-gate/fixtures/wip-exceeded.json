@@ -1,0 +1,39 @@
+{
+  "project": "notes-api",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "search-endpoint",
+      "title": "Search endpoint",
+      "behavior": "GET /api/search returns ranked, paginated results.",
+      "verification": "./verify.sh --feature search-endpoint",
+      "status": "passing",
+      "evidence": {
+        "command": "./verify.sh --feature search-endpoint",
+        "observed": "exit 0; 6 assertions passed",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "delete-endpoint",
+      "title": "Delete endpoint",
+      "behavior": "DELETE /api/notes/:id removes a note after confirmation.",
+      "verification": "./verify.sh --feature delete-endpoint",
+      "status": "in-progress"
+    },
+    {
+      "id": "error-shapes",
+      "title": "Consistent error responses",
+      "behavior": "Every handler returns the shared error shape.",
+      "verification": "./verify.sh --feature error-shapes",
+      "status": "in-progress"
+    },
+    {
+      "id": "rate-limiting",
+      "title": "Rate limiting",
+      "behavior": "Repeated queries are throttled per client.",
+      "verification": "./verify.sh --feature rate-limiting",
+      "status": "not-started"
+    }
+  ]
+}

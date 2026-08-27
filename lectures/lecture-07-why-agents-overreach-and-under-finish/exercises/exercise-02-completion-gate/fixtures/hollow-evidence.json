@@ -1,0 +1,56 @@
+{
+  "project": "notes-api",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "search-endpoint",
+      "title": "Search endpoint",
+      "behavior": "GET /api/search returns ranked, paginated results.",
+      "verification": "./verify.sh --feature search-endpoint",
+      "status": "passing",
+      "evidence": {
+        "command": "./verify.sh --feature search-endpoint",
+        "observed": "exit 0; 6 assertions passed",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "delete-endpoint",
+      "title": "Delete endpoint",
+      "behavior": "DELETE /api/notes/:id removes a note after confirmation.",
+      "verification": "./verify.sh --feature delete-endpoint",
+      "status": "passing",
+      "evidence": {
+        "command": "npx tsc --noEmit",
+        "observed": "exit 0; no type errors",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "rate-limiting",
+      "title": "Rate limiting",
+      "behavior": "Repeated queries are throttled per client.",
+      "verification": "./verify.sh --feature rate-limiting",
+      "status": "passing",
+      "evidence": {
+        "command": "./verify.sh --feature rate-limiting",
+        "observed": "exit 1; 3 of 5 assertions failed",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "test-layout",
+      "title": "Test layout cleanup",
+      "behavior": "Route tests live next to the routes they cover.",
+      "verification": "./verify.sh --feature test-layout",
+      "status": "passing"
+    },
+    {
+      "id": "error-shapes",
+      "title": "Consistent error responses",
+      "behavior": "Every handler returns the shared error shape.",
+      "verification": "./verify.sh --feature error-shapes",
+      "status": "in-progress"
+    }
+  ]
+}

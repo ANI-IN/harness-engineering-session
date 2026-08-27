@@ -1,0 +1,10 @@
+{
+  "changes": [
+    { "step": 1, "file": "src/routes/search.ts", "feature": "search-endpoint" },
+    { "step": 2, "file": "src/routes/delete.ts", "feature": "delete-endpoint" },
+    { "step": 3, "file": "src/search/rank.ts", "feature": "search-endpoint" },
+    { "step": 4, "file": "src/metrics/collect.ts", "feature": "session-metrics" },
+    { "step": 5, "file": "src/middleware/errors.ts", "feature": "error-shapes" },
+    { "step": 6, "file": "tests/routes/search.test.ts", "feature": "search-endpoint" }
+  ]
+}

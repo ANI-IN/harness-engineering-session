@@ -284,3 +284,6 @@ real deployment adds clocks at exactly that seam.
 - [Lecture 06: Why initialization needs its own phase](../../lectures/lecture-06-why-initialization-needs-its-own-phase/):
   `init.sh` now gates on the guard too; the doctor family grows a
   fourth check.
+- [Lecture 07: Why agents overreach and under-finish](../../lectures/lecture-07-why-agents-overreach-and-under-finish/):
+  the WIP=1 line the lecture's scripted worker obeys is the rule this
+  project's fourth doctor check enforces.

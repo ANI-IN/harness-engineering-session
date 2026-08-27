@@ -1,0 +1,62 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "open-scope-overreaches",
+      "args": [
+        "fixtures/workspaces/open-scope",
+        "fixtures/session-script.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/open-scope.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "bounded-scope-finishes",
+      "args": [
+        "fixtures/workspaces/bounded-scope",
+        "fixtures/session-script.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/bounded-scope.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "open-scope-big-budget",
+      "args": [
+        "fixtures/workspaces/open-scope",
+        "fixtures/session-script.json",
+        "--budget",
+        "18"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/open-scope-big-budget.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "fixtures/workspaces/no-such-workspace",
+        "fixtures/session-script.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

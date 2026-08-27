@@ -1,0 +1,26 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "clean-session",
+      "args": ["fixtures/feature_list.json", "fixtures/changes/clean-session.json"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/clean-session.json", "kind": "json" }
+    },
+    {
+      "name": "mixed-session",
+      "args": ["fixtures/feature_list.json", "fixtures/changes/mixed-session.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/mixed-session.json", "kind": "json" }
+    },
+    {
+      "name": "missing-file",
+      "args": ["fixtures/feature_list.json", "fixtures/changes/no-such-session.json"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}

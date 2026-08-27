@@ -51,6 +51,7 @@ links to a unit that runs today.
 | [04: Why one giant instruction file fails](lectures/lecture-04-why-one-giant-instruction-file-fails/) | Map, not manual: progressive disclosure | [Project 02](projects/project-02-agent-readable-workspace/) |
 | [05: Why long-running tasks lose continuity](lectures/lecture-05-why-long-running-tasks-lose-continuity/) | Context decay; externalized state across sessions | [Project 03](projects/project-03-multi-session-continuity/) |
 | [06: Why initialization needs its own phase](lectures/lecture-06-why-initialization-needs-its-own-phase/) | init.sh as a first-class phase | [Project 03](projects/project-03-multi-session-continuity/) |
+| [07: Why agents overreach and under-finish](lectures/lecture-07-why-agents-overreach-and-under-finish/) | WIP=1 read from the workspace; a parked queue instead of a refusal | [Project 04](projects/project-04-runtime-feedback-and-scope-control/) |
 
 | Project | You build |
 | --- | --- |
