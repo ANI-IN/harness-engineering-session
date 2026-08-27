@@ -4,5 +4,6 @@
   "min_verify_scripts": 22,
   "min_lectures": 6,
   "min_projects": 3,
-  "min_exercises": 12
+  "min_exercises": 12,
+  "min_readme_command_fences": 26
 }

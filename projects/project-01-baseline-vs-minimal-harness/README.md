@@ -146,8 +146,11 @@ P=projects/project-01-baseline-vs-minimal-harness
 uv run python $P/solution/python/main.py init --data-dir $P/kb-data --seed $P/fixtures/kb-data/documents
 uv run python $P/solution/python/main.py list --data-dir $P/kb-data
 uv run python $P/solution/python/main.py ask --data-dir $P/kb-data "Which lines become citations in the ranking?"
-uv run python $P/solution/python/main.py serve --data-dir $P/kb-data --port 8151
+uv run python $P/solution/python/main.py serve --data-dir $P/kb-data --self-check
 ```
+
+The foreground server is `kb serve --data-dir $P/kb-data --port 8151`
+(Ctrl+C stops it); the stanzas use `--self-check`, the assertable form.
 
 ### TypeScript
 
@@ -156,7 +159,7 @@ P=projects/project-01-baseline-vs-minimal-harness
 pnpm exec tsx $P/solution/typescript/main.ts init --data-dir $P/kb-data --seed $P/fixtures/kb-data/documents
 pnpm exec tsx $P/solution/typescript/main.ts list --data-dir $P/kb-data
 pnpm exec tsx $P/solution/typescript/main.ts ask --data-dir $P/kb-data "Which lines become citations in the ranking?"
-pnpm exec tsx $P/solution/typescript/main.ts serve --data-dir $P/kb-data --port 8151
+pnpm exec tsx $P/solution/typescript/main.ts serve --data-dir $P/kb-data --self-check
 ```
 
 A grounded answer, generated from the Python run by `make verify` (the

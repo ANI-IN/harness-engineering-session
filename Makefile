@@ -45,6 +45,7 @@ verify: ## Run every unit's verify.sh (both stacks) + all test suites
 	@uv run python tools/run_verify.py
 	@uv run python tools/check_build_state.py
 	@uv run python tools/gen_readme_blocks.py --check
+	@uv run python tools/check_readme_commands.py
 	@echo "verify: OK"
 
 verify-dedup: ## Verify for make status: unit conformance runs once, in the conformance gate
@@ -53,6 +54,7 @@ verify-dedup: ## Verify for make status: unit conformance runs once, in the conf
 	@uv run python tools/run_verify.py --skip-unit-conformance
 	@uv run python tools/check_build_state.py
 	@uv run python tools/gen_readme_blocks.py --check
+	@uv run python tools/check_readme_commands.py
 	@echo "verify-dedup: OK (unit conformance covered by the conformance gate)"
 
 quick: ## Inner loop for ONE unit: doctor + U=<dir>/verify.sh. NOT the commit gate; run make status before committing

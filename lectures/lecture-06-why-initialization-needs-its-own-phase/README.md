@@ -101,6 +101,7 @@ and `repo-broken` (three seeded gaps). Run it from the repo root:
 
 ### Python
 
+<!-- fence-exit: 1 -->
 ```sh
 L=lectures/lecture-06-why-initialization-needs-its-own-phase
 uv run python $L/code/python/main.py $L/code/fixtures/repos/repo-broken
@@ -108,6 +109,7 @@ uv run python $L/code/python/main.py $L/code/fixtures/repos/repo-broken
 
 ### TypeScript
 
+<!-- fence-exit: 1 -->
 ```sh
 L=lectures/lecture-06-why-initialization-needs-its-own-phase
 pnpm exec tsx $L/code/typescript/main.ts $L/code/fixtures/repos/repo-broken

@@ -125,6 +125,7 @@ the repo root:
 
 ### Python
 
+<!-- fence-exit: 1 -->
 ```sh
 L=lectures/lecture-03-why-the-repository-must-become-the-system-of-record
 uv run python $L/code/python/main.py $L/code/fixtures/repos/repo-blank-spots
@@ -132,6 +133,7 @@ uv run python $L/code/python/main.py $L/code/fixtures/repos/repo-blank-spots
 
 ### TypeScript
 
+<!-- fence-exit: 1 -->
 ```sh
 L=lectures/lecture-03-why-the-repository-must-become-the-system-of-record
 pnpm exec tsx $L/code/typescript/main.ts $L/code/fixtures/repos/repo-blank-spots
