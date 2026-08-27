@@ -133,26 +133,30 @@ make setup
 
 ## Usage
 
-All commands run from this project directory. `kb` is the canonical
-command form; expand it per track (the conformance suite proves both
-expansions behave identically):
+All commands run from the **repository root**: unit directories carry no
+package manifest by design, so `pnpm exec` resolves tools from the root
+workspace and fails inside the unit. `kb` is the canonical command form;
+expand it per track (the conformance suite proves both expansions behave
+identically):
 
 ### Python
 
 ```sh
-uv run python solution/python/main.py init --data-dir kb-data --seed fixtures/kb-data/documents
-uv run python solution/python/main.py list --data-dir kb-data
-uv run python solution/python/main.py ask --data-dir kb-data "Which lines become citations in the ranking?"
-uv run python solution/python/main.py serve --data-dir kb-data --port 8151
+P=projects/project-01-baseline-vs-minimal-harness
+uv run python $P/solution/python/main.py init --data-dir $P/kb-data --seed $P/fixtures/kb-data/documents
+uv run python $P/solution/python/main.py list --data-dir $P/kb-data
+uv run python $P/solution/python/main.py ask --data-dir $P/kb-data "Which lines become citations in the ranking?"
+uv run python $P/solution/python/main.py serve --data-dir $P/kb-data --port 8151
 ```
 
 ### TypeScript
 
 ```sh
-pnpm exec tsx solution/typescript/main.ts init --data-dir kb-data --seed fixtures/kb-data/documents
-pnpm exec tsx solution/typescript/main.ts list --data-dir kb-data
-pnpm exec tsx solution/typescript/main.ts ask --data-dir kb-data "Which lines become citations in the ranking?"
-pnpm exec tsx solution/typescript/main.ts serve --data-dir kb-data --port 8151
+P=projects/project-01-baseline-vs-minimal-harness
+pnpm exec tsx $P/solution/typescript/main.ts init --data-dir $P/kb-data --seed $P/fixtures/kb-data/documents
+pnpm exec tsx $P/solution/typescript/main.ts list --data-dir $P/kb-data
+pnpm exec tsx $P/solution/typescript/main.ts ask --data-dir $P/kb-data "Which lines become citations in the ranking?"
+pnpm exec tsx $P/solution/typescript/main.ts serve --data-dir $P/kb-data --port 8151
 ```
 
 A grounded answer, generated from the Python run by `make verify` (the
@@ -190,13 +194,15 @@ Run the experiment (both tracks print the same bytes):
 ### Python
 
 ```sh
-uv run python solution/python/main.py experiment
+P=projects/project-01-baseline-vs-minimal-harness
+uv run python $P/solution/python/main.py experiment
 ```
 
 ### TypeScript
 
 ```sh
-pnpm exec tsx solution/typescript/main.ts experiment
+P=projects/project-01-baseline-vs-minimal-harness
+pnpm exec tsx $P/solution/typescript/main.ts experiment
 ```
 
 It seeds the weak run, lets the fake agent fail exactly the way lectures

@@ -109,25 +109,29 @@ make setup
 
 ## Usage
 
-All commands run from this project directory; `kb` expands per track as
-in project 01.
+All commands run from the **repository root** (unit directories carry no
+package manifest by design, so `pnpm exec` resolves tools from the root
+workspace and fails inside the unit); `kb` expands per track as in
+project 01.
 
 ### Python
 
 ```sh
-uv run python solution/python/main.py init --data-dir kb-data --seed fixtures/kb-data/documents
-uv run python solution/python/main.py index --data-dir kb-data
-uv run python solution/python/main.py status --data-dir kb-data
-uv run python solution/python/main.py ask --data-dir kb-data "Which lines become citations in the ranking?"
+P=projects/project-03-multi-session-continuity
+uv run python $P/solution/python/main.py init --data-dir $P/kb-data --seed $P/fixtures/kb-data/documents
+uv run python $P/solution/python/main.py index --data-dir $P/kb-data
+uv run python $P/solution/python/main.py status --data-dir $P/kb-data
+uv run python $P/solution/python/main.py ask --data-dir $P/kb-data "Which lines become citations in the ranking?"
 ```
 
 ### TypeScript
 
 ```sh
-pnpm exec tsx solution/typescript/main.ts init --data-dir kb-data --seed fixtures/kb-data/documents
-pnpm exec tsx solution/typescript/main.ts index --data-dir kb-data
-pnpm exec tsx solution/typescript/main.ts status --data-dir kb-data
-pnpm exec tsx solution/typescript/main.ts ask --data-dir kb-data "Which lines become citations in the ranking?"
+P=projects/project-03-multi-session-continuity
+pnpm exec tsx $P/solution/typescript/main.ts init --data-dir $P/kb-data --seed $P/fixtures/kb-data/documents
+pnpm exec tsx $P/solution/typescript/main.ts index --data-dir $P/kb-data
+pnpm exec tsx $P/solution/typescript/main.ts status --data-dir $P/kb-data
+pnpm exec tsx $P/solution/typescript/main.ts ask --data-dir $P/kb-data "Which lines become citations in the ranking?"
 ```
 
 The chunk-grounded answer against the committed indexed fixture,
@@ -167,13 +171,15 @@ report is pinned in [`expected/continuity.json`](./expected/continuity.json)):
 ### Python
 
 ```sh
-uv run python solution/python/main.py continuity
+P=projects/project-03-multi-session-continuity
+uv run python $P/solution/python/main.py continuity
 ```
 
 ### TypeScript
 
 ```sh
-pnpm exec tsx solution/typescript/main.ts continuity
+P=projects/project-03-multi-session-continuity
+pnpm exec tsx $P/solution/typescript/main.ts continuity
 ```
 
 Session A initializes, imports, indexes, checks status, and writes the

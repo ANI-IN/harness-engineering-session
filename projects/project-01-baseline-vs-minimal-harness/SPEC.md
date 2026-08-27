@@ -24,11 +24,13 @@ track expands the prefix:
 
 | Track | `kb` expands to |
 | --- | --- |
-| Python | `uv run python solution/python/main.py` (from this directory) |
-| TypeScript | `pnpm exec tsx solution/typescript/main.ts` (from this directory) |
+| Python | `uv run python <project>/solution/python/main.py` (from the repository root) |
+| TypeScript | `pnpm exec tsx <project>/solution/typescript/main.ts` (from the repository root) |
 
 Evidence entries and experiment reports use the canonical form so they are
-identical across tracks; the conformance cases execute the same
+identical across tracks; commands run from the repository root because
+unit directories deliberately carry no package manifest (`pnpm exec`
+resolves tools from the root workspace). The conformance cases execute the same
 subcommands through both real CLIs, which is what makes the notation
 honest.
 

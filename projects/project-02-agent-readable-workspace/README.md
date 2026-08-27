@@ -106,25 +106,29 @@ make setup
 
 ## Usage
 
-All commands run from this project directory; `kb` expands per track as
-in project 01.
+All commands run from the **repository root** (unit directories carry no
+package manifest by design, so `pnpm exec` resolves tools from the root
+workspace and fails inside the unit); `kb` expands per track as in
+project 01.
 
 ### Python
 
 ```sh
-uv run python solution/python/main.py init --data-dir kb-data --seed fixtures/kb-data/documents
-uv run python solution/python/main.py import --data-dir kb-data fixtures/imports/field-guide.md
-uv run python solution/python/main.py show --data-dir kb-data field-guide
-uv run python solution/python/main.py workspace-check --workspace harness
+P=projects/project-02-agent-readable-workspace
+uv run python $P/solution/python/main.py init --data-dir $P/kb-data --seed $P/fixtures/kb-data/documents
+uv run python $P/solution/python/main.py import --data-dir $P/kb-data $P/fixtures/imports/field-guide.md
+uv run python $P/solution/python/main.py show --data-dir $P/kb-data field-guide
+uv run python $P/solution/python/main.py workspace-check --workspace $P/harness
 ```
 
 ### TypeScript
 
 ```sh
-pnpm exec tsx solution/typescript/main.ts init --data-dir kb-data --seed fixtures/kb-data/documents
-pnpm exec tsx solution/typescript/main.ts import --data-dir kb-data fixtures/imports/field-guide.md
-pnpm exec tsx solution/typescript/main.ts show --data-dir kb-data field-guide
-pnpm exec tsx solution/typescript/main.ts workspace-check --workspace harness
+P=projects/project-02-agent-readable-workspace
+pnpm exec tsx $P/solution/typescript/main.ts init --data-dir $P/kb-data --seed $P/fixtures/kb-data/documents
+pnpm exec tsx $P/solution/typescript/main.ts import --data-dir $P/kb-data $P/fixtures/imports/field-guide.md
+pnpm exec tsx $P/solution/typescript/main.ts show --data-dir $P/kb-data field-guide
+pnpm exec tsx $P/solution/typescript/main.ts workspace-check --workspace $P/harness
 ```
 
 The document list, now read from the metadata index alone (generated from
