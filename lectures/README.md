@@ -31,7 +31,7 @@ minutes per lecture including exercises.
 | 02 | [What a harness actually is](./lecture-02-what-a-harness-actually-is/) | A harness is five subsystems working as one system | Project 01 |
 | 03 | [Why the repository must become the system of record](./lecture-03-why-the-repository-must-become-the-system-of-record/) | What's not in the repo doesn't exist for the agent | Project 02 |
 | 04 | [Why one giant instruction file fails](./lecture-04-why-one-giant-instruction-file-fails/) | Instructions must be a map, not a manual | Project 02 |
-| 05 | Why long-running tasks lose continuity | Continuity comes from externalized state, not context windows | Project 03 |
+| 05 | [Why long-running tasks lose continuity](./lecture-05-why-long-running-tasks-lose-continuity/) | Continuity comes from externalized state, not context windows | Project 03 |
 | 06 | Why initialization needs its own phase | Sessions that start by improvising end by guessing | Project 03 |
 
 Lectures 07-14 (scope control, feature lists, evidence-based completion,

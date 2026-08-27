@@ -1,0 +1,37 @@
+{
+  "title": "Session handoff",
+  "sections": [
+    {
+      "heading": "Verified now",
+      "items": [
+        "`./verify.sh import-notes`: exit 0",
+        "Build green at commit `4e5f6a7`"
+      ]
+    },
+    {
+      "heading": "Changed this session",
+      "items": [
+        "`src/format.py` / `src/format.ts`: date rendering implemented."
+      ]
+    },
+    {
+      "heading": "Broken or unverified",
+      "items": [
+        "format-dates: sort assertion fails; reproduce with `./verify.sh format-dates`."
+      ]
+    },
+    {
+      "heading": "Next best step",
+      "items": [
+        "Fix the sort assertion in format-dates, then start archive-notes."
+      ]
+    },
+    {
+      "heading": "Commands",
+      "items": [
+        "Start: `./init.sh`",
+        "Verify: `./verify.sh`"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "handoff": false,
+  "sessions": [
+    {
+      "session": 1,
+      "reacquisition_lines": 0,
+      "recovered": [],
+      "work": "implemented half of format-dates; recorded progress, handoff, and statuses",
+      "rework": false,
+      "decision_drift": false
+    },
+    {
+      "session": 2,
+      "reacquisition_lines": 480,
+      "recovered": [],
+      "work": "could not see that format-dates was underway; restarted it from scratch and re-decided the date-storage approach",
+      "rework": true,
+      "decision_drift": true
+    },
+    {
+      "session": 3,
+      "reacquisition_lines": 480,
+      "recovered": [],
+      "work": "re-explored the repository and finished format-dates; archive-notes was never reached",
+      "rework": false,
+      "decision_drift": true
+    }
+  ],
+  "totals": {
+    "reacquisition_lines": 960,
+    "features_completed": 2,
+    "rework_sessions": 1,
+    "drift_events": 2
+  }
+}

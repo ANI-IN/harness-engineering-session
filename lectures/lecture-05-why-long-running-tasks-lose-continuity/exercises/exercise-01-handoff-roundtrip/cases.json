@@ -1,0 +1,20 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "parse",
+      "args": ["parse", "fixtures/handoff.md"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/handoff.json", "kind": "json" }
+    },
+    {
+      "name": "render",
+      "args": ["render", "fixtures/handoff.json"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/handoff.md", "kind": "text" }
+    }
+  ]
+}

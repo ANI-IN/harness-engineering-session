@@ -1,0 +1,32 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "with-handoff",
+      "args": ["fixtures/workspace"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/with-handoff.json", "kind": "json" }
+    },
+    {
+      "name": "no-handoff",
+      "args": ["fixtures/workspace", "--no-handoff"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/no-handoff.json", "kind": "json" }
+    },
+    {
+      "name": "compare",
+      "args": ["fixtures/workspace", "--compare"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/compare.txt", "kind": "text" }
+    },
+    {
+      "name": "missing-workspace",
+      "args": ["fixtures/no-such-workspace"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}
