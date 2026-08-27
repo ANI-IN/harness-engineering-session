@@ -20,14 +20,39 @@ def test_broken_relative_link_detected(tmp_path):
     assert errors[0].startswith("a.md")
 
 
-def test_fixture_markdown_is_not_collected(tmp_path):
-    # fixtures/ and expected/ hold unit test data; a seeded-defect fixture
-    # may deliberately contain a broken link for a doctor to catch, so the
-    # collector must never hand those files to the checker.
-    _md(tmp_path, "unit/fixtures/workspaces/stale/AGENTS.md", "[ghost](docs/GHOST.md)\n")
-    _md(tmp_path, "unit/expected/report.md", "[ghost](docs/GHOST.md)\n")
-    real = _md(tmp_path, "unit/README.md", "plain text, no links\n")
-    assert check_links.markdown_files(tmp_path) == [real]
+def test_declared_seeded_defect_fixture_may_break_a_link(tmp_path):
+    (tmp_path / "unit" / "SPEC.md").parent.mkdir(parents=True)
+    (tmp_path / "unit" / "SPEC.md").write_text(
+        "# spec\n\n## Seeded defects\n\n"
+        "The workspace-stale fixture routes to a missing doc on purpose.\n",
+        encoding="utf-8",
+    )
+    md = _md(tmp_path, "unit/fixtures/workspaces/workspace-stale/AGENTS.md",
+             "[ghost](docs/GHOST.md)\n")
+    assert check_links.check_relative([md], tmp_path) == []
+
+
+def test_undeclared_fixture_broken_link_still_rejected(tmp_path):
+    # The escape is keyed to the SPEC declaration; a fixture the SPEC does
+    # not name in a Seeded defects section is checked like documentation.
+    (tmp_path / "unit" / "SPEC.md").parent.mkdir(parents=True)
+    (tmp_path / "unit" / "SPEC.md").write_text("# spec\n\nno defects declared\n", encoding="utf-8")
+    md = _md(tmp_path, "unit/fixtures/workspaces/workspace-stale/AGENTS.md",
+             "[ghost](docs/GHOST.md)\n")
+    errors = check_links.check_relative([md], tmp_path)
+    assert len(errors) == 1
+    assert "broken link docs/GHOST.md" in errors[0]
+
+
+def test_broken_link_outside_fixtures_never_escapes(tmp_path):
+    (tmp_path / "unit" / "SPEC.md").parent.mkdir(parents=True)
+    (tmp_path / "unit" / "SPEC.md").write_text(
+        "# spec\n\n## Seeded defects\n\ndocs is broken on purpose (nice try)\n", encoding="utf-8"
+    )
+    md = _md(tmp_path, "unit/docs/GUIDE.md", "[ghost](missing.md)\n")
+    errors = check_links.check_relative([md], tmp_path)
+    assert len(errors) == 1
+    assert "broken link missing.md" in errors[0]
 
 
 def test_broken_anchor_detected(tmp_path):

@@ -21,14 +21,7 @@ import urllib.request
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-# fixtures/ and expected/ are unit test DATA, not documentation: a fixture
-# may deliberately contain a broken link for a checker to catch (a seeded
-# defect), and its relative paths resolve against the unit's temp working
-# copy, not the repository tree.
-SKIP_DIRS = {
-    "node_modules", "_reference", ".git", ".venv", "__pycache__", "dist",
-    "fixtures", "expected",
-}
+SKIP_DIRS = {"node_modules", "_reference", ".git", ".venv", "__pycache__", "dist"}
 SKIP_FILES = {"RESEARCH.md", "PROPOSAL.md", "BUILD_PROGRESS.md"}
 
 LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
@@ -71,6 +64,22 @@ def _rel(path: Path, root: Path) -> str:
     return str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
 
 
+def is_declared_seeded_defect(md: Path) -> bool:
+    """A fixture may carry a deliberately broken link only when it lives
+    under a unit's fixtures/ and that unit's SPEC.md names the fixture's
+    directory in a Seeded defects section (the same escape the canonical
+    feature_list dialect test uses). Every other fixture link is checked
+    like any documentation link."""
+    if "fixtures" not in md.parts:
+        return False
+    for parent in md.parents:
+        spec = parent / "SPEC.md"
+        if spec.is_file():
+            text = spec.read_text(encoding="utf-8")
+            return "Seeded defects" in text and md.parent.name in text
+    return False
+
+
 def check_relative(files: list[Path], root: Path = REPO_ROOT) -> list[str]:
     errors = []
     for md in files:
@@ -86,7 +95,8 @@ def check_relative(files: list[Path], root: Path = REPO_ROOT) -> list[str]:
                 continue
             resolved = (md.parent / raw_path).resolve()
             if not resolved.exists():
-                errors.append(f"{_rel(md, root)}: broken link {target}")
+                if not is_declared_seeded_defect(md):
+                    errors.append(f"{_rel(md, root)}: broken link {target}")
                 continue
             if anchor:
                 anchor_target = resolved / "README.md" if resolved.is_dir() else resolved
