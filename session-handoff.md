@@ -9,12 +9,16 @@ nowhere else.
 
 ## Verified now
 
-- `make status` at commit `18f680e`: every gate exit 0 (doctor,
+- `make status` at commit `f27d6d5`: every gate exit 0 (doctor,
   verify-dedup, conformance, lint, lint-links, lint-mermaid,
   lint-structure); counts 33 conformance units, 33 verify scripts,
   9 lectures, 18 exercises, 5 projects, all exactly at the floors in
   [tools/expected_counts.json](tools/expected_counts.json); 58 README
   command fences (floor 58).
+- Lecture 09 additionally verified in a tracked-content-only checkout
+  (10 conformance checks, both exercises' four-run ci mode, all exit 0),
+  after `f27d6d5` restored four fixtures that `.gitignore` had been
+  silently withholding from every clone.
 - Commits since the last push, all authored `Animesh Kumar
   <animesh.kcm@gmail.com>` and unpushed (15 at `18f680e`; the handoff
   commit makes 16): `ad44038` README-command gate, `3d16066` track-scoped
@@ -23,8 +27,10 @@ nowhere else.
   `0c4cd3a` pre-1.0 contract declaration, `a811464` project 04, `0b94fe1`
   kb-data ignore fix, `da73a5d` roadmap-language gate, `c9e1e82` lecture 06
   replay demo, `929c10e` project 05, `16955a5` lecture 07, `4a32e02`
-  lecture 08, `18f680e` lecture 09. **Push only when the user says so**;
-  the last push authorization covered commits through `0d14d91`.
+  lecture 08, `18f680e` lecture 09. All of these, plus `430f267` (this
+  handoff) and `f27d6d5` (the ignore-rule gate), were pushed to
+  `origin/main` on 2026-08-28 at the user's instruction. **Push only when
+  the user says so.**
 - Nothing is half-built. Batch two of the lecture fan-out (lectures 10,
   11, 12) was stopped at handoff time before any of its agents had written
   a file; `lectures/` contains 01-09 only.
@@ -393,16 +399,36 @@ stopped); (g) files you created (list).
   and generated fixtures; do not introduce today's date). Rationale:
   byte-identical output across tracks and across runs is the parity
   contract, and any wall-clock value breaks it.
-- **Subagents write directly into the tree** (no worktrees), which is why
-  a batch must finish completely before any whole-tree gate runs: a
-  half-written unit fails the structure and prose lints for reasons
-  unrelated to the unit being integrated. Launch the next batch only
-  after the previous batch's last commit.
+- **Subagents work in isolated git worktrees**, one per lecture, created
+  from the current HEAD under the session scratchpad. Each worktree gets
+  `node_modules` and `_reference` symlinked in (both gitignored, so a
+  bare worktree lacks them) and never runs `pnpm install` or `uv sync`.
+  The shared tree stays untouched while a batch runs, so whole-tree gates
+  and commits remain available to the integrator throughout, and a
+  half-written unit can never reach the main tree. Batch one wrote
+  directly into the shared tree and that window is where three stray
+  `kb-data/` directories appeared; the isolation replaced that.
+  On return, the boundary is enforced mechanically rather than trusted:
+  `git status --porcelain` in the worktree, minus the two symlinks, must
+  contain nothing outside that lecture's directory. Anything outside is
+  rejected and reported, never merged by hand. Only then is the lecture
+  directory copied into the main tree, gated, and committed.
 - **The non-code starter shape marker.** An exercise whose starter is
   not code (a document the learner edits) declares `Starter-shape:
   non-code` in its SPEC.md; the structure lint accepts the missing
   `starter/{python,typescript}` only under that marker, with negative
   tests. Undeclared deviations from the exercise shape fail the gate.
+- **An ignore rule must never reach committed curriculum content.**
+  `.gitignore` negates `fixtures/` and `expected/` under `lectures/` and
+  `projects/` after every broad rule, and `check_ignored_content` in
+  `tools/lint/check_structure.py` fails the build on any git-ignored file
+  inside a unit's `fixtures/` or `expected/`. Two incidents forced this:
+  `kb-data/` took project 04's corpus (`0b94fe1`), then `*.log` took four
+  of lecture 09's workspace fixtures (`f27d6d5`). Both times every gate
+  stayed green, because gates read the working tree, where the file is
+  present, and only a fresh checkout failed. When adding a broad ignore
+  rule, check it against `git ls-files --others --ignored
+  --exclude-standard -- lectures projects`.
 - **Seeded-defect escape hatches.** A broken link or an invalid
   `feature_list.json` is allowed only in a fixture named in the unit
   SPEC's section headed literally `Seeded defects`; both the link lint
