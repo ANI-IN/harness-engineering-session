@@ -193,7 +193,7 @@ run is held identical by `make conformance`):
 Interpretation: two questions answer cleanly, and the three
 `answered: false` entries are the map's blank spots, each naming the
 artifact that should exist (`docs/ARCHITECTURE.md`, a `- Verification:`
-line, a progress file). Against `repo-mapped` the same command reports
+line, a progress log). Against `repo-mapped` the same command reports
 5/5, `visibility_gap: 0`, `ready: true`, exit 0; that report is pinned in
 [`code/expected/mapped.json`](./code/expected/mapped.json).
 

@@ -28,7 +28,7 @@ keep passing against the starter). The delta:
 | `ask` | line-grounded, works without an index | **chunk-grounded**; refuses (exit 1, pinned error) unless state is `ready` |
 | `serve` | `/health`, `/documents`, `/documents/{id}`, `/ask` | adds `/status`; `/ask` returns 503 when the index is not ready; `--self-check` also reports the index `status` state |
 | `continuity` | absent (usage error) | the two-session resume proof (below) |
-| `list`, `import`, `init` surfaces | v2 shapes | unchanged output shapes except `import` echoing entries now includes `metadata`, and `init`'s recorded metadata file carries it |
+| `list`, `import`, `init` surfaces | v2 shapes | unchanged output shapes except `import` echoing entries now includes `metadata`, and the metadata index `init` records carries it |
 
 Harness artifacts accrete monotonically over project 02; nothing is
 dropped (the reference's fullest-harness project drops CLAUDE.md at this

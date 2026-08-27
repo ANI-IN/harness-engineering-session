@@ -35,7 +35,7 @@ atlas fixture exposes:
 | --- | --- | --- |
 | how-organized | answers from the instructions file's overview line instead of `docs/ARCHITECTURE.md` | the atlas-tool overview, source `AGENTS.md` |
 | how-to-verify | takes the first line *mentioning* verification instead of the `- Verification:` line | the prose "Always verify your work before claiming done." |
-| where-are-we | takes the progress file's first line (its heading) instead of the `- Next best step:` line | `# Progress` |
+| where-are-we | takes the progress log's first line (its heading) instead of the `- Next best step:` line | `# Progress` |
 
 Verification fails with a report mismatch first diverging at
 `$.questions[1].answer` (the how-organized answer is the overview line, not

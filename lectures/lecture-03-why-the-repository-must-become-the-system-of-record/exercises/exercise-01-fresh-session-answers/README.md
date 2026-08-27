@@ -31,7 +31,7 @@ extract from is language-neutral; both tracks read the same bytes.
   mistakes (shared).
 - [`fixtures/repos/repo-atlas`](./fixtures/repos/repo-atlas/): fully
   mapped, and built to trap each naive extractor: prose about verifying
-  *before* the real `- Verification:` line, and a progress file that opens
+  *before* the real `- Verification:` line, and a progress log that opens
   with a heading (shared).
 - [`fixtures/repos/repo-thin`](./fixtures/repos/repo-thin/): two answers
   present, three blanks (shared).
@@ -134,7 +134,7 @@ and each teaches a placement rule from the lecture:
   line is extractable, executable, and checkable. The trap line reads
   well and runs nothing, which is exactly the difference between having
   feedback and describing it (lecture 02's point, recurring).
-- **Structure beats position.** The progress file's first line is its
+- **Structure beats position.** The progress log's first line is its
   heading; the answer lives on a tagged line. Extractors that rely on
   position break the moment a file gains a title, a comment, or a blank
   line; extractors that rely on structure survive edits.

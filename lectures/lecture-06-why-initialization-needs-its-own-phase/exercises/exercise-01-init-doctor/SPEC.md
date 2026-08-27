@@ -22,7 +22,7 @@ identical to the demo SPEC.
   line); exit 0.
 - `repos/repo-hollow`: looks initialized and is not, one trap per naive
   check: `pyproject.toml` with no `.python-version`, an executable
-  `init.sh` without strict mode, and a progress file with no
+  `init.sh` without strict mode, and a progress log with no
   `- Next best step:` line. `verification-command` passes. Exit 1.
 
 ## Starter state (the intended failure)
@@ -34,7 +34,7 @@ substance:
 | --- | --- | --- |
 | `dependencies-pinned` | accepts a manifest without its runtime pin | passes on an unpinned interpreter |
 | `init-script` | accepts any file named `init.sh` | passes a script with no strict mode |
-| `progress-artifact` | accepts any progress file | passes a file that names no next step |
+| `progress-artifact` | accepts any progress log | passes a file that names no next step |
 
 Verification fails first on `repo-solid` at
 `$.checks[0].detail: 'pyproject.toml' != 'pyproject.toml + .python-version'`

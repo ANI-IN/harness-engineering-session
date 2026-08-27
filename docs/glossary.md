@@ -138,6 +138,19 @@ LF endings, stripped trailing whitespace, canonical JSON, POSIX paths.
 project. The starter runs but fails `verify.sh` for the intended reason; the
 solution passes. Both exist in both tracks, always.
 
+**Doctor**: a readiness tool that checks substance, not existence, and
+delivers its verdict through its exit code. Instances at three scales:
+`make doctor` (toolchain pins), lecture 06's init-check (repository
+readiness), and `kb workspace-check` (workspace readability). "The
+doctor" in a unit's prose means that unit's instance.
+
+**Workspace**: the directory an agent session works in, together with its
+harness artifacts (router `AGENTS.md`, state files, docs). The committed
+`harness/` directories are workspace seeds; project 02's
+`kb workspace-check` grades a workspace's readability. Some harness
+artifact headers say "working copy" for the same thing; workspace is the
+canonical term.
+
 **Seeded defect**: a bug placed in a fixture on purpose, whose exact symptom
 and catching stage are declared in SPEC.md so both tracks fail identically.
 

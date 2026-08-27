@@ -100,7 +100,7 @@ demo's [SPEC.md](./code/SPEC.md) pins the timeline and every cost rule.
 
 `code/` contains **session-simulator**: a deterministic three-session
 replay over a fixture workspace whose continuity artifacts are real files
-(the progress file, the handoff, a schema-valid feature list, and a repo
+(the progress log, the handoff, a schema-valid feature list, and a repo
 map for the scan cost). Run it from the repo root:
 
 ### Python
@@ -140,7 +140,7 @@ from the fixture files; none is typed into prose.
 
 ## Implementation notes
 
-- **The progress file is append-mostly.** Overwrite only the "current
+- **The progress log is append-mostly.** Overwrite only the "current
   verified state" block; the session log accumulates. A rewritten history
   is a handoff you can no longer trust
   ([template](../../library/templates/claude-progress.md)).

@@ -298,7 +298,7 @@ Enforced by `make lint-prose`, which runs as part of `make lint` and CI.
 
 - `docs/glossary.md` is authoritative: one term per concept, defined once.
   Notable fixed choices: feature statuses are
-  `not-started | in-progress | blocked | passing`; the progress file is
+  `not-started | in-progress | blocked | passing`; the progress log is
   `claude-progress.md`; the feature list is `feature_list.json` validated by
   `library/templates/feature_list.schema.json`.
 - Every claim about agent behavior is (a) demonstrated by a runnable demo,

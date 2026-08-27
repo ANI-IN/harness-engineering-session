@@ -57,4 +57,4 @@ A feature is done when all of the following hold:
 2. Update `feature_list.json` statuses and evidence.
 3. Append a session entry to `claude-progress.md`.
 4. Leave no stray files (scratch scripts, debug output, temp data).
-5. State the next best step in your final message and in the progress file.
+5. State the next best step in your final message and in the progress log.

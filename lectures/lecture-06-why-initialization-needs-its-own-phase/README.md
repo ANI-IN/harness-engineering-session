@@ -57,7 +57,7 @@ first run", separate from the coding agent that does feature work.
 - **Existence is not readiness.** The demo's broken fixture has an
   `init.sh`, a manifest, and instructions, and still cannot host a
   session: the script isn't strict, the interpreter isn't pinned, the
-  progress file doesn't exist. Readiness checks must test substance.
+  progress log doesn't exist. Readiness checks must test substance.
 - **The startup gate**: run the doctor at session start (from `init.sh`
   or by hand); blockers stop the session before it wastes budget, advice
   stays visible without stopping it (exercise 02's tier rule).
@@ -149,7 +149,7 @@ run by `make verify` (the TypeScript run is held identical by
 <!-- /generated-block -->
 
 Interpretation: three failures, each naming its exact gap (the missing
-pin, the missing strict mode, the missing progress file), and one passing
+pin, the missing strict mode, the missing progress log), and one passing
 check, because a broken repo is rarely broken everywhere and a doctor
 must report per-check. Against `repo-ready` the same command reports four
 passes and exit 0; that report is pinned in
@@ -173,7 +173,7 @@ single-file dual-ecosystem exception, labeled as such in its header.
   banner. The doctor checks for it because the failure mode it prevents
   is invisible by definition.
 - **Record decisions made during initialization** (test framework,
-  layout, dependency choices) in the progress file's decision lines;
+  layout, dependency choices) in the progress log's decision lines;
   lecture 05's simulator showed what re-deciding costs.
 - Track note: everything the doctor inspects is language-neutral, and the
   environment check is deliberately dual-ecosystem: it validates
@@ -185,7 +185,7 @@ single-file dual-ecosystem exception, labeled as such in its header.
 - Initialization has outputs; if a session cannot name them, it is not
   initializing, it is stalling feature work with setup debris.
 - Audit substance, not existence: pinned pairs, strict executable
-  scripts, progress files with a next step.
+  scripts, progress logs with a next step.
 - Gate the start of work on the doctor's exit code, with blockers and
   advice tiered so the gate stays credible.
 - One `init.sh` serves both ecosystems by design; that exception is

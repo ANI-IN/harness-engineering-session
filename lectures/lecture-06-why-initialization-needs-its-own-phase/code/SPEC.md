@@ -53,7 +53,7 @@ with the exact detail string:
 | --- | --- | --- |
 | `package.json` with no `.nvmrc` | `dependencies-pinned` | `package.json present but .nvmrc missing` |
 | `init.sh` without strict mode | `init-script` | `init.sh does not enable strict mode (set -euo pipefail)` |
-| no progress file | `progress-artifact` | `claude-progress.md missing` |
+| no progress log | `progress-artifact` | `claude-progress.md missing` |
 
 `verification-command` passes in both fixtures: a broken repo is rarely
 broken everywhere, and the doctor must report per-check, not overall

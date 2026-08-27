@@ -48,7 +48,7 @@ tools, environment, state, feedback. For the committed fixtures:
 | Repo | Score | Missing | What it is |
 | --- | --- | --- | --- |
 | `repo-complete` | 5/5 | none | the full minimal harness |
-| `repo-list-only` | 4/5 | state | a feature list with no progress file |
+| `repo-list-only` | 4/5 | state | a feature list with no progress log |
 | `repo-no-state` | 4/5 | state | working but amnesiac |
 | `repo-prompt-only` | 1/5 | all but instructions | a prompt file is not a harness |
 | `repo-talks-tools` | 4/5 | tools | instructions describe verify.sh; the file does not exist |
@@ -71,7 +71,7 @@ expose:
 | --- | --- | --- |
 | tools | trusts that the instructions *mention* `verify.sh` instead of checking the file exists | `repo-talks-tools` scores 5/5 instead of 4/5 |
 | environment | accepts a manifest without a runtime pin | `repo-unpinned` scores 4/5 instead of 3/5 |
-| state | accepts a feature list without a progress file | `repo-list-only` scores 5/5 instead of 4/5 |
+| state | accepts a feature list without a progress log | `repo-list-only` scores 5/5 instead of 4/5 |
 
 Verification fails with a report mismatch first diverging at
 `$.repos[0].subsystems.environment.evidence: 'pyproject.toml' !=

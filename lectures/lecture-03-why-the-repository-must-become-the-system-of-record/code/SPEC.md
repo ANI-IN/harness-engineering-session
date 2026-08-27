@@ -57,7 +57,7 @@ serialize as `0.6`; a fully mapped repo yields the number 0).
 - `repos/repo-mapped`: answers all five (gap 0, exit 0).
 - `repos/repo-blank-spots`: answers only `what-is-this` and `how-to-run`
   (the seeded blanks: no architecture doc, no Verification line, no
-  progress file; gap 0.6, exit 1, caught by the report's `answered: false`
+  progress log; gap 0.6, exit 1, caught by the report's `answered: false`
   entries in both tracks identically).
 
 ## Language-neutrality (this lecture's obligation)

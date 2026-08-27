@@ -31,7 +31,7 @@ files are all there, and none of them does its job.
   initialized (shared).
 - [`fixtures/repos/repo-hollow`](./fixtures/repos/repo-hollow/): every
   artifact present, none doing its job: an unpinned manifest, a
-  non-strict `init.sh`, a progress file with no next step (shared).
+  non-strict `init.sh`, a progress log with no next step (shared).
 - [`expected/solid.json`](./expected/solid.json) and
   [`expected/hollow.json`](./expected/hollow.json): the grading authority
   (shared; never edit them).
@@ -48,7 +48,7 @@ Work only in your track's starter file.
    pin.
 2. Fix `init-script`: `init.sh` must also be executable and enable strict
    mode (`set -euo pipefail`); the failure names the missing property.
-3. Fix `progress-artifact`: the progress file must carry a
+3. Fix `progress-artifact`: the progress log must carry a
    `- Next best step:` line.
 4. Re-run verification until it exits 0.
 
@@ -114,7 +114,7 @@ The three fixes are the same move at three depths:
 - **An init script without strict mode** keeps going after its first
   failure, which converts a loud initialization problem into a quiet
   mid-session one, the precise thing the init phase exists to prevent.
-- **A progress file without a next step** answers "what happened?" and
+- **A progress log without a next step** answers "what happened?" and
   not "what now?", so the next session still opens by guessing.
 
 The doctor's verdict lives in the exit code because that is what
