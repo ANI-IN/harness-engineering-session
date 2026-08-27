@@ -1,0 +1,23 @@
+{
+  "workspace": "workspace-clobbered",
+  "handoff": {
+    "trace": "trace-clobber.jsonl",
+    "events_read": 7
+  },
+  "diagnosis": [
+    {
+      "check": "chunk-size-positive",
+      "path": "config/app.conf",
+      "key": "chunk_size",
+      "observed": "0",
+      "attribution": "event 5 recorded step 4 setting chunk_size in config/app.conf from 512 to 0",
+      "repair": "restore chunk_size=512 in config/app.conf"
+    }
+  ],
+  "outcome": {
+    "failing": 1,
+    "attributed": 1,
+    "unattributed": 0,
+    "result": "located"
+  }
+}

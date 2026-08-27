@@ -290,3 +290,7 @@ real deployment adds clocks at exactly that seam.
 - [Lecture 08: Why feature lists are harness primitives](../../lectures/lecture-08-why-feature-lists-are-harness-primitives/):
   the pass gate that lecture builds is the evidence law this project's
   fifteen-feature list lives under.
+- [Lecture 11: Why observability belongs inside the harness](../../lectures/lecture-11-why-observability-belongs-inside-the-harness/)
+  is not paired with a project, and this is the closest built one: its
+  argument for a harness-written event log is what `log/events.jsonl`
+  and `kb logs` are here.

@@ -1,0 +1,14 @@
+{
+  "workspace": "workspace-healthy",
+  "handoff": {
+    "trace": "trace-clobber.jsonl",
+    "events_read": 7
+  },
+  "diagnosis": [],
+  "outcome": {
+    "failing": 0,
+    "attributed": 0,
+    "unattributed": 0,
+    "result": "located"
+  }
+}

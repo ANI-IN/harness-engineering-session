@@ -1,0 +1,45 @@
+{
+  "task": "add chunked ingest to the report tool",
+  "steps": [
+    {
+      "action": "add the paragraph splitter",
+      "write": {
+        "path": "src/ingest.txt",
+        "key": "splitter",
+        "value": "paragraph"
+      }
+    },
+    {
+      "action": "set the chunk size from the tuning note",
+      "write": {
+        "path": "config/app.conf",
+        "key": "chunk_size",
+        "value": "512"
+      }
+    },
+    {
+      "action": "record the ingest entry point",
+      "write": {
+        "path": "index/meta.conf",
+        "key": "entry",
+        "value": "ingest.main"
+      }
+    },
+    {
+      "action": "copy the batch defaults from the template",
+      "write": {
+        "path": "config/app.conf",
+        "key": "batch_size",
+        "value": "16"
+      }
+    },
+    {
+      "action": "raise the retry count",
+      "write": {
+        "path": "config/app.conf",
+        "key": "retries",
+        "value": "3"
+      }
+    }
+  ]
+}

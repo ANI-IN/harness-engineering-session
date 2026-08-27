@@ -1,0 +1,4 @@
+{"seq":1,"level":"INFO","command":"build","event":"session/start","detail":{"task":"add chunked ingest to the report tool"}}
+{"seq":2,"level":"INFO","command":"build","event":"workspace/write","detail":{"step":1,"path":"src/ingest.txt","key":"splitter","from":"","to":"paragraph"}}
+{"seq":3,"level":"INFO","command":"build","event":"workspace/write","detail":{"step":3,"path":"index/meta.conf","key":"entry","from":"","to":"ingest.main"}}
+{"seq":4,"level":"INFO","command":"build","event":"session/end","detail":{"steps":5,"declared":"done"}}

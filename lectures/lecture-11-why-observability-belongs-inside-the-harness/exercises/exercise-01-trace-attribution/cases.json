@@ -1,0 +1,60 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "clobber-attributed",
+      "args": [
+        "fixtures/workspaces/workspace-clobbered",
+        "fixtures/traces/trace-clobber.jsonl"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/clobber-attributed.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "scoped-blind",
+      "args": [
+        "fixtures/workspaces/workspace-clobbered",
+        "fixtures/traces/trace-scoped.jsonl"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/scoped-blind.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "healthy-nothing-failing",
+      "args": [
+        "fixtures/workspaces/workspace-healthy",
+        "fixtures/traces/trace-clobber.jsonl"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/healthy-nothing-failing.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-trace",
+      "args": [
+        "fixtures/workspaces/workspace-clobbered",
+        "fixtures/traces/no-such-trace.jsonl"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{"seq":1,"level":"INFO","command":"build","event":"session/start","detail":{"task":"add chunked ingest to the report tool"}}
+{"seq":2,"level":"INFO","command":"build","event":"workspace/write","detail":{"step":1,"path":"src/ingest.txt","key":"splitter","from":"","to":"paragraph"}}
+{"seq":3,"level":"INFO","command":"build","event":"workspace/write","detail":{"step":2,"path":"config/app.conf","key":"chunk_size","from":"0","to":"512"}}
+{"seq":4,"level":"INFO","command":"build","event":"workspace/write","detail":{"step":3,"path":"index/meta.conf","key":"entry","from":"","to":"ingest.main"}}
+{"seq":5,"level":"INFO","command":"build","event":"workspace/write","detail":{"step":4,"path":"config/app.conf","key":"chunk_size","from":"512","to":"0"}}
+{"seq":6,"level":"INFO","command":"build","event":"workspace/write","detail":{"step":5,"path":"config/app.conf","key":"retries","from":"1","to":"3"}}
+{"seq":7,"level":"INFO","command":"build","event":"session/end","detail":{"steps":5,"declared":"done"}}

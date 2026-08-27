@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "id": "splitter-configured",
+      "path": "src/ingest.txt",
+      "key": "splitter",
+      "rule": "non-empty"
+    },
+    {
+      "id": "chunk-size-positive",
+      "path": "config/app.conf",
+      "key": "chunk_size",
+      "rule": "positive-integer"
+    },
+    {
+      "id": "retries-positive",
+      "path": "config/app.conf",
+      "key": "retries",
+      "rule": "positive-integer"
+    },
+    {
+      "id": "entry-point-recorded",
+      "path": "index/meta.conf",
+      "key": "entry",
+      "rule": "non-empty"
+    }
+  ]
+}

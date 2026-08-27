@@ -1,9 +1,9 @@
 {
   "comment": "Fail-on-empty floors. Discovery reporting fewer than these counts is an error: either a glob broke or this manifest is stale. Bump the floor in the same commit that lands a new unit.",
-  "min_conformance_units": 33,
-  "min_verify_scripts": 33,
-  "min_lectures": 9,
+  "min_conformance_units": 36,
+  "min_verify_scripts": 36,
+  "min_lectures": 10,
   "min_projects": 5,
-  "min_exercises": 18,
-  "min_readme_command_fences": 58
+  "min_exercises": 20,
+  "min_readme_command_fences": 64
 }

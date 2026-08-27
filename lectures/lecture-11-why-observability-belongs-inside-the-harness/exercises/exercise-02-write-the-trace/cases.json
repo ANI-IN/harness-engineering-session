@@ -1,0 +1,44 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "overwrite-recorded",
+      "args": [
+        "fixtures/workspaces/workspace-ingest"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/overwrite-recorded.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "single-writes-agree",
+      "args": [
+        "fixtures/workspaces/workspace-clean"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/single-writes-agree.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "fixtures/workspaces/no-such-workspace"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

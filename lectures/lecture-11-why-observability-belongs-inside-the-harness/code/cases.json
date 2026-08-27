@@ -1,0 +1,92 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "build-silent-leaves-the-defect",
+      "args": [
+        "build",
+        "fixtures/workspaces/workspace-ingest",
+        "--observability=none"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/build-silent.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "build-instrumented-leaves-the-same-defect",
+      "args": [
+        "build",
+        "fixtures/workspaces/workspace-ingest",
+        "--observability=structured"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/build-instrumented.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "resume-silent-is-stuck",
+      "args": [
+        "resume",
+        "fixtures/workspaces/workspace-ingest",
+        "--observability=none"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/resume-silent.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "resume-instrumented-finishes-the-work",
+      "args": [
+        "resume",
+        "fixtures/workspaces/workspace-ingest",
+        "--observability=structured"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/resume-instrumented.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "resume-silent-clean-workspace-passes",
+      "args": [
+        "resume",
+        "fixtures/workspaces/workspace-clean",
+        "--observability=none"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/resume-clean-silent.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "resume",
+        "fixtures/workspaces/no-such-workspace",
+        "--observability=structured"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

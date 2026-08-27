@@ -54,6 +54,7 @@ links to a unit that runs today.
 | [07: Why agents overreach and under-finish](lectures/lecture-07-why-agents-overreach-and-under-finish/) | WIP=1 read from the workspace; a parked queue instead of a refusal | [Project 04](projects/project-04-runtime-feedback-and-scope-control/) |
 | [08: Why feature lists are harness primitives](lectures/lecture-08-why-feature-lists-are-harness-primitives/) | The triple (behavior, command, status); passing only through the command | [Project 04](projects/project-04-runtime-feedback-and-scope-control/) |
 | [09: Why agents declare victory too early](lectures/lecture-09-why-agents-declare-victory-too-early/) | Re-execution, not review, separates an earned claim from a premature one | [Project 05](projects/project-05-self-verification-and-role-separation/) |
+| [11: Why observability belongs inside the harness](lectures/lecture-11-why-observability-belongs-inside-the-harness/) | The harness records what the session did, so the next session can repair rather than guess | Closest: [Project 04](projects/project-04-runtime-feedback-and-scope-control/) |
 
 | Project | You build |
 | --- | --- |

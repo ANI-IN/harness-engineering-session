@@ -1,0 +1,39 @@
+{
+  "workspace": "workspace-clean",
+  "observability": "none",
+  "handoff": {
+    "files": [
+      "notes/session-note.md"
+    ],
+    "events_read": 0
+  },
+  "diagnosis": [],
+  "recheck": [
+    {
+      "id": "splitter-configured",
+      "status": "pass",
+      "detail": "src/ingest.txt splitter=paragraph is set"
+    },
+    {
+      "id": "chunk-size-positive",
+      "status": "pass",
+      "detail": "config/app.conf chunk_size=512 is a positive integer"
+    },
+    {
+      "id": "retries-positive",
+      "status": "pass",
+      "detail": "config/app.conf retries=3 is a positive integer"
+    },
+    {
+      "id": "entry-point-recorded",
+      "status": "pass",
+      "detail": "index/meta.conf entry=ingest.main is set"
+    }
+  ],
+  "outcome": {
+    "failing_before": 0,
+    "repaired": 0,
+    "failing_after": 0,
+    "result": "resumed"
+  }
+}

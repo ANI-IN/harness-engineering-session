@@ -1,0 +1,2 @@
+splitter=paragraph
+reader=stream

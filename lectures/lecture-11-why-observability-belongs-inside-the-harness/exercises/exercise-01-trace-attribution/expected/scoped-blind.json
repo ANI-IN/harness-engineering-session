@@ -1,0 +1,23 @@
+{
+  "workspace": "workspace-clobbered",
+  "handoff": {
+    "trace": "trace-scoped.jsonl",
+    "events_read": 4
+  },
+  "diagnosis": [
+    {
+      "check": "chunk-size-positive",
+      "path": "config/app.conf",
+      "key": "chunk_size",
+      "observed": "0",
+      "attribution": "unattributed: the trace records no write to chunk_size in config/app.conf",
+      "repair": "none"
+    }
+  ],
+  "outcome": {
+    "failing": 1,
+    "attributed": 0,
+    "unattributed": 1,
+    "result": "blind"
+  }
+}

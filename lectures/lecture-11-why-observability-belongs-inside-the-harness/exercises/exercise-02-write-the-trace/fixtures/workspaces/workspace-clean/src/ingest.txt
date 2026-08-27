@@ -1,0 +1,2 @@
+splitter=
+reader=stream

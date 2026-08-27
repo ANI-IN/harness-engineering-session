@@ -1,0 +1,49 @@
+{
+  "workspace": "workspace-ingest",
+  "observability": "structured",
+  "handoff": {
+    "files": [
+      "log/events.jsonl",
+      "notes/session-note.md"
+    ],
+    "events_read": 7
+  },
+  "diagnosis": [
+    {
+      "check": "chunk-size-positive",
+      "path": "config/app.conf",
+      "key": "chunk_size",
+      "observed": "0",
+      "attribution": "event 5 recorded step 4 setting chunk_size in config/app.conf from 512 to 0",
+      "repair": "restore chunk_size=512 in config/app.conf"
+    }
+  ],
+  "recheck": [
+    {
+      "id": "splitter-configured",
+      "status": "pass",
+      "detail": "src/ingest.txt splitter=paragraph is set"
+    },
+    {
+      "id": "chunk-size-positive",
+      "status": "pass",
+      "detail": "config/app.conf chunk_size=512 is a positive integer"
+    },
+    {
+      "id": "retries-positive",
+      "status": "pass",
+      "detail": "config/app.conf retries=3 is a positive integer"
+    },
+    {
+      "id": "entry-point-recorded",
+      "status": "pass",
+      "detail": "index/meta.conf entry=ingest.main is set"
+    }
+  ],
+  "outcome": {
+    "failing_before": 1,
+    "repaired": 1,
+    "failing_after": 0,
+    "result": "resumed"
+  }
+}
