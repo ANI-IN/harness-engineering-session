@@ -12,10 +12,11 @@ task needs them.
 
 After this lecture and its exercises you can:
 
-- Measure an instruction architecture: per-task signal-to-noise under an
-  explicit loading rule, and the zone of every hard constraint.
-- Explain why the same rules cost less as a router than as a monolith,
-  using numbers a tool computed rather than intuition.
+- Demonstrate, not just assert, that a monolith loses hard constraints: a
+  budgeted reader misses a rule the same reader finds under a router.
+- Measure an instruction architecture as supporting evidence: per-task
+  signal-to-noise under an explicit loading rule, and the zone of every
+  hard constraint.
 - Keep a router-shaped tree honest with executable checks: entry length,
   resolvable routes, hard constraints in the entry only, no duplicated
   rule text.
@@ -50,7 +51,8 @@ substantially better than information in the middle.
 > Source: [Lost in the Middle: How Language Models Use Long Contexts (Liu et al., 2023)](https://arxiv.org/abs/2307.03172)
 
 The rest of this lecture's claims are demonstrated by the demo on
-committed fixtures, not asserted: the same rules, filed two ways, measured.
+committed fixtures, not asserted: the same rules, filed two ways, walked
+by the same budgeted reader, with the outcome in the exit code.
 
 ## Concepts
 
@@ -99,31 +101,130 @@ zone/burial rules the diagram summarizes.
 
 ## Demo
 
-`code/` contains **instruction-stats**: two fixture trees carry the same
+`code/` contains **instruction-walk**: two fixture trees carry the same
 rules, `monolith` (one 45-line file) and `router` (a 15-line entry plus
-five topic docs), measured against five tasks. Run it from the repo root:
+five topic docs), including the identical `security!` hard constraint.
+The demo is behavioral: a deterministic reader with a 24-line context
+budget works the task `tighten-csv-import` against each tree, reading
+top-down and following only routes it has actually read. Run it from the
+repo root; **the exit code is the verdict** (1 = a hard constraint was
+never read).
 
-### Python
+### The monolith misses it
+
+#### Python
+
+<!-- fence-exit: 1 -->
+```sh
+L=lectures/lecture-04-why-one-giant-instruction-file-fails
+uv run python $L/code/python/main.py walk $L/code/fixtures/trees/monolith $L/code/fixtures/tasks.json tighten-csv-import --budget 24
+```
+
+#### TypeScript
+
+<!-- fence-exit: 1 -->
+```sh
+L=lectures/lecture-04-why-one-giant-instruction-file-fails
+pnpm exec tsx $L/code/typescript/main.ts walk $L/code/fixtures/trees/monolith $L/code/fixtures/tasks.json tighten-csv-import --budget 24
+```
+
+The monolith run, generated from the Python run by `make verify` (the
+TypeScript run is held identical by `make conformance`):
+
+<!-- generated-block: uv run python lectures/lecture-04-why-one-giant-instruction-file-fails/code/python/main.py walk lectures/lecture-04-why-one-giant-instruction-file-fails/code/fixtures/trees/monolith lectures/lecture-04-why-one-giant-instruction-file-fails/code/fixtures/tasks.json tighten-csv-import --budget 24 || true -->
+```json
+{
+  "tree": "monolith",
+  "task": "tighten-csv-import",
+  "budget": 24,
+  "files_visited": [
+    {
+      "file": "AGENTS.md",
+      "lines_read": 24,
+      "lines_total": 45
+    }
+  ],
+  "lines_spent": 24,
+  "hard_constraints": [
+    {
+      "text": "Every database query must be parameterized.",
+      "file": "AGENTS.md",
+      "line": 28,
+      "read": false
+    }
+  ],
+  "missed": 1
+}
+```
+<!-- /generated-block -->
+
+### The router finds it
+
+The same reader, same task, same budget (exit 0):
+
+#### Python
 
 ```sh
 L=lectures/lecture-04-why-one-giant-instruction-file-fails
-uv run python $L/code/python/main.py $L/code/fixtures/trees $L/code/fixtures/tasks.json
+uv run python $L/code/python/main.py walk $L/code/fixtures/trees/router $L/code/fixtures/tasks.json tighten-csv-import --budget 24
 ```
 
-### TypeScript
+#### TypeScript
 
 ```sh
 L=lectures/lecture-04-why-one-giant-instruction-file-fails
-pnpm exec tsx $L/code/typescript/main.ts $L/code/fixtures/trees $L/code/fixtures/tasks.json
+pnpm exec tsx $L/code/typescript/main.ts walk $L/code/fixtures/trees/router $L/code/fixtures/tasks.json tighten-csv-import --budget 24
 ```
 
-Both tracks print the same report; the full version (per-task rows and the
-hard-constraint inventory) is pinned in
-[`code/expected/stats-report.json`](./code/expected/stats-report.json).
-The comparison section below is generated from the Python run by
-`make verify` (the TypeScript run is held identical by `make conformance`):
+<!-- generated-block: uv run python lectures/lecture-04-why-one-giant-instruction-file-fails/code/python/main.py walk lectures/lecture-04-why-one-giant-instruction-file-fails/code/fixtures/trees/router lectures/lecture-04-why-one-giant-instruction-file-fails/code/fixtures/tasks.json tighten-csv-import --budget 24 -->
+```json
+{
+  "tree": "router",
+  "task": "tighten-csv-import",
+  "budget": 24,
+  "files_visited": [
+    {
+      "file": "AGENTS.md",
+      "lines_read": 15,
+      "lines_total": 15
+    },
+    {
+      "file": "docs/db.md",
+      "lines_read": 4,
+      "lines_total": 4
+    }
+  ],
+  "lines_spent": 19,
+  "hard_constraints": [
+    {
+      "text": "Every database query must be parameterized.",
+      "file": "AGENTS.md",
+      "line": 7,
+      "read": true
+    }
+  ],
+  "missed": 0
+}
+```
+<!-- /generated-block -->
 
-<!-- generated-block: uv run python lectures/lecture-04-why-one-giant-instruction-file-fails/code/python/main.py lectures/lecture-04-why-one-giant-instruction-file-fails/code/fixtures/trees lectures/lecture-04-why-one-giant-instruction-file-fails/code/fixtures/tasks.json | uv run python -c "import json,sys; print(json.dumps(json.load(sys.stdin)['comparison'], indent=2))" -->
+Interpretation: the monolith spent its whole budget on the file's first 24
+lines and never reached the security constraint at line 28; the router
+read its entire 15-line entry (constraint at line 7, read) plus the one
+routed topic file, with budget to spare. A third pinned case gives the
+monolith a 60-line budget and it recovers (`walk-monolith-big-budget`),
+which states the claim precisely: the failure is the architecture's
+interaction with a finite budget, not the file's content. A route below
+the budget line is lost exactly like a rule, which is the map-not-manual
+argument made mechanical.
+
+### Supporting evidence: the numbers
+
+`stats` is the metric, not the demo: it computes
+per-task signal-to-noise and the constraint zones across both trees. The
+comparison section is generated from the Python run by `make verify`:
+
+<!-- generated-block: uv run python lectures/lecture-04-why-one-giant-instruction-file-fails/code/python/main.py stats lectures/lecture-04-why-one-giant-instruction-file-fails/code/fixtures/trees lectures/lecture-04-why-one-giant-instruction-file-fails/code/fixtures/tasks.json | uv run python -c "import json,sys; print(json.dumps(json.load(sys.stdin)['comparison'], indent=2))" -->
 ```json
 {
   "mean_snr": {
@@ -138,12 +239,11 @@ The comparison section below is generated from the Python run by
 ```
 <!-- /generated-block -->
 
-Interpretation: same rules, same tasks, and the router roughly doubles the
-mean fraction of loaded context that is actually for the task, while the
-monolith's one security hard constraint sits buried in its middle third
-and the router's does not (it lives at the top of a file too short to have
-a middle). The measurement is the argument; no percentage in this lecture
-was typed by hand.
+Same rules, same tasks: the router roughly doubles the fraction of loaded
+context that is for the task, and its one hard constraint sits at the top
+of a file too short to have a middle. The full stats report is pinned in
+[`code/expected/stats-report.json`](./code/expected/stats-report.json);
+no figure in this lecture was typed by hand.
 
 ## Implementation notes
 
@@ -174,8 +274,9 @@ was typed by hand.
 
 - Instructions are a map, not a manual: short routing entry, topic depth
   on demand, hard constraints where every task will see them.
-- Measure, don't argue: SNR under an explicit loading rule and
-  hard-constraint zones make architecture quality a computed property.
+- Demonstrate, then measure: the budgeted reader shows the failure
+  behaviorally; SNR and zone numbers support the demonstration, and
+  neither replaces the other.
 - "Add a rule" has a routing step; skipping it is how entries balloon.
 - A router stays a router only under executable checks: entry length,
   resolvable routes, hard-in-entry, no duplicated rule text.

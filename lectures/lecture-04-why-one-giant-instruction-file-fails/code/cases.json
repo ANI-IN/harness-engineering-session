@@ -5,16 +5,64 @@
   },
   "cases": [
     {
-      "name": "basic",
-      "args": ["fixtures/trees", "fixtures/tasks.json"],
+      "name": "walk-monolith-misses-the-constraint",
+      "args": ["walk", "fixtures/trees/monolith", "fixtures/tasks.json", "tighten-csv-import", "--budget", "24"],
       "stdin": null,
-      "expect": { "exit_code": 0, "stdout": "expected/stats-report.json", "kind": "json" }
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/walk-monolith-24.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "walk-router-finds-it",
+      "args": ["walk", "fixtures/trees/router", "fixtures/tasks.json", "tighten-csv-import", "--budget", "24"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/walk-router-24.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "walk-monolith-big-budget-recovers",
+      "args": ["walk", "fixtures/trees/monolith", "fixtures/tasks.json", "tighten-csv-import", "--budget", "60"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/walk-monolith-60.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "walk-unknown-task",
+      "args": ["walk", "fixtures/trees/monolith", "fixtures/tasks.json", "no-such-task", "--budget", "24"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    },
+    {
+      "name": "stats-supporting-evidence",
+      "args": ["stats", "fixtures/trees", "fixtures/tasks.json"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/stats-report.json",
+        "kind": "json"
+      }
     },
     {
       "name": "missing-trees-dir",
-      "args": ["fixtures/no-such-trees", "fixtures/tasks.json"],
+      "args": ["stats", "fixtures/no-such-trees", "fixtures/tasks.json"],
       "stdin": null,
-      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
     }
   ]
 }

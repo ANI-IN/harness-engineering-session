@@ -1,0 +1,22 @@
+{
+  "tree": "monolith",
+  "task": "tighten-csv-import",
+  "budget": 60,
+  "files_visited": [
+    {
+      "file": "AGENTS.md",
+      "lines_read": 45,
+      "lines_total": 45
+    }
+  ],
+  "lines_spent": 45,
+  "hard_constraints": [
+    {
+      "text": "Every database query must be parameterized.",
+      "file": "AGENTS.md",
+      "line": 28,
+      "read": true
+    }
+  ],
+  "missed": 0
+}

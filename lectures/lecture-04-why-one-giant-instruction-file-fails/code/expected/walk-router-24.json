@@ -1,0 +1,27 @@
+{
+  "tree": "router",
+  "task": "tighten-csv-import",
+  "budget": 24,
+  "files_visited": [
+    {
+      "file": "AGENTS.md",
+      "lines_read": 15,
+      "lines_total": 15
+    },
+    {
+      "file": "docs/db.md",
+      "lines_read": 4,
+      "lines_total": 4
+    }
+  ],
+  "lines_spent": 19,
+  "hard_constraints": [
+    {
+      "text": "Every database query must be parameterized.",
+      "file": "AGENTS.md",
+      "line": 7,
+      "read": true
+    }
+  ],
+  "missed": 0
+}

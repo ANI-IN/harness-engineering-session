@@ -1,10 +1,12 @@
-"""instruction-stats: measure what an instruction architecture costs.
+"""instruction-walk: demonstrate what an instruction architecture costs.
 
-For each instruction tree (an AGENTS.md entry file plus optional docs/
-topic files), simulate the loading rule (entry always; docs/<topic>.md for
-each task topic when present), compute per-task signal-to-noise, and locate
-hard constraints by zone, flagging the ones buried in the middle of long
-files. SPEC.md pins the formats; expected/ is the grading authority.
+`walk` is the demo: a budgeted deterministic reader works one task against
+one instruction tree, reading files top-down until the line budget runs
+out, following only the routes it has actually read. The failure is
+behavioral: with a realistic budget the monolith's buried hard constraint
+is never read (exit 1) while the router's is (exit 0). `stats` is the
+supporting evidence: per-task signal-to-noise and constraint zones for
+every tree. SPEC.md pins both; expected/ is the grading authority.
 """
 
 from __future__ import annotations
@@ -103,21 +105,81 @@ def analyze_tree(tree: Path, tasks: list[dict]) -> dict:
     }
 
 
-def main(argv: list[str]) -> int:
-    if len(argv) != 3:
-        print("usage: main.py <trees-dir> <tasks.json>", file=sys.stderr)
+def walk_tree(tree: Path, task: dict, budget: int) -> dict:
+    """The budgeted deterministic reader (SPEC.md, "The reader"). Files are
+    read whole-file top-down until the budget runs out; a route is followed
+    only if the line naming it was actually read."""
+    entry = parse_file(tree / "AGENTS.md")
+    remaining = budget
+    visited = []
+
+    def read_file(name: str, info: dict) -> int:
+        nonlocal remaining
+        lines_read = min(remaining, info["lines"])
+        remaining -= lines_read
+        visited.append({"file": name, "lines_read": lines_read, "lines_total": info["lines"]})
+        return lines_read
+
+    entry_read = read_file("AGENTS.md", entry)
+    entry_lines = (tree / "AGENTS.md").read_text(encoding="utf-8").split("\n")[:entry_read]
+    for topic in task["topics"]:
+        doc_path = tree / "docs" / f"{topic}.md"
+        route_seen = any(f"docs/{topic}.md" in line for line in entry_lines)
+        if doc_path.is_file() and route_seen and remaining > 0:
+            read_file(f"docs/{topic}.md", parse_file(doc_path))
+
+    read_of = {item["file"]: item["lines_read"] for item in visited}
+    files = [("AGENTS.md", entry)]
+    docs_dir = tree / "docs"
+    if docs_dir.is_dir():
+        files += [(f"docs/{doc.stem}.md", parse_file(doc)) for doc in sorted(docs_dir.glob("*.md"))]
+    constraints = []
+    for name, info in files:
+        for rule in info["rules"]:
+            if rule["hard"]:
+                constraints.append({
+                    "text": rule["text"],
+                    "file": name,
+                    "line": rule["line"],
+                    "read": rule["line"] <= read_of.get(name, 0),
+                })
+    missed = sum(1 for constraint in constraints if not constraint["read"])
+    return {
+        "tree": tree.name,
+        "task": task["id"],
+        "budget": budget,
+        "files_visited": visited,
+        "lines_spent": budget - remaining,
+        "hard_constraints": constraints,
+        "missed": missed,
+    }
+
+
+def load_tasks(tasks_path: Path) -> list[dict] | None:
+    try:
+        return json.loads(tasks_path.read_text(encoding="utf-8"))["tasks"]
+    except OSError:
+        return None
+
+
+USAGE = (
+    "usage: main.py walk <tree-dir> <tasks.json> <task-id> --budget N | "
+    "main.py stats <trees-dir> <tasks.json>"
+)
+
+
+def run_stats(argv: list[str]) -> int:
+    if len(argv) != 2:
+        print(USAGE, file=sys.stderr)
         return 2
-    trees_dir = Path(argv[1])
-    tasks_path = Path(argv[2])
+    trees_dir = Path(argv[0])
     if not trees_dir.is_dir():
         print(f"error: not a directory: {trees_dir}", file=sys.stderr)
         return 2
-    try:
-        tasks = json.loads(tasks_path.read_text(encoding="utf-8"))["tasks"]
-    except OSError as error:
-        print(f"error: cannot read tasks: {error}", file=sys.stderr)
+    tasks = load_tasks(Path(argv[1]))
+    if tasks is None:
+        print(f"error: cannot read tasks: {argv[1]}", file=sys.stderr)
         return 2
-
     trees = [analyze_tree(tree, tasks) for tree in sorted(trees_dir.iterdir()) if tree.is_dir()]
     report = {
         "trees": trees,
@@ -130,6 +192,36 @@ def main(argv: list[str]) -> int:
     }
     print(json.dumps(report, indent=2))
     return 0
+
+
+def run_walk(argv: list[str]) -> int:
+    if len(argv) != 5 or argv[3] != "--budget" or not argv[4].isdigit():
+        print(USAGE, file=sys.stderr)
+        return 2
+    tree = Path(argv[0])
+    if not (tree / "AGENTS.md").is_file():
+        print(f"error: not an instruction tree: {tree}", file=sys.stderr)
+        return 2
+    tasks = load_tasks(Path(argv[1]))
+    if tasks is None:
+        print(f"error: cannot read tasks: {argv[1]}", file=sys.stderr)
+        return 2
+    task = next((entry for entry in tasks if entry["id"] == argv[2]), None)
+    if task is None:
+        print(f"error: no task with id {argv[2]}", file=sys.stderr)
+        return 2
+    report = walk_tree(tree, task, int(argv[4]))
+    print(json.dumps(report, indent=2))
+    return 1 if report["missed"] else 0
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) >= 2 and argv[1] == "stats":
+        return run_stats(argv[2:])
+    if len(argv) >= 2 and argv[1] == "walk":
+        return run_walk(argv[2:])
+    print(USAGE, file=sys.stderr)
+    return 2
 
 
 if __name__ == "__main__":

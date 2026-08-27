@@ -223,6 +223,18 @@ floors.**
   mistakes.
 - Hints are progressive `<details>` blocks so they do not spoil on sight.
 
+## Lecture demos are behavioral
+
+Where a lecture's claim is behavioral ("the agent misses the constraint",
+"the session loses continuity"), its demo demonstrates that behavior:
+something attempts the task under the claimed condition and observably
+fails, with the outcome in output and exit code. A metric may support a
+demo but cannot be one; computing a number about the problem
+(a ratio, a count, a score) is evidence, not demonstration, and it goes
+after the behavioral run under a heading that says so. Lecture 04's
+budgeted reader replacing its metric-first demo is the reference example;
+lectures 07-14 inherit this rule from day one.
+
 ## Seeded defects
 
 When a fixture is deliberately broken (a bug the learner must find or a
@@ -254,6 +266,10 @@ machine-checked:
   transcript is produced by execution, never written by hand).
 
 ## Command blocks
+
+When a demo has multiple named runs, each run is its own `###` subsection
+and the track stanzas nest one level deeper (`#### Python`,
+`#### TypeScript`), Python still first.
 
 Everywhere commands are shown, Python comes first, then TypeScript, with the
 same two headings every time:
