@@ -1,0 +1,23 @@
+{
+  "tasks": [
+    {
+      "id": "fix-login-bug",
+      "loaded_lines": 45,
+      "relevant_lines": 6,
+      "snr": 0.13333333333333333
+    },
+    {
+      "id": "tighten-csv-import",
+      "loaded_lines": 45,
+      "relevant_lines": 2,
+      "snr": 0.044444444444444446
+    },
+    {
+      "id": "ship-release",
+      "loaded_lines": 45,
+      "relevant_lines": 3,
+      "snr": 0.06666666666666667
+    }
+  ],
+  "mean_snr": 0.08148148148148149
+}

@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "id": "entry-length",
+      "passed": true,
+      "violations": []
+    },
+    {
+      "id": "routes-resolve",
+      "passed": true,
+      "violations": []
+    },
+    {
+      "id": "hard-in-entry",
+      "passed": true,
+      "violations": []
+    },
+    {
+      "id": "no-duplicates",
+      "passed": true,
+      "violations": []
+    }
+  ],
+  "ok": true
+}

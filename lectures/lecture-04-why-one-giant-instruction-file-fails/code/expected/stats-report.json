@@ -1,0 +1,112 @@
+{
+  "trees": [
+    {
+      "name": "monolith",
+      "files": 1,
+      "total_lines": 45,
+      "entry_lines": 45,
+      "tasks": [
+        {
+          "id": "fix-login-bug",
+          "loaded_lines": 45,
+          "relevant_lines": 6,
+          "snr": 0.13333333333333333
+        },
+        {
+          "id": "add-report-endpoint",
+          "loaded_lines": 45,
+          "relevant_lines": 5,
+          "snr": 0.1111111111111111
+        },
+        {
+          "id": "tighten-csv-import",
+          "loaded_lines": 45,
+          "relevant_lines": 2,
+          "snr": 0.044444444444444446
+        },
+        {
+          "id": "speed-up-ci",
+          "loaded_lines": 45,
+          "relevant_lines": 3,
+          "snr": 0.06666666666666667
+        },
+        {
+          "id": "ship-release",
+          "loaded_lines": 45,
+          "relevant_lines": 3,
+          "snr": 0.06666666666666667
+        }
+      ],
+      "mean_snr": 0.08444444444444443,
+      "hard_constraints": [
+        {
+          "text": "Every database query must be parameterized.",
+          "file": "AGENTS.md",
+          "line": 28,
+          "zone": "middle",
+          "buried": true
+        }
+      ],
+      "buried_hard_constraints": 1
+    },
+    {
+      "name": "router",
+      "files": 6,
+      "total_lines": 39,
+      "entry_lines": 15,
+      "tasks": [
+        {
+          "id": "fix-login-bug",
+          "loaded_lines": 25,
+          "relevant_lines": 6,
+          "snr": 0.24
+        },
+        {
+          "id": "add-report-endpoint",
+          "loaded_lines": 24,
+          "relevant_lines": 5,
+          "snr": 0.20833333333333334
+        },
+        {
+          "id": "tighten-csv-import",
+          "loaded_lines": 19,
+          "relevant_lines": 2,
+          "snr": 0.10526315789473684
+        },
+        {
+          "id": "speed-up-ci",
+          "loaded_lines": 20,
+          "relevant_lines": 3,
+          "snr": 0.15
+        },
+        {
+          "id": "ship-release",
+          "loaded_lines": 20,
+          "relevant_lines": 3,
+          "snr": 0.15
+        }
+      ],
+      "mean_snr": 0.17071929824561405,
+      "hard_constraints": [
+        {
+          "text": "Every database query must be parameterized.",
+          "file": "AGENTS.md",
+          "line": 7,
+          "zone": "middle",
+          "buried": false
+        }
+      ],
+      "buried_hard_constraints": 0
+    }
+  ],
+  "comparison": {
+    "mean_snr": {
+      "monolith": 0.08444444444444443,
+      "router": 0.17071929824561405
+    },
+    "buried_hard_constraints": {
+      "monolith": 1,
+      "router": 0
+    }
+  }
+}

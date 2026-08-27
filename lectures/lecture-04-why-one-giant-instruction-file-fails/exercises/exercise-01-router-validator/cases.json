@@ -1,0 +1,20 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "tree-good",
+      "args": ["fixtures/trees/tree-good"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/tree-good.json", "kind": "json" }
+    },
+    {
+      "name": "tree-broken",
+      "args": ["fixtures/trees/tree-broken"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/tree-broken.json", "kind": "json" }
+    }
+  ]
+}

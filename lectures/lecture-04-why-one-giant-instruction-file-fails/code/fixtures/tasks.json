@@ -1,0 +1,9 @@
+{
+  "tasks": [
+    {"id": "fix-login-bug", "topics": ["api", "testing"]},
+    {"id": "add-report-endpoint", "topics": ["api", "db"]},
+    {"id": "tighten-csv-import", "topics": ["db"]},
+    {"id": "speed-up-ci", "topics": ["testing"]},
+    {"id": "ship-release", "topics": ["deploy"]}
+  ]
+}

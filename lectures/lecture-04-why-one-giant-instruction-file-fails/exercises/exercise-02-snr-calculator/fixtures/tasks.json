@@ -1,0 +1,7 @@
+{
+  "tasks": [
+    {"id": "fix-login-bug", "topics": ["api", "testing"]},
+    {"id": "tighten-csv-import", "topics": ["db"]},
+    {"id": "ship-release", "topics": ["deploy"]}
+  ]
+}

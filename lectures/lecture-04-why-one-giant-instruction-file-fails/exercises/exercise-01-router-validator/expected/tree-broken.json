@@ -1,0 +1,43 @@
+{
+  "checks": [
+    {
+      "id": "entry-length",
+      "passed": true,
+      "violations": []
+    },
+    {
+      "id": "routes-resolve",
+      "passed": false,
+      "violations": [
+        {
+          "file": "AGENTS.md",
+          "line": 13,
+          "detail": "route target does not exist: docs/deploy.md"
+        }
+      ]
+    },
+    {
+      "id": "hard-in-entry",
+      "passed": false,
+      "violations": [
+        {
+          "file": "docs/db.md",
+          "line": 4,
+          "detail": "hard constraint outside the entry file: Reconciliation runs are append-only."
+        }
+      ]
+    },
+    {
+      "id": "no-duplicates",
+      "passed": false,
+      "violations": [
+        {
+          "file": "docs/api.md",
+          "line": 4,
+          "detail": "rule text duplicated (also in AGENTS.md): Use pagination cursors, never offsets."
+        }
+      ]
+    }
+  ],
+  "ok": false
+}

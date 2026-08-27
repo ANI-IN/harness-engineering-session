@@ -1,0 +1,20 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "basic",
+      "args": ["fixtures/trees", "fixtures/tasks.json"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/stats-report.json", "kind": "json" }
+    },
+    {
+      "name": "missing-trees-dir",
+      "args": ["fixtures/no-such-trees", "fixtures/tasks.json"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}
