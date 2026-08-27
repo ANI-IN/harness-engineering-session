@@ -40,10 +40,8 @@ draws how everything connects.
 
 ## Curriculum
 
-First release: the foundation sequence, lectures 01-06 and projects 01-04.
-The remaining curriculum (lectures 07-14 on scope control, feature lists,
-verification, observability, clean state, loops, and graphs; projects 05-08;
-the harness-creator skill) follows the same conventions and lands next.
+The tables below list everything the course currently contains; every row
+links to a unit that runs today.
 
 | Lecture | Teaches | Builds toward |
 | --- | --- | --- |

@@ -21,8 +21,7 @@
 
 ## Next best step
 
-- Project 05: maker/checker role separation with a mechanically scored
-  rubric arrives with the next release of this course.
+- Proceed to Project 05 (self-verification and role separation).
 
 ## Commands
 

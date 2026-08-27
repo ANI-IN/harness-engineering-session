@@ -7,8 +7,8 @@ copy-ready templates those systems are built from.
 
 This map covers the curriculum's **first pass**: lectures 01-06 and projects
 01-03, the foundation sequence. Project 04 (runtime feedback and scope
-control) is also built; its lectures (07-08) arrive with the next pass,
-which is why it does not appear in the graph yet. Later lectures (scope control, feature lists,
+control) is also built; it sits outside this map because its paired
+lectures are outside the map's scope. Later lectures (scope control, feature lists,
 verification, observability, clean state, loops, graphs) and their projects
 extend this graph in the same pattern.
 

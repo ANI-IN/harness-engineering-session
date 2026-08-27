@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""Prose punctuation checker: no em-dashes (U+2014) or en-dashes (U+2013).
+"""Prose checker: punctuation and roadmap language.
 
-Applies to markdown prose in every shipped .md file, including the text of
-mermaid node labels. Does NOT apply to: fenced code blocks (other than
-mermaid), inline code spans, link targets/URLs, or anything under a
-fixtures/ or expected/ directory (expected output is the grading authority
-and is never edited for style).
+Two rules over markdown prose in every shipped .md file (mermaid node
+labels included; fenced code, inline code, link targets, and anything
+under fixtures/ or expected/ exempt):
 
-Rewrite the sentence with a comma, a normal hyphen (hyphen-minus, ASCII 45),
-a colon, or a full stop. A hyphen doing an em-dash's job usually reads worse
-than a comma, so prefer restructuring.
+1. No em-dashes (U+2014) or en-dashes (U+2013). Rewrite with a comma, a
+   normal hyphen, a colon, or a full stop.
+2. No roadmap language. Committed prose describes what exists; promises
+   rot the moment priorities move, which is how the reference course
+   accumulated announcements for content that never arrived, and this
+   repository shipped the same phrasing twice before this became a gate.
+   Banned (case-insensitive): "next release", "coming soon",
+   "will be added", "in a future", "not yet built". Name what exists and
+   link to it, or say nothing.
 """
 
 from __future__ import annotations
@@ -24,6 +28,9 @@ SKIP_FILES = {"RESEARCH.md", "PROPOSAL.md", "BUILD_PROGRESS.md"}
 EXEMPT_DIRS = {"fixtures", "expected"}
 
 BANNED = {"—": "em-dash (U+2014)", "–": "en-dash (U+2013)"}
+ROADMAP_PHRASES = (
+    "next release", "coming soon", "will be added", "in a future", "not yet built",
+)
 INLINE_CODE_RE = re.compile(r"`[^`]*`")
 LINK_TARGET_RE = re.compile(r"\]\([^)]*\)")
 FENCE_RE = re.compile(r"^\s*(```|~~~)\s*(\S*)")
@@ -63,11 +70,19 @@ def check_file(path: Path, root: Path) -> list[str]:
         if not in_fence:
             candidate = INLINE_CODE_RE.sub("", candidate)
             candidate = LINK_TARGET_RE.sub("]", candidate)
+        rel = path.relative_to(root) if path.is_relative_to(root) else path
         for char, name in BANNED.items():
             column = candidate.find(char)
             if column != -1:
-                rel = path.relative_to(root) if path.is_relative_to(root) else path
                 errors.append(f"{rel}:{number}:{column + 1}: {name} in prose")
+        lowered = candidate.lower()
+        for phrase in ROADMAP_PHRASES:
+            column = lowered.find(phrase)
+            if column != -1:
+                errors.append(
+                    f"{rel}:{number}:{column + 1}: roadmap language ({phrase!r}); "
+                    "describe what exists instead of promising what might"
+                )
     return errors
 
 
@@ -81,7 +96,10 @@ def check_tree(root: Path) -> list[str]:
 def main() -> int:
     files = markdown_files(REPO_ROOT)
     errors = check_tree(REPO_ROOT)
-    print(f"lint-prose: {len(files)} markdown files scanned for em/en dashes")
+    print(
+        f"lint-prose: {len(files)} markdown files scanned for em/en dashes "
+        "and roadmap language"
+    )
     for error in errors:
         print(f"  FAIL {error}")
     if errors:

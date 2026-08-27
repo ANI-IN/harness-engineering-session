@@ -33,8 +33,6 @@ documented commands; that is verified, not assumed.
 
 | # | Project | You build | Composes lectures |
 | --- | --- | --- | --- |
-| 04 | [Runtime feedback and scope control](./project-04-runtime-feedback-and-scope-control/) | Structured logs, corrupt-state recovery, the behavioral architecture guard, and the WIP=1 doctor | 02, 04 (07-08 arrive next release) |
+| 04 | [Runtime feedback and scope control](./project-04-runtime-feedback-and-scope-control/) | Structured logs, corrupt-state recovery, the behavioral architecture guard, and the WIP=1 doctor | 02, 04 |
 
-Projects 05-08 (self-verification and role separation, the
-observable-harness capstone, loop engineering, graph engineering) follow
-in the next release, together with lectures 07-14.
+This index lists every project the course currently contains.

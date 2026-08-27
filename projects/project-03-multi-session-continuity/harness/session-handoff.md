@@ -20,8 +20,7 @@
 
 ## Next best step
 
-- Project 04: structured logging, the architecture guard, and the seeded
-  chunking bug arrive with the next release of this course.
+- Proceed to Project 04 (runtime feedback and scope control).
 
 ## Commands
 

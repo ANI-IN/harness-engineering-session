@@ -41,8 +41,8 @@ After this project you can:
 - [Lecture 04](../../lectures/lecture-04-why-one-giant-instruction-file-fails/):
   rules the agent must actually meet; here they become executable checks.
 - [Project 03](../project-03-multi-session-continuity/), whose solution is
-  this project's starter. (The reference maps this project to lectures 07
-  and 08, which arrive with this course's next release.)
+  this project's starter. (The reference maps this project to its lectures 07
+  and 08 on task boundaries and feature lists.)
 - `make setup` completed at the repository root; your track green in
   `make doctor` ([choosing your track](../../docs/choosing-your-track.md)).
 

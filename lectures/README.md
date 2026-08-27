@@ -34,6 +34,5 @@ minutes per lecture including exercises.
 | 05 | [Why long-running tasks lose continuity](./lecture-05-why-long-running-tasks-lose-continuity/) | Continuity comes from externalized state, not context windows | [Project 03](../projects/project-03-multi-session-continuity/) |
 | 06 | [Why initialization needs its own phase](./lecture-06-why-initialization-needs-its-own-phase/) | Sessions that start by improvising end by guessing | [Project 03](../projects/project-03-multi-session-continuity/) |
 
-Lectures 07-14 (scope control, feature lists, evidence-based completion,
-end-to-end verification, observability, clean state, loop engineering, graph
-engineering) follow in the next release, in the same format.
+This index lists every lecture the course currently contains; the
+[curriculum map](../docs/curriculum-map.md) shows how they connect.

@@ -57,3 +57,32 @@ def test_fixtures_and_expected_dirs_exempt(tmp_path):
     _md(tmp_path, "unit/fixtures/f.md", "dash — allowed in fixtures\n")
     _md(tmp_path, "unit/expected/e.md", "dash – allowed in expected\n")
     assert check_prose.check_tree(tmp_path) == []
+
+
+def test_roadmap_language_detected(tmp_path):
+    md = tmp_path / "README.md"
+    md.write_text("Lectures 07-14 follow in the Next Release, in the same format.\n")
+    errors = check_prose.check_file(md, tmp_path)
+    assert len(errors) == 1
+    assert "roadmap language" in errors[0]
+
+
+def test_all_five_roadmap_phrases_detected(tmp_path):
+    body = (
+        "Coming soon: more.\nThis will be added later.\n"
+        "In a future pass.\nThat part is not yet built.\n"
+    )
+    md = tmp_path / "README.md"
+    md.write_text(body)
+    errors = check_prose.check_file(md, tmp_path)
+    assert len(errors) == 4
+
+
+def test_roadmap_language_in_code_and_fixtures_is_exempt(tmp_path):
+    md = tmp_path / "README.md"
+    md.write_text("```text\ncoming soon\n```\n\nUse `next release` as a literal.\n")
+    assert check_prose.check_file(md, tmp_path) == []
+    fixture = tmp_path / "unit" / "fixtures" / "doc.md"
+    fixture.parent.mkdir(parents=True)
+    fixture.write_text("coming soon\n")
+    assert fixture not in check_prose.markdown_files(tmp_path)
