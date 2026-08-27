@@ -35,6 +35,7 @@ minutes per lecture including exercises.
 | 06 | [Why initialization needs its own phase](./lecture-06-why-initialization-needs-its-own-phase/) | Sessions that start by improvising end by guessing | [Project 03](../projects/project-03-multi-session-continuity/) |
 | 07 | [Why agents overreach and under-finish](./lecture-07-why-agents-overreach-and-under-finish/) | Overreach and under-finish are one budget seen from two sides | [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
 | 08 | [Why feature lists are harness primitives](./lecture-08-why-feature-lists-are-harness-primitives/) | A feature list is a data structure the harness executes against, not a memo | [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
+| 09 | [Why agents declare victory too early](./lecture-09-why-agents-declare-victory-too-early/) | A completion claim stands until something outside the session re-executes the checks | [Project 05](../projects/project-05-self-verification-and-role-separation/) |
 
 This index lists every lecture the course currently contains; the
 [curriculum map](../docs/curriculum-map.md) shows how they connect.

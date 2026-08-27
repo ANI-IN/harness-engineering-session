@@ -1,0 +1,52 @@
+{
+  "workspace": "workspace-torn",
+  "layers": [
+    {
+      "layer": "static",
+      "status": "failed",
+      "checks": [
+        {
+          "id": "todo-markers-cleared",
+          "status": "fail",
+          "detail": "src/export.txt contains TODO"
+        }
+      ]
+    },
+    {
+      "layer": "tests",
+      "status": "not-reached",
+      "checks": [
+        {
+          "id": "unit-exporter-green",
+          "status": "not-reached",
+          "detail": "gated by failing layer static"
+        }
+      ]
+    },
+    {
+      "layer": "system",
+      "status": "not-reached",
+      "checks": [
+        {
+          "id": "config-export-dir",
+          "status": "not-reached",
+          "detail": "gated by failing layer static"
+        },
+        {
+          "id": "migration-applied",
+          "status": "not-reached",
+          "detail": "gated by failing layer static"
+        },
+        {
+          "id": "e2e-export-ran",
+          "status": "not-reached",
+          "detail": "gated by failing layer static"
+        }
+      ]
+    }
+  ],
+  "verdict": {
+    "stopped_at": "static",
+    "result": "not-done"
+  }
+}

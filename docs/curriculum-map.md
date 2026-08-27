@@ -5,11 +5,10 @@ its exercises make you build that mechanism, and each project composes the
 mechanisms of two lectures into a working system. The library holds the
 copy-ready templates those systems are built from.
 
-This map covers lectures 01-08 and projects 01-04: the foundation sequence
-(lectures 01-06, projects 01-03) and the scope-control and feature-list
-lectures that project 04 industrializes. Project 05 (self-verification and role
-separation) is also built; it sits outside this map because its paired
-lectures are outside the map's scope.
+This map covers lectures 01-09 and projects 01-05: the foundation sequence
+(lectures 01-06, projects 01-03), the scope-control and feature-list
+lectures that project 04 industrializes, and the premature-claim lecture
+that project 05 puts under a rubric.
 
 ```mermaid
 flowchart LR
@@ -22,6 +21,7 @@ flowchart LR
     L06["06 Initialization as its own phase"]
     L07["07 Overreach and under-finish"]
     L08["08 Feature lists as primitives"]
+    L09["09 Declaring victory too early"]
   end
 
   subgraph Projects
@@ -29,6 +29,7 @@ flowchart LR
     P02["Project 02 Agent-readable workspace"]
     P03["Project 03 Multi-session continuity"]
     P04["Project 04 Runtime feedback and scope control"]
+    P05["Project 05 Self-verification and role separation"]
   end
 
   subgraph Library
@@ -42,6 +43,7 @@ flowchart LR
   L05 --> L06
   L06 --> L07
   L07 --> L08
+  L08 --> L09
 
   L01 --> P01
   L02 --> P01
@@ -51,11 +53,13 @@ flowchart LR
   L06 --> P03
   L07 --> P04
   L08 --> P04
+  L09 --> P05
 
   T --> P01
   T --> P02
   T --> P03
   T --> P04
+  T --> P05
   L02 -. "defines the artifacts" .-> T
 ```
 
@@ -75,7 +79,10 @@ Reading the graph:
   survive session boundaries (lectures 05-06),
   [project 04](../projects/project-04-runtime-feedback-and-scope-control/)
   turns scope control and the feature list's evidence law into a doctor
-  check and a guard (lectures 07-08).
+  check and a guard (lectures 07-08),
+  [project 05](../projects/project-05-self-verification-and-role-separation/)
+  replays the premature claim under three role configurations and a
+  rubric of executable predicates (lecture 09).
 - The **library feeds every project**: projects instantiate the same
   templates the library ships, and lecture 02 is where those artifacts are
   defined, which is why it points at the library.

@@ -1,0 +1,4 @@
+# export writer
+format=csv
+TODO read export_dir from config/app.conf
+status=in-progress

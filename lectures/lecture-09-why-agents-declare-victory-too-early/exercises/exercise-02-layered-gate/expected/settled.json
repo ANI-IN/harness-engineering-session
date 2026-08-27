@@ -1,0 +1,52 @@
+{
+  "workspace": "workspace-settled",
+  "layers": [
+    {
+      "layer": "static",
+      "status": "passed",
+      "checks": [
+        {
+          "id": "todo-markers-cleared",
+          "status": "pass",
+          "detail": "src/export.txt carries no TODO marker"
+        }
+      ]
+    },
+    {
+      "layer": "tests",
+      "status": "passed",
+      "checks": [
+        {
+          "id": "unit-exporter-green",
+          "status": "pass",
+          "detail": "tests/unit-export.txt has a line starting with result=pass"
+        }
+      ]
+    },
+    {
+      "layer": "system",
+      "status": "passed",
+      "checks": [
+        {
+          "id": "config-export-dir",
+          "status": "pass",
+          "detail": "config/app.conf has a line starting with export_dir="
+        },
+        {
+          "id": "migration-applied",
+          "status": "pass",
+          "detail": "db/schema.version version=3 matches db/applied.txt applied=3"
+        },
+        {
+          "id": "e2e-export-ran",
+          "status": "pass",
+          "detail": "logs/e2e-export.log present"
+        }
+      ]
+    }
+  ],
+  "verdict": {
+    "stopped_at": null,
+    "result": "done"
+  }
+}

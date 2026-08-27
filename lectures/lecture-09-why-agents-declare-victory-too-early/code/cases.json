@@ -1,0 +1,73 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "session-premature-declares-done",
+      "args": [
+        "session",
+        "fixtures/workspaces/workspace-premature"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/session-premature.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "gate-premature-diverges",
+      "args": [
+        "gate",
+        "fixtures/workspaces/workspace-premature"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/gate-premature.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "session-earned-same-claim",
+      "args": [
+        "session",
+        "fixtures/workspaces/workspace-earned"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/session-earned.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "gate-earned-confirms",
+      "args": [
+        "gate",
+        "fixtures/workspaces/workspace-earned"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/gate-earned.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "gate",
+        "fixtures/workspaces/no-such-workspace"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

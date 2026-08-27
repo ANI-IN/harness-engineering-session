@@ -53,6 +53,7 @@ links to a unit that runs today.
 | [06: Why initialization needs its own phase](lectures/lecture-06-why-initialization-needs-its-own-phase/) | init.sh as a first-class phase | [Project 03](projects/project-03-multi-session-continuity/) |
 | [07: Why agents overreach and under-finish](lectures/lecture-07-why-agents-overreach-and-under-finish/) | WIP=1 read from the workspace; a parked queue instead of a refusal | [Project 04](projects/project-04-runtime-feedback-and-scope-control/) |
 | [08: Why feature lists are harness primitives](lectures/lecture-08-why-feature-lists-are-harness-primitives/) | The triple (behavior, command, status); passing only through the command | [Project 04](projects/project-04-runtime-feedback-and-scope-control/) |
+| [09: Why agents declare victory too early](lectures/lecture-09-why-agents-declare-victory-too-early/) | Re-execution, not review, separates an earned claim from a premature one | [Project 05](projects/project-05-self-verification-and-role-separation/) |
 
 | Project | You build |
 | --- | --- |

@@ -1,0 +1,26 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "cracked-stops-at-tests",
+      "args": ["fixtures/workspaces/workspace-cracked"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/cracked.json", "kind": "json" }
+    },
+    {
+      "name": "torn-stops-at-static",
+      "args": ["fixtures/workspaces/workspace-torn"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/torn.json", "kind": "json" }
+    },
+    {
+      "name": "settled-passes-every-layer",
+      "args": ["fixtures/workspaces/workspace-settled"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/settled.json", "kind": "json" }
+    }
+  ]
+}

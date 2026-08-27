@@ -1,0 +1,44 @@
+{
+  "task": "add csv export to the report tool",
+  "checks": [
+    {
+      "id": "todo-markers-cleared",
+      "layer": "static",
+      "cost": 1,
+      "kind": "file-lacks-marker",
+      "path": "src/export.txt",
+      "marker": "TODO"
+    },
+    {
+      "id": "unit-exporter-green",
+      "layer": "tests",
+      "cost": 2,
+      "kind": "file-has-line",
+      "path": "tests/unit-export.txt",
+      "prefix": "result=pass"
+    },
+    {
+      "id": "config-export-dir",
+      "layer": "system",
+      "cost": 3,
+      "kind": "file-has-line",
+      "path": "config/app.conf",
+      "prefix": "export_dir="
+    },
+    {
+      "id": "migration-applied",
+      "layer": "system",
+      "cost": 3,
+      "kind": "values-agree",
+      "left": { "path": "db/schema.version", "key": "version" },
+      "right": { "path": "db/applied.txt", "key": "applied" }
+    },
+    {
+      "id": "e2e-export-ran",
+      "layer": "system",
+      "cost": 3,
+      "kind": "file-exists",
+      "path": "logs/e2e-export.log"
+    }
+  ]
+}

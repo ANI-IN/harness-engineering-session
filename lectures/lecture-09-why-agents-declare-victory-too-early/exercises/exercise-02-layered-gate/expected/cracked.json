@@ -1,0 +1,52 @@
+{
+  "workspace": "workspace-cracked",
+  "layers": [
+    {
+      "layer": "static",
+      "status": "passed",
+      "checks": [
+        {
+          "id": "todo-markers-cleared",
+          "status": "pass",
+          "detail": "src/export.txt carries no TODO marker"
+        }
+      ]
+    },
+    {
+      "layer": "tests",
+      "status": "failed",
+      "checks": [
+        {
+          "id": "unit-exporter-green",
+          "status": "fail",
+          "detail": "tests/unit-export.txt has no line starting with result=pass"
+        }
+      ]
+    },
+    {
+      "layer": "system",
+      "status": "not-reached",
+      "checks": [
+        {
+          "id": "config-export-dir",
+          "status": "not-reached",
+          "detail": "gated by failing layer tests"
+        },
+        {
+          "id": "migration-applied",
+          "status": "not-reached",
+          "detail": "gated by failing layer tests"
+        },
+        {
+          "id": "e2e-export-ran",
+          "status": "not-reached",
+          "detail": "gated by failing layer tests"
+        }
+      ]
+    }
+  ],
+  "verdict": {
+    "stopped_at": "tests",
+    "result": "not-done"
+  }
+}

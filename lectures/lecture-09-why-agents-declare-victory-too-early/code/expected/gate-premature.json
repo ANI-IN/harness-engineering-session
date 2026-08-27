@@ -1,0 +1,60 @@
+{
+  "workspace": "workspace-premature",
+  "claim": {
+    "done": true,
+    "green": 5,
+    "executed": 2,
+    "predicted": 3
+  },
+  "reexecution": [
+    {
+      "id": "todo-markers-cleared",
+      "layer": "static",
+      "claimed": "pass",
+      "basis": "executed",
+      "actual": "pass",
+      "detail": "src/export.txt carries no TODO marker",
+      "verdict": "confirmed"
+    },
+    {
+      "id": "unit-exporter-green",
+      "layer": "tests",
+      "claimed": "pass",
+      "basis": "executed",
+      "actual": "pass",
+      "detail": "tests/unit-export.txt has a line starting with result=pass",
+      "verdict": "confirmed"
+    },
+    {
+      "id": "config-export-dir",
+      "layer": "system",
+      "claimed": "pass",
+      "basis": "predicted",
+      "actual": "fail",
+      "detail": "config/app.conf has no line starting with export_dir=",
+      "verdict": "diverged"
+    },
+    {
+      "id": "migration-applied",
+      "layer": "system",
+      "claimed": "pass",
+      "basis": "predicted",
+      "actual": "fail",
+      "detail": "db/schema.version version=3 but db/applied.txt applied=2",
+      "verdict": "diverged"
+    },
+    {
+      "id": "e2e-export-ran",
+      "layer": "system",
+      "claimed": "pass",
+      "basis": "predicted",
+      "actual": "fail",
+      "detail": "logs/e2e-export.log missing",
+      "verdict": "diverged"
+    }
+  ],
+  "verdict": {
+    "divergences": 3,
+    "result": "premature"
+  }
+}

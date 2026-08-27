@@ -1,0 +1,35 @@
+{
+  "done": true,
+  "checks": [
+    {
+      "id": "todo-markers-cleared",
+      "status": "pass",
+      "basis": "executed",
+      "evidence": "src/export.txt carries no TODO marker"
+    },
+    {
+      "id": "unit-exporter-green",
+      "status": "pass",
+      "basis": "predicted",
+      "evidence": "the suite was green before the header change"
+    },
+    {
+      "id": "config-export-dir",
+      "status": "pass",
+      "basis": "executed",
+      "evidence": "config/app.conf has a line starting with export_dir="
+    },
+    {
+      "id": "migration-applied",
+      "status": "pass",
+      "basis": "executed",
+      "evidence": "db/schema.version version=3 matches db/applied.txt applied=3"
+    },
+    {
+      "id": "e2e-export-ran",
+      "status": "pass",
+      "basis": "predicted",
+      "evidence": "the export writer logs on completion"
+    }
+  ]
+}

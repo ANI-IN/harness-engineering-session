@@ -270,3 +270,6 @@ rule since project 01; here it becomes a checker's verdict.
 - [Lecture 06: Why initialization needs its own phase](../../lectures/lecture-06-why-initialization-needs-its-own-phase/):
   the same doctor discipline, pointed at finished work instead of a
   starting repository.
+- [Lecture 09: Why agents declare victory too early](../../lectures/lecture-09-why-agents-declare-victory-too-early/):
+  the premature claim caught by re-execution; the gen-eval checker here
+  is that lecture's gate given a rubric and a second role.

@@ -1,0 +1,26 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "stale-evidence",
+      "args": ["fixtures/workspaces/workspace-drifted", "fixtures/claims/claim-recorded-green.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/stale-evidence.json", "kind": "json" }
+    },
+    {
+      "name": "predictions-caught",
+      "args": ["fixtures/workspaces/workspace-drifted", "fixtures/claims/claim-predictions.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/predictions-caught.json", "kind": "json" }
+    },
+    {
+      "name": "earned-confirmed",
+      "args": ["fixtures/workspaces/workspace-earned", "fixtures/claims/claim-earned.json"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/earned-confirmed.json", "kind": "json" }
+    }
+  ]
+}
