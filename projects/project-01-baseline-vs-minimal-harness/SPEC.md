@@ -12,6 +12,11 @@ Both implementations (`solution/python/main.py`,
 `solution/typescript/main.ts`) must produce byte-identical output after
 normalization for every case in `cases.json`.
 
+Starter-shape: non-code (declared). The starter is the weak experimental
+condition, a task prompt and nothing else; there is deliberately no
+starter implementation in either track. `lint-structure` accepts this
+shape only because this marker line declares it.
+
 ## The `kb` canonical command form
 
 Every command in this project is written as `kb <subcommand> ...`. Each
@@ -196,4 +201,10 @@ controlled experiment.
 (vitest) cover tokenization and scoring rules, tie-breaks, title
 fallback, init idempotency, the evidence-reset control, the
 isolated-directories control, the canonical command splitter, and the
-committed-evidence equality above. `make verify` runs both suites.
+committed-evidence equality above. Additionally, an **independent
+evidence check** in each suite executes every feature's evidence command
+through the real CLI as a subprocess in a fresh working copy, with the
+experiment runner and its fake agent entirely out of the loop, and
+asserts the output equals the recorded `observed` string; the committed
+evidence is thereby true on its own, not merely consistent with its
+generator. `make verify` runs both suites.

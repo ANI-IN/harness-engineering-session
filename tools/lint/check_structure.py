@@ -138,24 +138,52 @@ def check_units(errors: list[str], root: Path) -> None:
                 for stack in ("python", "typescript")
             )
             # Third accepted shape (projects): a complete dual-track
-            # solution/ next to a non-code starter/, where the starter is an
-            # experimental condition (e.g. a task prompt), not a partial
-            # implementation. The conformance runner executes the solution
-            # stage by default for such units.
+            # solution/ next to a NON-CODE starter/ (e.g. only a task
+            # prompt), where the starter is an experimental condition, not a
+            # partial implementation. This shape must be DECLARED by the
+            # marker line in the unit's SPEC.md; it is never inferred from
+            # missing directories, so a project that simply forgot a starter
+            # track stays an error. Declaring the marker while shipping code
+            # stacks in starter/ is a contradiction and also an error.
+            spec_text = spec.read_text(encoding="utf-8")
+            declares_non_code_starter = NON_CODE_STARTER_MARKER in spec_text
+            starter_has_code = any(
+                (unit / "starter" / stack).is_dir() for stack in ("python", "typescript")
+            )
             solution_staged = (
-                (unit / "starter").is_dir()
+                declares_non_code_starter
+                and (unit / "starter").is_dir()
+                and not starter_has_code
                 and (unit / "solution" / "python").is_dir()
                 and (unit / "solution" / "typescript").is_dir()
             )
-            if not (plain or staged or solution_staged):
-                missing = [
-                    stack for stack in ("python", "typescript") if not (unit / stack).is_dir()
-                ]
+            if declares_non_code_starter and starter_has_code:
                 errors.append(
-                    f"{rel}: SPEC.md unit lacks both stacks "
-                    f"(missing {', '.join(missing) or 'starter/solution variants'}; "
-                    "need python/+typescript/ or starter+solution variants)"
+                    f"{rel}: SPEC.md declares '{NON_CODE_STARTER_MARKER}' but starter/ "
+                    "contains implementation stack(s); remove the marker or the code"
                 )
+            if not (plain or staged or solution_staged):
+                if (unit / "starter").is_dir() and (unit / "solution").is_dir():
+                    missing = [
+                        f"{stage}/{stack}"
+                        for stage in ("starter", "solution")
+                        for stack in ("python", "typescript")
+                        if not (unit / stage / stack).is_dir()
+                    ]
+                    errors.append(
+                        f"{rel}: staged SPEC.md unit is missing {', '.join(missing)}; a "
+                        "starter without both stacks is only valid when SPEC.md declares "
+                        f"'{NON_CODE_STARTER_MARKER}' and starter/ holds no code at all"
+                    )
+                else:
+                    missing = [
+                        stack for stack in ("python", "typescript") if not (unit / stack).is_dir()
+                    ]
+                    errors.append(
+                        f"{rel}: SPEC.md unit lacks both stacks "
+                        f"(missing {', '.join(missing) or 'starter/solution variants'}; "
+                        "need python/+typescript/ or starter+solution variants)"
+                    )
             if not (unit / "cases.json").is_file():
                 errors.append(f"{rel}: SPEC.md unit missing cases.json")
         # Unit parts with no contract: a stray cases.json, or fixture/expected
@@ -170,6 +198,7 @@ def check_units(errors: list[str], root: Path) -> None:
 
 
 JUSTIFICATION_MARKER = "Starter-divergence justification:"
+NON_CODE_STARTER_MARKER = "Starter-shape: non-code"
 
 
 def _formatting_skeleton(value: str) -> str:

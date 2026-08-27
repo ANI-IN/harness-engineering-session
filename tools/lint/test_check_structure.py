@@ -54,7 +54,29 @@ def test_complete_unit_passes(tmp_path):
     assert errors == []
 
 
-def test_solution_staged_unit_with_prompt_only_starter_passes(tmp_path):
+def _declare_non_code_starter(unit):
+    (unit / "SPEC.md").write_text(
+        f"# spec\n\n{check_structure.NON_CODE_STARTER_MARKER} (the starter is a task prompt)\n",
+        encoding="utf-8",
+    )
+
+
+def test_declared_non_code_starter_unit_passes(tmp_path):
+    unit = _tree(
+        tmp_path,
+        "projects/project-01-x",
+        files=("SPEC.md", "cases.json"),
+        dirs=("fixtures", "expected", "starter", "solution/python", "solution/typescript"),
+    )
+    _declare_non_code_starter(unit)
+    errors: list[str] = []
+    check_structure.check_units(errors, tmp_path)
+    assert errors == []
+
+
+def test_non_code_starter_shape_requires_the_marker(tmp_path):
+    # Same directories, no marker in SPEC.md: the shape must never be
+    # inferred from the absence of starter code.
     _tree(
         tmp_path,
         "projects/project-01-x",
@@ -63,19 +85,56 @@ def test_solution_staged_unit_with_prompt_only_starter_passes(tmp_path):
     )
     errors: list[str] = []
     check_structure.check_units(errors, tmp_path)
-    assert errors == []
+    assert len(errors) == 1
+    assert "starter without both stacks is only valid" in errors[0]
+    assert "starter/python, starter/typescript" in errors[0]
+
+
+def test_project_missing_one_starter_track_detected(tmp_path):
+    # A project-02-shaped unit (real dual-track starter intended) with the
+    # typescript starter missing must be rejected, marker or not.
+    _tree(
+        tmp_path,
+        "projects/project-02-x",
+        files=("SPEC.md", "cases.json"),
+        dirs=(
+            "fixtures", "expected",
+            "starter/python", "solution/python", "solution/typescript",
+        ),
+    )
+    errors: list[str] = []
+    check_structure.check_units(errors, tmp_path)
+    assert len(errors) == 1
+    assert "missing starter/typescript" in errors[0]
+
+
+def test_marker_with_starter_code_is_a_contradiction(tmp_path):
+    unit = _tree(
+        tmp_path,
+        "projects/project-02-x",
+        files=("SPEC.md", "cases.json"),
+        dirs=(
+            "fixtures", "expected",
+            "starter/python", "solution/python", "solution/typescript",
+        ),
+    )
+    _declare_non_code_starter(unit)
+    errors: list[str] = []
+    check_structure.check_units(errors, tmp_path)
+    assert any("remove the marker or the code" in error for error in errors)
 
 
 def test_solution_staged_unit_missing_a_stack_detected(tmp_path):
-    _tree(
+    unit = _tree(
         tmp_path,
         "projects/project-01-x",
         files=("SPEC.md", "cases.json"),
         dirs=("fixtures", "expected", "starter", "solution/python"),
     )
+    _declare_non_code_starter(unit)
     errors: list[str] = []
     check_structure.check_units(errors, tmp_path)
-    assert any("lacks both stacks" in error for error in errors)
+    assert any("missing" in error and "solution/typescript" in error for error in errors)
 
 
 def test_readme_sections_out_of_order_detected(tmp_path):

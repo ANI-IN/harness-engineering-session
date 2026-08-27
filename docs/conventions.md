@@ -46,8 +46,11 @@ conformance runner executes the **solution**, `verify.sh` exercises both.
 Projects whose starter is an experimental condition rather than a partial
 implementation (project 01's starter is a task prompt, by design) keep a
 complete `solution/{python,typescript}/` next to that non-code `starter/`;
-the conformance runner still executes the solution stage, and the
-project's SPEC.md and README state what the starter is. Projects may also
+the conformance runner still executes the solution stage. This shape must
+be declared by a `Starter-shape: non-code` line in that project's SPEC.md;
+`lint-structure` never infers it from missing directories, so a project
+that merely forgot a starter track (or one of its two starter stacks) is
+an error, and declaring the marker while shipping starter code is too. Projects may also
 carry `harness/` (language-neutral harness artifacts) and per-track
 `tests/` inside each solution, run by `make verify`.
 

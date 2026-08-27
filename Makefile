@@ -5,6 +5,16 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
+# Resolve the pinned Node 20 toolchain once and put it first on PATH for
+# every recipe, so a newer Node elsewhere (e.g. /usr/local/bin) cannot
+# shadow the pin. The corepack pnpm shims live in the same directory. If no
+# Node 20 exists anywhere, PATH is left alone and `make doctor` fails hard
+# against the .nvmrc pin.
+NODE20_BIN := $(shell bash tools/find_node20.sh 2>/dev/null)
+ifneq ($(NODE20_BIN),)
+export PATH := $(NODE20_BIN):$(PATH)
+endif
+
 .PHONY: help setup doctor status verify conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure
 
 help: ## List available targets

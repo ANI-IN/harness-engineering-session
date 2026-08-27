@@ -1,7 +1,16 @@
 // Project 01 TypeScript test suite: retrieval rules, init idempotency, the
 // experiment's controls, and the committed-evidence equality contract.
 
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync, copyFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import {
+  copyFileSync,
+  cpSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,6 +31,7 @@ import {
 } from "../main";
 
 const PROJECT_DIR = dirname(dirname(dirname(dirname(fileURLToPath(import.meta.url)))));
+const REPO_ROOT = dirname(dirname(PROJECT_DIR));
 
 function makeDocuments(): LoadedDocument[] {
   return [
@@ -197,4 +207,50 @@ describe("committed evidence", () => {
     ) as Report;
     expect(report).toEqual(pinned);
   });
+});
+
+// Expand the canonical `kb ...` form to this track's real CLI.
+function expandKb(command: string): string[] {
+  const argv = splitCommand(command);
+  expect(argv[0]).toBe("kb");
+  return [
+    join(REPO_ROOT, "node_modules", ".bin", "tsx"),
+    join(PROJECT_DIR, "solution", "typescript", "main.ts"),
+    ...argv.slice(1),
+  ];
+}
+
+// The committed evidence must be true on its own, not merely match its
+// generator: each feature's evidence command is executed through the real
+// CLI as a subprocess in a fresh working copy, with the experiment runner
+// and its fake agent entirely out of the loop, and the output must equal
+// the recorded `observed` string.
+describe("independent evidence", () => {
+  it(
+    "reproduces each feature's observed output through the real CLI",
+    () => {
+      const dir = makeTempDir();
+      cpSync(join(PROJECT_DIR, "fixtures", "kb-data", "documents"), join(dir, "data", "sample-documents"), {
+        recursive: true,
+      });
+      const committed = JSON.parse(
+        readFileSync(join(PROJECT_DIR, "harness", "feature_list.json"), "utf8"),
+      ) as FeatureList;
+      for (const feature of committed.features) {
+        const evidence = feature.evidence;
+        expect(evidence, feature.id).toBeDefined();
+        if (evidence === undefined) {
+          continue;
+        }
+        const [cli, ...args] = expandKb(evidence.command);
+        expect(cli).toBeDefined();
+        const proc = spawnSync(cli as string, args, { cwd: dir, encoding: "utf8", timeout: 120000 });
+        const observed = proc.stdout
+          ? `exit ${proc.status}: ${JSON.stringify(JSON.parse(proc.stdout))}`
+          : `exit ${proc.status}: ${proc.stderr.trim()}`;
+        expect(observed, feature.id).toBe(evidence.observed);
+      }
+    },
+    120000,
+  );
 });

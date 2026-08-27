@@ -6,6 +6,8 @@ from __future__ import annotations
 import importlib.util
 import json
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -150,3 +152,39 @@ class TestCommittedEvidence:
     def test_report_matches_the_pinned_expectation(self, report):
         pinned = json.loads((PROJECT_DIR / "expected" / "experiment.json").read_text("utf-8"))
         assert report == pinned
+
+
+def expand_kb(command: str) -> list[str]:
+    """Expand the canonical `kb ...` form to this track's real CLI."""
+    argv = kb.split_command(command)
+    assert argv[0] == "kb"
+    return [sys.executable, str(PROJECT_DIR / "solution" / "python" / "main.py"), *argv[1:]]
+
+
+class TestIndependentEvidence:
+    """The committed evidence must be true on its own, not merely match its
+    generator: each feature's evidence command is executed through the real
+    CLI as a subprocess in a fresh working copy, with the experiment runner
+    and its fake agent entirely out of the loop, and the output must equal
+    the recorded `observed` string."""
+
+    def test_each_evidence_command_reproduces_its_observed_output(self, tmp_path):
+        shutil.copytree(
+            PROJECT_DIR / "fixtures" / "kb-data" / "documents",
+            tmp_path / "data" / "sample-documents",
+        )
+        committed = json.loads(
+            (PROJECT_DIR / "harness" / "feature_list.json").read_text(encoding="utf-8")
+        )
+        for feature in committed["features"]:
+            evidence = feature["evidence"]
+            proc = subprocess.run(
+                expand_kb(evidence["command"]),
+                cwd=tmp_path, capture_output=True, text=True, timeout=120,
+            )
+            if proc.stdout:
+                compact = json.dumps(json.loads(proc.stdout), separators=(",", ":"))
+                observed = f"exit {proc.returncode}: {compact}"
+            else:
+                observed = f"exit {proc.returncode}: {proc.stderr.strip()}"
+            assert observed == evidence["observed"], feature["id"]
