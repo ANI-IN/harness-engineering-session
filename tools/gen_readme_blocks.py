@@ -20,9 +20,11 @@ blocks in place.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -127,14 +129,23 @@ def main() -> int:
         parser.error("--write and --check are mutually exclusive")
 
     blocks = 0
-    errors: list[str] = []
+    with_blocks: list[Path] = []
     for path in markdown_files(REPO_ROOT):
-        text = path.read_text(encoding="utf-8")
-        found = len(BLOCK_RE.findall(text))
-        if found == 0:
-            continue
-        blocks += found
-        errors.extend(process_file(path, args.write))
+        found = len(BLOCK_RE.findall(path.read_text(encoding="utf-8")))
+        if found:
+            blocks += found
+            with_blocks.append(path)
+
+    # Files are independent (each block's command is self-contained and each
+    # file is written only by its own worker), so they run in a worker pool;
+    # errors are collected and printed in file order, so output stays
+    # deterministic regardless of completion order.
+    errors: list[str] = []
+    jobs = min(8, os.cpu_count() or 2)
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        futures = [pool.submit(process_file, path, args.write) for path in with_blocks]
+        for future in futures:
+            errors.extend(future.result())
 
     mode = "write" if args.write else "check"
     print(f"gen-readme-blocks[{mode}]: {blocks} generated block(s) processed")

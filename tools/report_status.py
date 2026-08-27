@@ -38,6 +38,11 @@ def main() -> int:
             tail = "\n".join(proc.stdout.strip().split("\n")[-6:])
             print(f"--- {gate} output tail ---\n{tail}\n---")
 
+    print(
+        "note: verify-dedup runs the verify gate with unit conformance covered"
+        " once, by the conformance gate above; coverage equality is proven by"
+        " tools/test_dedup_coverage.py (docs/conventions.md, dedup mode)."
+    )
     floors = json.loads((REPO_ROOT / "tools" / "expected_counts.json").read_text())
     counts = {
         "conformance_units": len(runner.discover_units(REPO_ROOT)),
