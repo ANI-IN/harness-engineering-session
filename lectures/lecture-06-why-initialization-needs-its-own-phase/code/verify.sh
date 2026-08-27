@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# failure-triage demo verify: runs this unit through the conformance runner.
+# why-initialization-needs-its-own-phase demo verify: runs this unit through the conformance runner.
 # Usage: verify.sh [--stack=python|typescript|both]   (default: both)
 set -euo pipefail
 cd "$(dirname "$0")"
