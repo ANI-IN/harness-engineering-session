@@ -1,0 +1,61 @@
+{
+  "workspace": "workspace-seam-gap",
+  "task": "add csv export to the desktop report tool",
+  "definition_of_done": {
+    "id": "unit-only",
+    "levels": [
+      "unit"
+    ],
+    "e2e_runs": []
+  },
+  "events": [
+    {
+      "step": 1,
+      "action": "write the ui component selection-ui",
+      "outcome": "ops declared in app.json: set"
+    },
+    {
+      "step": 2,
+      "action": "write the service component path-builder",
+      "outcome": "ops declared in app.json: format"
+    },
+    {
+      "step": 3,
+      "action": "write the io component file-writer",
+      "outcome": "ops declared in app.json: require-prefix, copy"
+    }
+  ],
+  "levels": [
+    {
+      "level": "unit",
+      "checks": [
+        {
+          "id": "unit:selection-ui",
+          "subject": "selection-ui",
+          "result": "pass",
+          "detail": "selection-ui unit case output matches its declaration: report=quarterly"
+        },
+        {
+          "id": "unit:path-builder",
+          "subject": "path-builder",
+          "result": "pass",
+          "detail": "path-builder unit case output matches its declaration: path=exports/quarterly.csv report=quarterly"
+        },
+        {
+          "id": "unit:file-writer",
+          "subject": "file-writer",
+          "result": "pass",
+          "detail": "file-writer unit case output matches its declaration: path=/srv/reports/exports/quarterly.csv report=quarterly written=/srv/reports/exports/quarterly.csv"
+        }
+      ],
+      "result": "pass"
+    }
+  ],
+  "verdict": {
+    "declared": "done",
+    "failing_level": null,
+    "levels_not_admitted": [
+      "e2e"
+    ]
+  }
+}

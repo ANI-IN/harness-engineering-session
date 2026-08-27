@@ -1,0 +1,15 @@
+{
+  "workspace": "workspace-seam-closed",
+  "runs": [
+    {
+      "id": "e2e:assembled-export-flow",
+      "result": "pass",
+      "detail": "the assembled run completed: written=/srv/reports/exports/quarterly.csv"
+    }
+  ],
+  "remediations": [],
+  "verdict": {
+    "remediations": 0,
+    "result": "clean"
+  }
+}

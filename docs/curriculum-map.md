@@ -5,7 +5,7 @@ its exercises make you build that mechanism, and each project composes the
 mechanisms of two lectures into a working system. The library holds the
 copy-ready templates those systems are built from.
 
-This map covers lectures 01-09 and 11, and projects 01-05: the foundation sequence
+This map covers lectures 01-11 and projects 01-05: the foundation sequence
 (lectures 01-06, projects 01-03), the scope-control and feature-list
 lectures that project 04 industrializes, and the premature-claim lecture
 that project 05 puts under a rubric.
@@ -22,6 +22,7 @@ flowchart LR
     L07["07 Overreach and under-finish"]
     L08["08 Feature lists as primitives"]
     L09["09 Declaring victory too early"]
+    L10["10 End-to-end testing changes results"]
     L11["11 Observability inside the harness"]
   end
 
@@ -45,7 +46,8 @@ flowchart LR
   L06 --> L07
   L07 --> L08
   L08 --> L09
-  L09 --> L11
+  L09 --> L10
+  L10 --> L11
 
   L01 --> P01
   L02 --> P01
@@ -56,6 +58,7 @@ flowchart LR
   L07 --> P04
   L08 --> P04
   L09 --> P05
+  L10 --> P05
 
   T --> P01
   T --> P02

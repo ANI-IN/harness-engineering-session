@@ -1,0 +1,22 @@
+{
+  "workspace": "workspace-artifact-gap",
+  "runs": [
+    {
+      "id": "e2e:assembled-export-flow",
+      "result": "fail",
+      "detail": "the assembled run completed but written=/srv/reports/exports/quarterly.csv.tmp; the flow expects written=/srv/reports/exports/quarterly.csv"
+    }
+  ],
+  "remediations": [
+    {
+      "check": "e2e:assembled-export-flow",
+      "fix": "change file-writer to emit written=/srv/reports/exports/quarterly.csv",
+      "what": "assembled-export-flow finished with written=/srv/reports/exports/quarterly.csv.tmp",
+      "why": "assembled-export-flow is declared to finish with written=/srv/reports/exports/quarterly.csv"
+    }
+  ],
+  "verdict": {
+    "remediations": 1,
+    "result": "fixes-required"
+  }
+}

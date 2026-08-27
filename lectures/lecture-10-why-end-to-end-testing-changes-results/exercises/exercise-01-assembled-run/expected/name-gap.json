@@ -1,0 +1,51 @@
+{
+  "workspace": "workspace-name-gap",
+  "unit": {
+    "checks": [
+      {
+        "id": "unit:selection-ui",
+        "subject": "selection-ui",
+        "result": "pass",
+        "detail": "selection-ui unit case output matches its declaration: report_name=quarterly"
+      },
+      {
+        "id": "unit:path-builder",
+        "subject": "path-builder",
+        "result": "pass",
+        "detail": "path-builder unit case output matches its declaration: path=/srv/reports/exports/quarterly.csv report=quarterly"
+      },
+      {
+        "id": "unit:file-writer",
+        "subject": "file-writer",
+        "result": "pass",
+        "detail": "file-writer unit case output matches its declaration: path=/tmp/unit-fixture.csv written=/tmp/unit-fixture.csv"
+      }
+    ],
+    "result": "pass"
+  },
+  "e2e": {
+    "checks": [
+      {
+        "id": "e2e:assembled-export-flow",
+        "subject": "assembled-export-flow",
+        "result": "fail",
+        "detail": "the assembled run stopped at path-builder: report is not in the record; no component in this flow wrote report",
+        "trace": [
+          {
+            "component": "selection-ui",
+            "outcome": "report_name=quarterly"
+          },
+          {
+            "component": "path-builder",
+            "outcome": "rejected: report is not in the record"
+          }
+        ]
+      }
+    ],
+    "result": "fail"
+  },
+  "verdict": {
+    "failing_level": "e2e",
+    "result": "blocked"
+  }
+}

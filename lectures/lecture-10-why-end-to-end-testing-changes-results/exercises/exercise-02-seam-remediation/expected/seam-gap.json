@@ -1,0 +1,22 @@
+{
+  "workspace": "workspace-seam-gap",
+  "runs": [
+    {
+      "id": "e2e:assembled-export-flow",
+      "result": "fail",
+      "detail": "the assembled run stopped at file-writer: path=exports/quarterly.csv does not start with /; path was last written by path-builder"
+    }
+  ],
+  "remediations": [
+    {
+      "check": "e2e:assembled-export-flow",
+      "fix": "change path-builder to emit path starting with /",
+      "what": "file-writer rejected the record: path=exports/quarterly.csv does not start with /",
+      "why": "file-writer accepts path only when it starts with /"
+    }
+  ],
+  "verdict": {
+    "remediations": 1,
+    "result": "fixes-required"
+  }
+}

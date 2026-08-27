@@ -1,0 +1,55 @@
+{
+  "workspace": "workspace-seam-closed",
+  "unit": {
+    "checks": [
+      {
+        "id": "unit:selection-ui",
+        "subject": "selection-ui",
+        "result": "pass",
+        "detail": "selection-ui unit case output matches its declaration: report=quarterly"
+      },
+      {
+        "id": "unit:path-builder",
+        "subject": "path-builder",
+        "result": "pass",
+        "detail": "path-builder unit case output matches its declaration: path=/srv/reports/exports/quarterly.csv report=quarterly"
+      },
+      {
+        "id": "unit:file-writer",
+        "subject": "file-writer",
+        "result": "pass",
+        "detail": "file-writer unit case output matches its declaration: path=/srv/reports/exports/quarterly.csv report=quarterly written=/srv/reports/exports/quarterly.csv"
+      }
+    ],
+    "result": "pass"
+  },
+  "e2e": {
+    "checks": [
+      {
+        "id": "e2e:assembled-export-flow",
+        "subject": "assembled-export-flow",
+        "result": "pass",
+        "detail": "the assembled run completed: written=/srv/reports/exports/quarterly.csv",
+        "trace": [
+          {
+            "component": "selection-ui",
+            "outcome": "report=quarterly"
+          },
+          {
+            "component": "path-builder",
+            "outcome": "path=/srv/reports/exports/quarterly.csv report=quarterly"
+          },
+          {
+            "component": "file-writer",
+            "outcome": "path=/srv/reports/exports/quarterly.csv report=quarterly written=/srv/reports/exports/quarterly.csv"
+          }
+        ]
+      }
+    ],
+    "result": "pass"
+  },
+  "verdict": {
+    "failing_level": null,
+    "result": "done"
+  }
+}

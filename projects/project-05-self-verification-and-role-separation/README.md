@@ -273,3 +273,6 @@ rule since project 01; here it becomes a checker's verdict.
 - [Lecture 09: Why agents declare victory too early](../../lectures/lecture-09-why-agents-declare-victory-too-early/):
   the premature claim caught by re-execution; the gen-eval checker here
   is that lecture's gate given a rubric and a second role.
+- [Lecture 10: Why end-to-end testing changes results](../../lectures/lecture-10-why-end-to-end-testing-changes-results/):
+  why this project's checker runs each feature's verification command
+  against the working application rather than reading the code.

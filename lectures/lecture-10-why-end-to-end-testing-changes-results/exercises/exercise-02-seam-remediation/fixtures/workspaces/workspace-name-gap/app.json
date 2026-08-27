@@ -1,0 +1,54 @@
+{
+  "task": "add csv export to the desktop report tool",
+  "levels": ["unit", "e2e"],
+  "components": [
+    {
+      "id": "selection-ui",
+      "layer": "ui",
+      "ops": [
+        {"op": "set", "field": "report_name", "value": "quarterly"}
+      ],
+      "unit_case": {
+        "input": {},
+        "expects": {"report_name": "quarterly"}
+      }
+    },
+    {
+      "id": "path-builder",
+      "layer": "service",
+      "ops": [
+        {"op": "format", "field": "path", "template": "/srv/reports/exports/{report}.csv"}
+      ],
+      "unit_case": {
+        "input": {"report": "quarterly"},
+        "expects": {
+          "report": "quarterly",
+          "path": "/srv/reports/exports/quarterly.csv"
+        }
+      }
+    },
+    {
+      "id": "file-writer",
+      "layer": "io",
+      "ops": [
+        {"op": "require-prefix", "field": "path", "prefix": "/"},
+        {"op": "copy", "from": "path", "to": "written"}
+      ],
+      "unit_case": {
+        "input": {"path": "/tmp/unit-fixture.csv"},
+        "expects": {
+          "path": "/tmp/unit-fixture.csv",
+          "written": "/tmp/unit-fixture.csv"
+        }
+      }
+    }
+  ],
+  "pipelines": [
+    {
+      "id": "assembled-export-flow",
+      "stages": ["selection-ui", "path-builder", "file-writer"],
+      "start": {},
+      "expects": {"field": "written", "value": "/srv/reports/exports/quarterly.csv"}
+    }
+  ]
+}

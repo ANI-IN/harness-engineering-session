@@ -1,0 +1,6 @@
+{
+  "id": "unit-only",
+  "summary": "component unit checks only",
+  "levels": ["unit"],
+  "e2e_runs": []
+}

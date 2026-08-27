@@ -1,0 +1,22 @@
+{
+  "workspace": "workspace-name-gap",
+  "runs": [
+    {
+      "id": "e2e:assembled-export-flow",
+      "result": "fail",
+      "detail": "the assembled run stopped at path-builder: report is not in the record; no component in this flow wrote report"
+    }
+  ],
+  "remediations": [
+    {
+      "check": "e2e:assembled-export-flow",
+      "fix": "change selection-ui to emit report before path-builder runs",
+      "what": "path-builder rejected the record: report is not in the record",
+      "why": "path-builder reads report, and the record it was handed has none"
+    }
+  ],
+  "verdict": {
+    "remediations": 1,
+    "result": "fixes-required"
+  }
+}

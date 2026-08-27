@@ -1,0 +1,90 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "unit-only-declares-done",
+      "args": [
+        "session",
+        "fixtures/workspaces/workspace-seam-gap",
+        "fixtures/definitions/unit-only.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/unit-only-gap.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "through-e2e-blocks-the-same-work",
+      "args": [
+        "session",
+        "fixtures/workspaces/workspace-seam-gap",
+        "fixtures/definitions/through-e2e.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/through-e2e-gap.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "through-e2e-clears-the-closed-seam",
+      "args": [
+        "session",
+        "fixtures/workspaces/workspace-seam-closed",
+        "fixtures/definitions/through-e2e.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/through-e2e-closed.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "e2e-listed-but-empty-declares-done",
+      "args": [
+        "session",
+        "fixtures/workspaces/workspace-seam-gap",
+        "fixtures/definitions/e2e-listed-empty.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/e2e-listed-empty-gap.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "coverage-counts-the-seams",
+      "args": [
+        "coverage",
+        "fixtures/workspaces/workspace-seam-gap"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/coverage-gap.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "coverage",
+        "fixtures/workspaces/no-such-workspace"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

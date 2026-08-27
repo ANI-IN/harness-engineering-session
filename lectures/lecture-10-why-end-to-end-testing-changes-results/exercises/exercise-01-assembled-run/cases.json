@@ -1,0 +1,26 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "seam-gap-blocked",
+      "args": ["fixtures/workspaces/workspace-seam-gap"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/seam-gap.json", "kind": "json" }
+    },
+    {
+      "name": "name-gap-blocked",
+      "args": ["fixtures/workspaces/workspace-name-gap"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/name-gap.json", "kind": "json" }
+    },
+    {
+      "name": "seam-closed-done",
+      "args": ["fixtures/workspaces/workspace-seam-closed"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/seam-closed.json", "kind": "json" }
+    }
+  ]
+}

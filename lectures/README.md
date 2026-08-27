@@ -36,6 +36,7 @@ minutes per lecture including exercises.
 | 07 | [Why agents overreach and under-finish](./lecture-07-why-agents-overreach-and-under-finish/) | Overreach and under-finish are one budget seen from two sides | [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
 | 08 | [Why feature lists are harness primitives](./lecture-08-why-feature-lists-are-harness-primitives/) | A feature list is a data structure the harness executes against, not a memo | [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
 | 09 | [Why agents declare victory too early](./lecture-09-why-agents-declare-victory-too-early/) | A completion claim stands until something outside the session re-executes the checks | [Project 05](../projects/project-05-self-verification-and-role-separation/) |
+| 10 | [Why end-to-end testing changes results](./lecture-10-why-end-to-end-testing-changes-results/) | Unit checks can all pass while the assembled path fails at a seam | [Project 05](../projects/project-05-self-verification-and-role-separation/) |
 | 11 | [Why observability belongs inside the harness](./lecture-11-why-observability-belongs-inside-the-harness/) | A session can only resume work whose history something recorded | Closest: [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
 
 This index lists every lecture the course currently contains; the

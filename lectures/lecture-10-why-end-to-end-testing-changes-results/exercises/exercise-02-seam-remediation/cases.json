@@ -1,0 +1,32 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "prefix-seam-remediated",
+      "args": ["fixtures/workspaces/workspace-seam-gap"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/seam-gap.json", "kind": "json" }
+    },
+    {
+      "name": "missing-field-remediated",
+      "args": ["fixtures/workspaces/workspace-name-gap"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/name-gap.json", "kind": "json" }
+    },
+    {
+      "name": "wrong-artifact-remediated",
+      "args": ["fixtures/workspaces/workspace-artifact-gap"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/artifact-gap.json", "kind": "json" }
+    },
+    {
+      "name": "clean-flow-has-nothing-to-fix",
+      "args": ["fixtures/workspaces/workspace-seam-closed"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/seam-closed.json", "kind": "json" }
+    }
+  ]
+}

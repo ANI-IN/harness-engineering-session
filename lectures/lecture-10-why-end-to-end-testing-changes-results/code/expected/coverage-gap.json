@@ -1,0 +1,29 @@
+{
+  "workspace": "workspace-seam-gap",
+  "components": [
+    "selection-ui",
+    "path-builder",
+    "file-writer"
+  ],
+  "unit_checks": [
+    "unit:selection-ui",
+    "unit:path-builder",
+    "unit:file-writer"
+  ],
+  "seams": [
+    "selection-ui -> path-builder",
+    "path-builder -> file-writer"
+  ],
+  "seams_exercised_by_unit_checks": [],
+  "seams_exercised_by_the_assembled_run": [
+    "selection-ui -> path-builder",
+    "path-builder -> file-writer"
+  ],
+  "totals": {
+    "components": 3,
+    "unit_checks": 3,
+    "seams": 2,
+    "seams_exercised_by_unit_checks": 0,
+    "seams_exercised_by_the_assembled_run": 2
+  }
+}

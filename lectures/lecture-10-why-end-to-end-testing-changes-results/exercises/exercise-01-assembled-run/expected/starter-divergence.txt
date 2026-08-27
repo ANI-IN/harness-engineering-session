@@ -1,0 +1,1 @@
+diverges at $.e2e.checks[0].detail: 'the assembled run completed but written=/tmp/unit-fixture.csv; the flow expects written=/srv/reports/exports/quarterly.csv' != 'the assembled run stopped at file-writer: path=exports/quarterly.csv does not start with /; path was last written by path-builder'
