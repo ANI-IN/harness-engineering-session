@@ -8,19 +8,19 @@ understand a concept.
 
 ## What is shared, what is per-track
 
-Harness artifacts are language-neutral by design — that is itself one of the
+Harness artifacts are language-neutral by design; that is itself one of the
 first lessons of the course. Written once, used by both tracks:
 
 - all prose: lectures, exercise briefs, project docs, diagrams;
 - all harness templates: `AGENTS.md`, `CLAUDE.md`, `feature_list.json` (and
   its schema), `init.sh`, `claude-progress.md`, `session-handoff.md`,
   `clean-state-checklist.md`, `evaluator-rubric.md`, `quality-document.md`;
-- all test inputs (`fixtures/`) and expected outputs (`expected/`) — the same
+- all test inputs (`fixtures/`) and expected outputs (`expected/`): the same
   files grade both tracks;
 - every `verify.sh`.
 
-Only the implementation source differs, and each side is written idiomatically
-— dataclasses, `pathlib`, and type hints in Python; discriminated unions,
+Only the implementation source differs, and each side is written idiomatically:
+dataclasses, `pathlib`, and type hints in Python; discriminated unions,
 `readonly`, and strict mode in TypeScript. The two tracks must produce
 identical observable behavior; `make conformance` enforces it.
 
@@ -74,7 +74,7 @@ pnpm exec tsx <unit>/typescript/main.ts <args>
 ./<unit>/verify.sh --stack=typescript
 ```
 
-`verify.sh --stack=both` (the default) checks both tracks — useful if you want
+`verify.sh --stack=both` (the default) checks both tracks, useful if you want
 to see the parity contract in action, never required for learning.
 
 ## Ecosystem differences worth knowing

@@ -15,6 +15,7 @@
   "include": [
     "lectures/**/typescript/**/*.ts",
     "projects/**/typescript/**/*.ts",
+    "tools/**/typescript/**/*.ts",
     "*.config.ts", "*.config.mts"
   ],
   "exclude": ["node_modules", "_reference"]

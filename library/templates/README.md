@@ -1,7 +1,7 @@
 # Templates
 
 The nine harness artifacts plus the JSON Schema that validates the feature
-list — each a valid, filled-in exemplar. Copy the file, replace the example
+list, each a valid, filled-in exemplar. Copy the file, replace the example
 content with your project's, keep the structure.
 
 | Template | Purpose | Failure mode it addresses |
@@ -20,7 +20,7 @@ content with your project's, keep the structure.
 Notes:
 
 - `feature_list.json` is validated against the schema by this repository's own
-  test suite — if you edit the template, `make verify` tells you whether it is
+  test suite; if you edit the template, `make verify` tells you whether it is
   still a valid instance.
 - File names are part of the convention: agents are instructed (in
   `AGENTS.md`) to read these files by exact name. Rename them only if you also

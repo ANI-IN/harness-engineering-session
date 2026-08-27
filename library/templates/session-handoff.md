@@ -1,7 +1,7 @@
 <!--
-  Template: session-handoff.md — the compact note one session leaves the next.
+  Template: session-handoff.md, the compact note one session leaves the next.
   Use when: sessions end mid-task, or a different agent/person picks up next.
-  Don't use when: the task finished cleanly — claude-progress.md already
+  Don't use when: the task finished cleanly; claude-progress.md already
   carries the record; a handoff of "nothing in flight" is noise.
   Motivated by: Lecture 05 (Why long-running tasks lose continuity).
   Kept deliberately short: a handoff nobody reads is a handoff that failed.
@@ -11,7 +11,7 @@
 
 ## Verified now
 
-- `./verify.sh note-create` — exit 0
+- `./verify.sh note-create`: exit 0
 - Build and full test suite green at commit `3f2a91c`
 
 ## Changed this session
@@ -21,7 +21,7 @@
 
 ## Broken or unverified
 
-- `note-list` sort order: assertion fails — dates compare as strings but
+- `note-list` sort order: assertion fails; dates compare as strings but
   fixtures contain mixed formats. Not a flake; reproduce with
   `./verify.sh note-list`.
 

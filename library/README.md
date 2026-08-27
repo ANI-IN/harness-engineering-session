@@ -1,8 +1,8 @@
 # Library
 
 The copy-ready pack: the harness artifacts this course teaches, in the form
-you drop into your own repository. Everything here is language-neutral — the
-same files serve a Python, TypeScript, or any other codebase — and every file
+you drop into your own repository. Everything here is language-neutral: the
+same files serve a Python, TypeScript, or any other codebase, and every file
 is valid in its own format (JSON parses and validates against its schema,
 shell scripts pass shellcheck, checklists are complete).
 
@@ -22,12 +22,12 @@ noticeably more stable:
 | [`templates/claude-progress.md`](./templates/claude-progress.md) | Session-to-session memory: what is verified, what happened, what's next |
 | [`templates/init.sh`](./templates/init.sh) | A working start: install, verify, print the next command |
 
-If your agent is Claude Code, add [`templates/CLAUDE.md`](./templates/CLAUDE.md)
-— a thin pointer that keeps one contract in one place.
+If your agent is Claude Code, add [`templates/CLAUDE.md`](./templates/CLAUDE.md),
+a thin pointer that keeps one contract in one place.
 
 ## The upgrade path
 
-Add the next tier when you observe the failure it addresses — not before.
+Add the next tier when you observe the failure it addresses, not before.
 Harness components must earn their place (each template's header names the
 failure mode it exists for):
 
@@ -38,8 +38,8 @@ failure mode it exists for):
 | [`templates/evaluator-rubric.md`](./templates/evaluator-rubric.md) | The agent approves its own questionable work; you need a checker role |
 | [`templates/quality-document.md`](./templates/quality-document.md) | You can't tell whether the codebase is getting stronger or weaker across weeks |
 
-Signals that you have outgrown this pack entirely — many domains, several
-agents, long-running work — point to the advanced pack (fuller repository
+Signals that you have outgrown this pack entirely (many domains, several
+agents, long-running work) point to the advanced pack (fuller repository
 skeleton with routing docs and plan lifecycle), which arrives with the second
 half of the course alongside the reference notes (startup flow, failure-mode
 map, audit checklist).

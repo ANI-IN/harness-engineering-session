@@ -66,6 +66,49 @@ def looks_like_json(text: str) -> bool:
     return stripped.startswith(("{", "[")) and stripped.endswith(("}", "]"))
 
 
+def _diff_path(got: Any, want: Any, path: str) -> str | None:
+    if type(got) is not type(want):
+        return f"{path}: type {type(got).__name__} != {type(want).__name__}"
+    if isinstance(got, dict):
+        for key in sorted(set(got) | set(want)):
+            if key not in got:
+                return f"{path}.{key}: missing in output"
+            if key not in want:
+                return f"{path}.{key}: unexpected key"
+            found = _diff_path(got[key], want[key], f"{path}.{key}")
+            if found:
+                return found
+        return None
+    if isinstance(got, list):
+        if len(got) != len(want):
+            return f"{path}: length {len(got)} != {len(want)}"
+        for index, (g, w) in enumerate(zip(got, want, strict=True)):
+            found = _diff_path(g, w, f"{path}[{index}]")
+            if found:
+                return found
+        return None
+    return None if got == want else f"{path}: {got!r} != {want!r}"
+
+
+def first_divergence(got: str, want: str) -> str:
+    """Name the first diverging field (JSON) or line (text) between two payloads.
+
+    Both inputs are expected to be already normalized.
+    """
+    try:
+        found = _diff_path(json.loads(got), json.loads(want), "$")
+        return found or "payloads equal"
+    except json.JSONDecodeError:
+        pass
+    got_lines, want_lines = got.split("\n"), want.split("\n")
+    for number, (g, w) in enumerate(zip(got_lines, want_lines, strict=False), 1):
+        if g != w:
+            return f"line {number}: {g!r} != {w!r}"
+    if len(got_lines) != len(want_lines):
+        return f"length: {len(got_lines)} vs {len(want_lines)} lines"
+    return "payloads equal"
+
+
 def normalize(text: str, *, kind: str = "auto") -> str:
     """Normalize an output payload.
 

@@ -26,12 +26,12 @@ HEADING_RE = re.compile(r"^#{1,6}\s+(.*)$", re.MULTILINE)
 CODE_FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 
 
-def markdown_files() -> list[Path]:
+def markdown_files(root: Path = REPO_ROOT) -> list[Path]:
     files = []
-    for path in REPO_ROOT.rglob("*.md"):
+    for path in root.rglob("*.md"):
         if any(part in SKIP_DIRS for part in path.parts):
             continue
-        if path.name in SKIP_FILES and path.parent == REPO_ROOT:
+        if path.name in SKIP_FILES and path.parent == root:
             continue
         files.append(path)
     return sorted(files)
@@ -57,7 +57,11 @@ def anchors_in(path: Path) -> set[str]:
     return result
 
 
-def check_relative(files: list[Path]) -> list[str]:
+def _rel(path: Path, root: Path) -> str:
+    return str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
+
+
+def check_relative(files: list[Path], root: Path = REPO_ROOT) -> list[str]:
     errors = []
     for md in files:
         text = CODE_FENCE_RE.sub("", md.read_text(encoding="utf-8"))
@@ -68,11 +72,11 @@ def check_relative(files: list[Path]) -> list[str]:
             raw_path, _, anchor = target.partition("#")
             if not raw_path:  # same-file anchor
                 if anchor and anchor not in anchors_in(md):
-                    errors.append(f"{md.relative_to(REPO_ROOT)}: missing anchor #{anchor}")
+                    errors.append(f"{_rel(md, root)}: missing anchor #{anchor}")
                 continue
             resolved = (md.parent / raw_path).resolve()
             if not resolved.exists():
-                errors.append(f"{md.relative_to(REPO_ROOT)}: broken link {target}")
+                errors.append(f"{_rel(md, root)}: broken link {target}")
                 continue
             if anchor:
                 anchor_target = resolved / "README.md" if resolved.is_dir() else resolved
@@ -81,7 +85,7 @@ def check_relative(files: list[Path]) -> list[str]:
                     and anchor_target.is_file()
                     and anchor not in anchors_in(anchor_target)
                 ):
-                    errors.append(f"{md.relative_to(REPO_ROOT)}: missing anchor {target}")
+                    errors.append(f"{_rel(md, root)}: missing anchor {target}")
     return errors
 
 
@@ -115,7 +119,7 @@ def main() -> int:
     args = parser.parse_args()
 
     files = markdown_files()
-    errors = check_relative(files)
+    errors = check_relative(files, REPO_ROOT)
     print(f"lint-links: {len(files)} markdown files scanned (relative links + anchors)")
 
     if args.external:

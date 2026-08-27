@@ -13,9 +13,9 @@ credentials. The realistic security surface is:
 
 ## Reporting a vulnerability
 
-If you find anything that could harm a learner's machine — a script that
+If you find anything that could harm a learner's machine (a script that
 writes outside its unit directory, a command with destructive side effects, a
-dependency with a known vulnerability, or anything that exfiltrates data —
+dependency with a known vulnerability, or anything that exfiltrates data),
 please report it via
 [GitHub Security Advisories](https://github.com/ANI-IN/harness/security/advisories/new)
 (preferred, private) or a GitHub issue if the problem is not sensitive.
@@ -32,4 +32,4 @@ observed. You can expect an acknowledgment within a week.
   [docs/conventions.md](docs/conventions.md)).
 - All shell scripts pass shellcheck in CI.
 
-A violation of any of these is a security bug — please report it.
+A violation of any of these is a security bug; please report it.

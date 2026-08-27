@@ -7,20 +7,26 @@ Enforces the repository conventions that rot silently if unchecked
 1. Every curriculum directory that must carry a README.md has one.
 2. Every conformance unit (SPEC.md) is complete: fixtures/, expected/,
    both stacks present (python/typescript or starter+solution variants),
-   and cases.json.
+   and cases.json. Conversely, unit parts without a SPEC.md (a stray
+   cases.json, or fixtures/ + expected/ with no contract) are errors.
 3. Every exercise directory is complete: README.md, SPEC.md, verify.sh,
    starter/{python,typescript}, solution/{python,typescript}.
 4. Lecture and project READMEs follow the required H2 section order.
-5. No orphan directories (empty dirs, or dirs with no files anywhere below).
+5. No orphan directories (dirs with no files anywhere below).
+6. Fail on empty: discovered lecture/project/exercise counts must meet the
+   floors in tools/expected_counts.json, so a broken glob fails loudly.
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+COUNTS_MANIFEST = REPO_ROOT / "tools" / "expected_counts.json"
+UNIT_ROOTS = ("lectures", "projects", "tools/conformance/selftest")
 SKIP_DIRS = {
     "node_modules", "_reference", ".git", ".venv",
     "__pycache__", "dist", ".pytest_cache", ".ruff_cache",
@@ -68,6 +74,10 @@ EXERCISE_SECTIONS = [
 ]
 
 
+def _rel(path: Path, root: Path) -> str:
+    return str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
+
+
 def _iter_dirs(base: Path):
     for path in sorted(base.rglob("*")):
         if path.is_dir() and not any(part in SKIP_DIRS for part in path.parts):
@@ -80,24 +90,24 @@ def _headings(md: Path) -> list[str]:
     return [m.group(1).strip() for m in re.finditer(r"^##\s+(.*)$", text, re.MULTILINE)]
 
 
-def _check_section_order(md: Path, required: list[str], errors: list[str]) -> None:
+def _check_section_order(md: Path, required: list[str], errors: list[str], root: Path) -> None:
     present = _headings(md)
     positions = []
     for section in required:
         matches = [i for i, h in enumerate(present) if h.lower().startswith(section.lower())]
         if not matches:
-            errors.append(f"{md.relative_to(REPO_ROOT)}: missing section '## {section}'")
+            errors.append(f"{_rel(md, root)}: missing section '## {section}'")
         else:
             positions.append((section, matches[0]))
     ordered = [p for _, p in positions]
     if ordered != sorted(ordered):
-        errors.append(f"{md.relative_to(REPO_ROOT)}: sections out of required order")
+        errors.append(f"{_rel(md, root)}: sections out of required order")
 
 
-def check_readmes(errors: list[str]) -> None:
+def check_readmes(errors: list[str], root: Path) -> None:
     needs_readme = []
     for top in ("lectures", "projects", "skills", "library", "tools"):
-        base = REPO_ROOT / top
+        base = root / top
         if not base.is_dir():
             continue
         needs_readme.append(base)
@@ -106,17 +116,17 @@ def check_readmes(errors: list[str]) -> None:
                 needs_readme.append(child)
     for directory in needs_readme:
         if not (directory / "README.md").is_file():
-            errors.append(f"{directory.relative_to(REPO_ROOT)}: missing README.md")
+            errors.append(f"{_rel(directory, root)}: missing README.md")
 
 
-def check_units(errors: list[str]) -> None:
-    for top in ("lectures", "projects"):
-        base = REPO_ROOT / top
+def check_units(errors: list[str], root: Path) -> None:
+    for top in UNIT_ROOTS:
+        base = root / top
         if not base.is_dir():
             continue
         for spec in sorted(base.rglob("SPEC.md")):
             unit = spec.parent
-            rel = unit.relative_to(REPO_ROOT)
+            rel = _rel(unit, root)
             for required in ("fixtures", "expected"):
                 if not (unit / required).is_dir():
                     errors.append(f"{rel}: SPEC.md unit missing {required}/")
@@ -127,20 +137,33 @@ def check_units(errors: list[str]) -> None:
                 for stack in ("python", "typescript")
             )
             if not (plain or staged):
+                missing = [
+                    stack for stack in ("python", "typescript") if not (unit / stack).is_dir()
+                ]
                 errors.append(
                     f"{rel}: SPEC.md unit lacks both stacks "
-                    "(need python/+typescript/ or starter+solution variants)"
+                    f"(missing {', '.join(missing) or 'starter/solution variants'}; "
+                    "need python/+typescript/ or starter+solution variants)"
                 )
             if not (unit / "cases.json").is_file():
                 errors.append(f"{rel}: SPEC.md unit missing cases.json")
+        # Unit parts with no contract: a stray cases.json, or fixture/expected
+        # pair, with no SPEC.md is a half-built unit and an error.
+        for directory in _iter_dirs(base):
+            if (directory / "SPEC.md").is_file():
+                continue
+            if (directory / "cases.json").is_file():
+                errors.append(f"{_rel(directory, root)}: cases.json without SPEC.md")
+            elif (directory / "fixtures").is_dir() and (directory / "expected").is_dir():
+                errors.append(f"{_rel(directory, root)}: fixtures/+expected/ without SPEC.md")
 
 
-def check_exercises(errors: list[str]) -> None:
-    base = REPO_ROOT / "lectures"
+def check_exercises(errors: list[str], root: Path) -> None:
+    base = root / "lectures"
     if not base.is_dir():
         return
     for exercise in sorted(base.glob("lecture-*/exercises/exercise-*")):
-        rel = exercise.relative_to(REPO_ROOT)
+        rel = _rel(exercise, root)
         for required_file in ("README.md", "SPEC.md", "verify.sh"):
             if not (exercise / required_file).is_file():
                 errors.append(f"{rel}: missing {required_file}")
@@ -150,40 +173,67 @@ def check_exercises(errors: list[str]) -> None:
                     errors.append(f"{rel}: missing {stage}/{stack}/")
         readme = exercise / "README.md"
         if readme.is_file():
-            _check_section_order(readme, EXERCISE_SECTIONS, errors)
+            _check_section_order(readme, EXERCISE_SECTIONS, errors, root)
 
 
-def check_section_orders(errors: list[str]) -> None:
-    for lecture_readme in sorted(REPO_ROOT.glob("lectures/lecture-*/README.md")):
-        _check_section_order(lecture_readme, LECTURE_SECTIONS, errors)
-    for project_readme in sorted(REPO_ROOT.glob("projects/project-*/README.md")):
-        _check_section_order(project_readme, PROJECT_SECTIONS, errors)
+def check_section_orders(errors: list[str], root: Path) -> None:
+    for lecture_readme in sorted(root.glob("lectures/lecture-*/README.md")):
+        _check_section_order(lecture_readme, LECTURE_SECTIONS, errors, root)
+    for project_readme in sorted(root.glob("projects/project-*/README.md")):
+        _check_section_order(project_readme, PROJECT_SECTIONS, errors, root)
 
 
-def check_orphans(errors: list[str]) -> None:
+def check_orphans(errors: list[str], root: Path) -> None:
     for top in ("lectures", "projects", "skills", "library", "docs", "tools"):
-        base = REPO_ROOT / top
+        base = root / top
         if not base.is_dir():
             continue
         for directory in _iter_dirs(base):
             if not any(p.is_file() for p in directory.rglob("*")):
-                errors.append(f"{directory.relative_to(REPO_ROOT)}: orphan directory (no files)")
+                errors.append(f"{_rel(directory, root)}: orphan directory (no files)")
+
+
+def counts(root: Path) -> dict[str, int]:
+    return {
+        "lectures": len(list(root.glob("lectures/lecture-*"))),
+        "projects": len(list(root.glob("projects/project-*"))),
+        "exercises": len(list(root.glob("lectures/lecture-*/exercises/exercise-*"))),
+    }
+
+
+def check_floors(errors: list[str], root: Path, floors: dict[str, int]) -> None:
+    found = counts(root)
+    for name, minimum in (
+        ("lectures", floors.get("min_lectures", 0)),
+        ("projects", floors.get("min_projects", 0)),
+        ("exercises", floors.get("min_exercises", 0)),
+    ):
+        if found[name] < minimum:
+            errors.append(
+                f"fail-on-empty: found {found[name]} {name} but the manifest requires "
+                f"at least {minimum} (broken glob or stale tools/expected_counts.json)"
+            )
+
+
+def check_tree(root: Path, floors: dict[str, int] | None = None) -> list[str]:
+    errors: list[str] = []
+    check_readmes(errors, root)
+    check_units(errors, root)
+    check_exercises(errors, root)
+    check_section_orders(errors, root)
+    check_orphans(errors, root)
+    if floors is not None:
+        check_floors(errors, root, floors)
+    return errors
 
 
 def main() -> int:
-    errors: list[str] = []
-    check_readmes(errors)
-    check_units(errors)
-    check_exercises(errors)
-    check_section_orders(errors)
-    check_orphans(errors)
-
-    lectures = len(list(REPO_ROOT.glob("lectures/lecture-*")))
-    projects = len(list(REPO_ROOT.glob("projects/project-*")))
-    exercises = len(list(REPO_ROOT.glob("lectures/lecture-*/exercises/exercise-*")))
+    floors = json.loads(COUNTS_MANIFEST.read_text(encoding="utf-8"))
+    errors = check_tree(REPO_ROOT, floors)
+    found = counts(REPO_ROOT)
     print(
-        f"lint-structure: checked {lectures} lecture(s), {exercises} exercise(s), "
-        f"{projects} project(s)"
+        f"lint-structure: checked {found['lectures']} lecture(s), "
+        f"{found['exercises']} exercise(s), {found['projects']} project(s)"
     )
     for error in errors:
         print(f"  FAIL {error}")

@@ -1,29 +1,29 @@
 # Lectures
 
 Each lecture defends **one claim** about why agents fail and what fixes the
-failure — and proves it with a runnable demo. Lectures are short on ideology
+failure, and proves it with a runnable demo. Lectures are short on ideology
 and long on mechanism: every concept you read, you will run.
 
 ## How a lecture works
 
 Every `lecture-NN-<slug>/` directory contains:
 
-- **`README.md`** — the lecture itself, always in the same order: learning
+- **`README.md`**: the lecture itself, always in the same order: learning
   objectives, prerequisites, the problem (a concrete failure you can
   observe), concepts, architecture (with a diagram), the demo with real
   commands and real output in both tracks, implementation notes, key
   takeaways, exercises, further exploration.
-- **`code/`** — the demo: a shared `SPEC.md` + fixtures + expected outputs,
+- **`code/`**: the demo, a shared `SPEC.md` + fixtures + expected outputs,
   implemented in `python/` and `typescript/`, checked by `verify.sh`.
-- **`exercises/`** — 2 exercises per lecture. Each gives you starter code
+- **`exercises/`**: 2 exercises per lecture. Each gives you starter code
   that runs but fails verification, and you modify it until
   `./verify.sh --stack=<your track>` exits 0. Committed solutions let you
   check your work.
 
-Work in order — each lecture assumes the ones before it. Expect roughly 60–90
+Work in order; each lecture assumes the ones before it. Expect roughly 60-90
 minutes per lecture including exercises.
 
-## First-pass curriculum (lectures 01–06)
+## First-pass curriculum (lectures 01-06)
 
 | # | Lecture | The claim it defends | Related project |
 | --- | --- | --- | --- |
@@ -34,6 +34,6 @@ minutes per lecture including exercises.
 | 05 | Why long-running tasks lose continuity | Continuity comes from externalized state, not context windows | Project 03 |
 | 06 | Why initialization needs its own phase | Sessions that start by improvising end by guessing | Project 03 |
 
-Lectures 07–14 (scope control, feature lists, evidence-based completion,
+Lectures 07-14 (scope control, feature lists, evidence-based completion,
 end-to-end verification, observability, clean state, loop engineering, graph
 engineering) follow in the next release, in the same format.

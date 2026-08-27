@@ -5,8 +5,10 @@ export default defineConfig({
     include: [
       "lectures/**/typescript/**/*.test.ts",
       "projects/**/typescript/**/*.test.ts",
+      "tools/**/typescript/**/*.test.ts",
     ],
     exclude: ["**/node_modules/**", "_reference/**"],
-    passWithNoTests: true,
+    // Fail-on-empty: zero discovered tests is an error, never a green run.
+    passWithNoTests: false,
   },
 });

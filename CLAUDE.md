@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Read [AGENTS.md](AGENTS.md) and follow it exactly — startup workflow, working
+Read [AGENTS.md](AGENTS.md) and follow it exactly: startup workflow, working
 rules, verification commands, definition of done, and end-of-session steps
 all live there. Claude Code specifics:
 
@@ -8,7 +8,7 @@ all live there. Claude Code specifics:
   editing.
 - Run curriculum code through the root toolchains:
   `uv run python <unit>/python/main.py` and
-  `pnpm exec tsx <unit>/typescript/main.ts` — unit directories have no
+  `pnpm exec tsx <unit>/typescript/main.ts`; unit directories have no
   manifests of their own by design (see docs/conventions.md, "Workspace
   shape").
 - When editing an exercise, re-run all four acceptance runs before claiming

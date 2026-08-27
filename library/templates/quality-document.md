@@ -1,15 +1,15 @@
 <!--
-  Template: quality-document.md — the long-horizon health snapshot.
+  Template: quality-document.md, the long-horizon health snapshot.
   Use when: agent work on a codebase spans weeks; you need to know whether
   the system is getting stronger or weaker over time.
-  Don't use when: short-lived work — the evaluator rubric (per-session
+  Don't use when: short-lived work; the evaluator rubric (per-session
   verdict) is the right tool there. The two answer different questions:
   rubric = "was this session's work good?", quality document = "is the
   project trending up or down?".
   Motivated by: Lecture 12 (Why every session must leave a clean state) and
   the harness-simplification practice: snapshot -> remove one component ->
   re-run the benchmark tasks -> snapshot -> compare. If grades didn't drop,
-  the component was overhead — remove it for good.
+  the component was overhead; remove it for good.
 -->
 
 # Quality document
@@ -28,7 +28,7 @@ unverified.
 | --- | --- | --- | --- |
 | Note creation | A | verify green since 2026-08-26; fresh-clone tested | steady |
 | Note listing | C | implemented; sort assertion failing | up from D |
-| Note search | D | not started | — |
+| Note search | D | not started | none |
 
 ## Architectural layers
 
@@ -50,6 +50,6 @@ unverified.
 
 Append one line per snapshot; never rewrite old lines.
 
-- 2026-08-27 — listing D→C (implemented, one failing assertion); no
+- 2026-08-27: listing D→C (implemented, one failing assertion); no
   components removed.
-- 2026-08-26 — initial snapshot after setup + `note-create` (A).
+- 2026-08-26: initial snapshot after setup + `note-create` (A).

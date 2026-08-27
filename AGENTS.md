@@ -1,17 +1,17 @@
 # AGENTS.md
 
-You are working in **the Harness Engineering course repository** — a
+You are working in **the Harness Engineering course repository**, a
 dual-stack (Python + TypeScript) curriculum where every runnable unit
 implements a shared `SPEC.md` against shared fixtures and expected outputs.
 This repo is itself harnessed with the artifacts it teaches; this file is the
-entry point. It is a router — depth lives in the linked docs.
+entry point. It is a router; depth lives in the linked docs.
 
 ## Startup workflow
 
-1. `make setup` — install both toolchains; `make doctor` confirms the pins.
-2. Read [docs/conventions.md](docs/conventions.md) — the standard every
+1. `make setup`: install both toolchains; `make doctor` confirms the pins.
+2. Read [docs/conventions.md](docs/conventions.md): the standard every
    folder follows. It is authoritative.
-3. `make verify` — confirm the tree is green before changing anything.
+3. `make verify`: confirm the tree is green before changing anything.
 
 ## Working rules
 
@@ -19,10 +19,10 @@ entry point. It is a router — depth lives in the linked docs.
   `python/` and `typescript/` and passes `make conformance`. One track
   passing is not done.
 - **Shared files are the contract.** Fix divergence in `SPEC.md` and the
-  implementations — never by forking `expected/` per language.
+  implementations, never by forking `expected/` per language.
 - **Four runs per exercise**: starter fails for the intended reason and
   solution passes, in both tracks, every time an exercise changes.
-- Terminology comes from [docs/glossary.md](docs/glossary.md) — one term per
+- Terminology comes from [docs/glossary.md](docs/glossary.md): one term per
   concept.
 - No invented numbers; claims are demonstrated, cited, or labeled heuristics.
 - No network after setup; no API keys; deterministic fake agents where a

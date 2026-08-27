@@ -1,0 +1,28 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "basic",
+      "args": ["fixtures/input.json"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/basic.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-input",
+      "args": ["fixtures/no-such-file.json"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

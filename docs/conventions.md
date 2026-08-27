@@ -1,7 +1,7 @@
 # Conventions
 
 Every folder in this repository follows the standard on this page. The rules
-here are not style preferences — each one exists because the [reference
+here are not style preferences. Each one exists because the [reference
 course](https://github.com/walkinglabs/learn-harness-engineering) this
 curriculum was modeled on demonstrably rotted where the rule was missing:
 broken run commands, three incompatible template dialects, dead links, and
@@ -19,13 +19,13 @@ the human-readable statement of what those tools check.
 - Human-facing documents and scripts are kebab-case: `session-handoff.md`,
   `clean-state-checklist.md`, `verify.sh`.
 - Machine-readable state keeps its course-canonical name `feature_list.json`
-  (snake_case — it is a harness artifact with a fixed name, taught as such).
+  (snake_case: it is a harness artifact with a fixed name, taught as such).
 - Python sources are snake_case, TypeScript sources are kebab-case; each track
   follows its own ecosystem inside its own tree.
 
 ## Directory shape of a runnable unit
 
-Every unit that has runnable code — a lecture demo, an exercise, a project —
+Every unit that has runnable code (a lecture demo, an exercise, a project)
 uses one shape:
 
 ```text
@@ -33,7 +33,7 @@ uses one shape:
   SPEC.md              # the shared contract both tracks implement
   cases.json           # machine-readable conformance cases (see below)
   fixtures/            # shared inputs
-  expected/            # shared expected outputs — the grading authority
+  expected/            # shared expected outputs - the grading authority
   python/              # Python implementation (plain source tree)
   typescript/          # TypeScript implementation (plain source tree)
   verify.sh            # runs one or both tracks; --stack=python|typescript|both
@@ -60,11 +60,11 @@ uv) and one TypeScript project (the repo root, managed by pnpm):
 
 > **Deviation from the original build brief.** The brief sketched per-unit
 > manifests and uv/pnpm workspaces. With ~40 runnable units, per-unit manifests
-> mean ~80 dependency files that must stay in lockstep — exactly the
+> mean ~80 dependency files that must stay in lockstep, exactly the
 > hand-propagated duplication that let the reference's 14 app copies drift
 > (one had a one-character difference; nine did not compile). A single root
 > toolchain makes version pins one-place-only and keeps unit directories pure
-> source. The cost — units cannot pin private dependencies — is no cost here,
+> source. The cost (units cannot pin private dependencies) is no cost here,
 > because curriculum code is standard-library-only by design.
 
 ## The parity contract
@@ -80,7 +80,7 @@ One spec, one verification suite, two implementations.
 - `tools/conformance/runner.py` executes every case in `cases.json` against
   both tracks and diffs three ways: python vs `expected/`, typescript vs
   `expected/`, python vs typescript. Any post-normalization divergence fails
-  the build — it is a failing test, not a cosmetic inconsistency.
+  the build: it is a failing test, not a cosmetic inconsistency.
 
 ### Normalization (the definition of "byte-identical")
 
@@ -106,7 +106,7 @@ under-specified: tighten SPEC.md and fix the implementations.
 Every `verify.sh`, and every conformance run:
 
 - accepts `--stack=python|typescript|both` (default `both`);
-- exits `0` on success and non-zero on failure — no other signal counts;
+- exits `0` on success and non-zero on failure; no other signal counts;
 - prints what it checked and for which stack;
 - needs **no network** after `make setup`;
 - writes nothing outside its own unit directory or a temp directory;
@@ -115,7 +115,7 @@ Every `verify.sh`, and every conformance run:
 
 ## Exercise anatomy
 
-- `starter/` runs, but fails `verify.sh` — and it must fail **for the intended
+- `starter/` runs, but fails `verify.sh`, and it must fail **for the intended
   reason only**. A starter failing on an import error or a missing file is a
   build bug. The failure message names the work to do and where.
 - `solution/` is complete, idiomatic in each track, and passes `verify.sh`.
@@ -123,7 +123,7 @@ Every `verify.sh`, and every conformance run:
   same expected outputs grade both tracks with no duplicated test logic.
 - Every exercise must be completable only by modifying code: if a learner
   could "finish" it by writing prose or a prompt, the exercise is misdesigned.
-- Acceptance for every exercise, every time: four runs — starter and solution,
+- Acceptance for every exercise, every time: four runs, starter and solution,
   in both tracks. Starter fails twice for the right reason; solution passes twice.
 - Hints are progressive `<details>` blocks so they do not spoil on sight.
 
@@ -181,13 +181,30 @@ sentence, and ecosystem-specific notes, which are labeled as such.
 
 ## Cross-links
 
-- Relative paths only — never absolute GitHub URLs for in-repo content.
+- Relative paths only; never absolute GitHub URLs for in-repo content.
 - Every lecture links forward to its exercises and its related project; every
   project links back to its lectures; every library template links to the
   lecture that motivates it.
 - `make lint-links` verifies every relative link and anchor;
   `make lint-links-external` fetches external URLs and runs before a lecture
   is committed. A URL that does not resolve is removed, not marked dead.
+
+## Punctuation
+
+No em-dashes (U+2014) and no en-dashes (U+2013) anywhere in markdown prose.
+Use a comma, a colon, a normal hyphen (hyphen-minus, ASCII 45), or restructure
+the sentence; a hyphen doing an em-dash's job usually reads worse than a
+comma or a full stop, so prefer rewriting. Number ranges use a plain hyphen
+(lectures 01-06).
+
+This applies to every shipped .md file: READMEs, SPEC.md files, lecture
+bodies, docs/, library templates, and the text of mermaid node labels. It
+also applies to commit messages. It does NOT apply to: source code under
+`python/` and `typescript/`, code fences and inline code spans, anything
+under `fixtures/` or `expected/` (expected output is the grading authority
+and is never edited for style), or URLs.
+
+Enforced by `make lint-prose`, which runs as part of `make lint` and CI.
 
 ## Terminology and claims
 

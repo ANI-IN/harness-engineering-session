@@ -1,0 +1,5 @@
+{
+  "label": "canary",
+  "factors": [0.1, 0.2],
+  "segments": ["data", "notes", "first.md"]
+}

@@ -6,9 +6,16 @@ executes its declared cases against BOTH implementations, and diffs three ways:
 
     python  vs expected/     typescript vs expected/     python vs typescript
 
-All comparisons run through tools/conformance/normalize.py — the definition of
+All comparisons run through tools/conformance/normalize.py, the definition of
 "byte-identical" for this repository. Any post-normalization divergence fails
-the build.
+the build, and the failure names the first diverging field (JSON) or line
+(text).
+
+Discovery covers lectures/, projects/, and tools/conformance/selftest/ (the
+canary unit that keeps this gate provably functional). The number of
+discovered units must meet the floor in tools/expected_counts.json:
+a broken discovery glob fails loudly instead of reporting success on an
+empty set.
 
 cases.json contract (per unit):
 {
@@ -20,7 +27,7 @@ cases.json contract (per unit):
       "stdin": null,                      # or a path relative to the unit
       "expect": {
         "exit_code": 0,
-        "stdout": "expected/basic.out",   # null = assert python == typescript only
+        "stdout": "expected/basic.json",  # null = assert python == typescript only
         "kind": "auto",                   # normalization kind: auto|json|text
         "files": [                        # artifacts written by the run
           {"path": "out/report.json", "expected": "expected/report.json"}
@@ -31,11 +38,12 @@ cases.json contract (per unit):
 }
 
 For exercise units, entry points name the solution tracks
-(e.g. "solution/python/main.py") — starters are exercised by verify.sh.
+(e.g. "solution/python/main.py"); starters are exercised by verify.sh.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import shutil
 import subprocess
@@ -45,11 +53,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from tools.conformance.normalize import normalize  # noqa: E402
+from tools.conformance.normalize import first_divergence, normalize  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SEARCH_ROOTS = ("lectures", "projects")
-STACKS = ("python", "typescript")
+SEARCH_ROOTS = ("lectures", "projects", "tools/conformance/selftest")
+ALL_STACKS = ("python", "typescript")
+COUNTS_MANIFEST = REPO_ROOT / "tools" / "expected_counts.json"
 
 
 @dataclass
@@ -72,6 +81,13 @@ class UnitReport:
         return all(result.ok for result in self.results)
 
 
+def unit_label(unit: Path) -> str:
+    try:
+        return str(unit.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(unit)
+
+
 def discover_units(root: Path) -> list[Path]:
     units = []
     for search_root in SEARCH_ROOTS:
@@ -85,12 +101,19 @@ def discover_units(root: Path) -> list[Path]:
     return units
 
 
+def minimum_units() -> int:
+    manifest = json.loads(COUNTS_MANIFEST.read_text(encoding="utf-8"))
+    return int(manifest["min_conformance_units"])
+
+
 def _entry_command(unit: Path, entry: str) -> list[str]:
     path = unit / entry
     if entry.endswith(".py"):
         return ["uv", "run", "--project", str(REPO_ROOT), "python", str(path)]
     if entry.endswith(".ts"):
-        return ["pnpm", "--dir", str(REPO_ROOT), "exec", "tsx", str(path)]
+        # Invoke the tsx binary directly: `pnpm --dir` would reset the child's
+        # working directory to the repo root, clobbering the case's temp cwd.
+        return [str(REPO_ROOT / "node_modules" / ".bin" / "tsx"), str(path)]
     raise ValueError(f"{unit}: unsupported entry point {entry!r}")
 
 
@@ -115,22 +138,30 @@ def run_case(unit: Path, entry: str, case: dict, stack: str, workdir: Path) -> C
         timeout=120,
     )
 
-    kind = expect.get("kind", "auto")
-    got_stdout = normalize(proc.stdout, kind=kind)
-
     if proc.returncode != expect["exit_code"]:
         return CaseResult(
-            unit.name, name, stack, False,
+            unit_label(unit), name, stack, False,
             f"exit code {proc.returncode} != expected {expect['exit_code']}; "
             f"stderr: {proc.stderr.strip()[:400]}",
+        )
+
+    kind = expect.get("kind", "auto")
+    try:
+        got_stdout = normalize(proc.stdout, kind=kind)
+    except json.JSONDecodeError as error:
+        return CaseResult(
+            unit_label(unit), name, stack, False,
+            f"stdout is not valid JSON (kind={kind}): {error}; "
+            f"stdout head: {proc.stdout[:120]!r}",
         )
 
     if expect.get("stdout"):
         want = normalize(_read_expected(unit, expect["stdout"]), kind=kind)
         if got_stdout != want:
             return CaseResult(
-                unit.name, name, stack, False,
-                f"stdout mismatch vs {expect['stdout']} (after normalization)",
+                unit_label(unit), name, stack, False,
+                f"stdout mismatch vs {expect['stdout']}: "
+                f"diverges at {first_divergence(got_stdout, want)}",
                 stdout_normalized=got_stdout,
             )
 
@@ -138,7 +169,7 @@ def run_case(unit: Path, entry: str, case: dict, stack: str, workdir: Path) -> C
         written = workdir / artifact["path"]
         if not written.is_file():
             return CaseResult(
-                unit.name, name, stack, False,
+                unit_label(unit), name, stack, False,
                 f"expected artifact not written: {artifact['path']}",
             )
         got = normalize(written.read_text(encoding="utf-8"), kind=artifact.get("kind", "auto"))
@@ -147,19 +178,20 @@ def run_case(unit: Path, entry: str, case: dict, stack: str, workdir: Path) -> C
         )
         if got != want:
             return CaseResult(
-                unit.name, name, stack, False,
-                f"artifact mismatch: {artifact['path']} vs {artifact['expected']}",
+                unit_label(unit), name, stack, False,
+                f"artifact mismatch {artifact['path']}: "
+                f"diverges at {first_divergence(got, want)}",
             )
 
-    return CaseResult(unit.name, name, stack, True, stdout_normalized=got_stdout)
+    return CaseResult(unit_label(unit), name, stack, True, stdout_normalized=got_stdout)
 
 
-def run_unit(unit: Path) -> UnitReport:
+def run_unit(unit: Path, stacks: tuple[str, ...] = ALL_STACKS) -> UnitReport:
     config = json.loads((unit / "cases.json").read_text(encoding="utf-8"))
-    report = UnitReport(str(unit.relative_to(REPO_ROOT)))
+    report = UnitReport(unit_label(unit))
     by_case: dict[str, dict[str, CaseResult]] = {}
 
-    for stack in STACKS:
+    for stack in stacks:
         entry = config["entry"][stack]
         for case in config["cases"]:
             with tempfile.TemporaryDirectory(prefix="conformance-") as tmp:
@@ -172,30 +204,52 @@ def run_unit(unit: Path) -> UnitReport:
             by_case.setdefault(case["name"], {})[stack] = result
 
     # Direct cross-stack parity check on stdout, regardless of expected/ pins.
-    for case_name, per_stack in by_case.items():
-        py, ts = per_stack.get("python"), per_stack.get("typescript")
-        if not py or not ts or not (py.ok and ts.ok):
-            continue
-        if py.stdout_normalized != ts.stdout_normalized:
-            report.results.append(
-                CaseResult(
-                    unit.name, case_name, "python-vs-typescript", False,
-                    "normalized stdout differs between the two stacks",
+    if set(stacks) == set(ALL_STACKS):
+        for case_name, per_stack in by_case.items():
+            py, ts = per_stack.get("python"), per_stack.get("typescript")
+            if not py or not ts or not (py.ok and ts.ok):
+                continue
+            if py.stdout_normalized != ts.stdout_normalized:
+                where = first_divergence(py.stdout_normalized or "", ts.stdout_normalized or "")
+                report.results.append(
+                    CaseResult(
+                        unit_label(unit), case_name, "python-vs-typescript", False,
+                        f"normalized stdout differs between the two stacks: diverges at {where}",
+                    )
                 )
-            )
     return report
 
 
 def main() -> int:
-    units = discover_units(REPO_ROOT)
-    if not units:
-        print("conformance: 0 units with SPEC.md + cases.json found (skeleton state) — OK")
-        return 0
+    parser = argparse.ArgumentParser(description="cross-stack conformance runner")
+    parser.add_argument("--unit", help="run only this unit directory")
+    parser.add_argument(
+        "--stack", choices=["python", "typescript", "both"], default="both",
+        help="restrict execution to one stack (cross-stack diff needs both)",
+    )
+    args = parser.parse_args()
+    stacks = ALL_STACKS if args.stack == "both" else (args.stack,)
+
+    if args.unit:
+        units = [Path(args.unit).resolve()]
+        if not (units[0] / "SPEC.md").is_file() or not (units[0] / "cases.json").is_file():
+            print(f"conformance: {args.unit} is not a unit (needs SPEC.md + cases.json)")
+            return 1
+    else:
+        units = discover_units(REPO_ROOT)
+        floor = minimum_units()
+        if len(units) < floor:
+            print(
+                f"conformance: FAIL: discovered {len(units)} unit(s) but "
+                f"tools/expected_counts.json requires at least {floor}. "
+                "Either discovery is broken or the manifest is stale."
+            )
+            return 1
 
     failures = 0
     checked = 0
     for unit in units:
-        report = run_unit(unit)
+        report = run_unit(unit, stacks)
         checked += len(report.results)
         status = "OK" if report.ok else "FAIL"
         print(f"conformance: {report.unit}: {status}")
@@ -203,7 +257,7 @@ def main() -> int:
             marker = "pass" if result.ok else "FAIL"
             line = f"  [{marker}] {result.case} ({result.stack})"
             if result.detail:
-                line += f" — {result.detail}"
+                line += f" -- {result.detail}"
             print(line)
             if not result.ok:
                 failures += 1

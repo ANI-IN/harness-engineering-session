@@ -19,12 +19,12 @@ mismatch fails the run.
 
 ## Normalization
 
-All comparisons happen after the pass defined in `normalize.py` — the
+All comparisons happen after the pass defined in `normalize.py`, the
 repository's definition of "byte-identical": LF line endings, stripped
 trailing whitespace, exactly one final newline, canonical JSON (sorted keys,
 2-space indent), POSIX path separators, canonical float round-trip inside
 JSON. **A divergence the normalizer cannot absorb is a spec bug in the unit,
-never a runner setting** — tighten the unit's `SPEC.md` and fix the
+never a runner setting**: tighten the unit's `SPEC.md` and fix the
 implementations.
 
 ## Usage

@@ -17,7 +17,7 @@ Pins: Python 3.12 (`.python-version`, installed by uv), Node 20 LTS
 
 ## Before you open a pull request
 
-Run the full gate locally — CI runs exactly the same targets:
+Run the full gate locally; CI runs exactly the same targets:
 
 ```sh
 make verify && make conformance && make lint && \
@@ -33,8 +33,8 @@ make lint-links && make lint-mermaid && make lint-structure
    starter fails (for the intended reason) and solution passes, in both
    tracks.
 3. **Shared files are the contract.** `SPEC.md`, `fixtures/`, and `expected/`
-   are written once. If the tracks disagree after normalization, fix the spec
-   — never fork the expected outputs per language.
+   are written once. If the tracks disagree after normalization, fix the spec,
+   and never fork the expected outputs per language.
 4. **No invented numbers.** Claims about agent behavior are demonstrated by a
    demo, cited to a primary source, or framed as a design heuristic.
 5. **Conventions are law.** [docs/conventions.md](docs/conventions.md) defines
@@ -52,7 +52,7 @@ make lint-links && make lint-mermaid && make lint-structure
   implementations, then `expected/`; run the unit's `verify.sh --stack=both`
   and `make conformance`.
 - **Adding an exercise or unit**: follow the directory shape in
-  conventions.md exactly — `lint-structure` rejects incomplete units.
+  conventions.md exactly; `lint-structure` rejects incomplete units.
 - **Changing templates** (`library/templates/`): these are single-sourced for
   the entire course; `make verify` validates them (JSON against schema,
   init.sh via shellcheck).
@@ -61,7 +61,7 @@ make lint-links && make lint-mermaid && make lint-structure
 
 - One completed, verified unit of work per commit.
 - Message: imperative summary naming the unit and, for curriculum code, the
-  tracks verified — e.g. `lecture-03: add repo-reader demo (py+ts verified)`.
+  tracks verified, e.g. `lecture-03: add repo-reader demo (py+ts verified)`.
 - No co-author trailers or tool attributions.
 
 ## Reporting problems

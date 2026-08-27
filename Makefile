@@ -5,7 +5,7 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-.PHONY: help setup doctor verify conformance lint lint-py lint-ts lint-md lint-sh lint-links lint-links-external lint-mermaid lint-structure
+.PHONY: help setup doctor verify conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure
 
 help: ## List available targets
 	@grep -E '^[a-z][a-z-]*:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  make %-22s %s\n", $$1, $$2}'
@@ -21,20 +21,17 @@ doctor: ## Print toolchain versions and check them against the pins
 verify: ## Run every unit's verify.sh (both stacks) + all test suites
 	@uv run pytest
 	@pnpm run --silent test
-	@set -e; \
-	scripts=$$(find lectures projects -name verify.sh -type f 2>/dev/null | sort); \
-	if [ -z "$$scripts" ]; then \
-	  echo "verify: no curriculum verify.sh scripts present yet (skeleton state)"; \
-	else \
-	  for s in $$scripts; do echo "verify: running $$s"; bash "$$s" --stack=both; done; \
-	fi
+	@uv run python tools/run_verify.py
 	@echo "verify: OK"
 
 conformance: ## Diff python vs typescript vs expected/ for every SPEC.md unit
 	@uv run python tools/conformance/runner.py
 
-lint: lint-py lint-ts lint-md lint-sh ## All source linters (ruff + eslint + markdownlint + shellcheck)
+lint: lint-py lint-ts lint-md lint-sh lint-prose ## All source linters (+ prose punctuation)
 	@echo "lint: OK"
+
+lint-prose: ## No em/en dashes in markdown prose (code fences, inline code, URLs exempt)
+	@uv run python tools/lint/check_prose.py
 
 lint-py: ## ruff over all Python sources
 	uv run ruff check .
