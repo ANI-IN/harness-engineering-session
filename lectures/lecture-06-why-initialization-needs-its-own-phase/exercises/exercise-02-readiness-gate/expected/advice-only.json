@@ -1,0 +1,8 @@
+{
+  "blockers_failed": [],
+  "advice_failed": [
+    "progress-artifact",
+    "readme-freshness"
+  ],
+  "verdict": "ready-with-advice"
+}

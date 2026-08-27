@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "id": "dependencies-pinned",
+      "passed": false,
+      "detail": "pyproject.toml present but .python-version missing"
+    },
+    {
+      "id": "init-script",
+      "passed": false,
+      "detail": "init.sh does not enable strict mode (set -euo pipefail)"
+    },
+    {
+      "id": "verification-command",
+      "passed": true,
+      "detail": "AGENTS.md: ./verify.sh"
+    },
+    {
+      "id": "progress-artifact",
+      "passed": false,
+      "detail": "claude-progress.md has no Next best step line"
+    }
+  ],
+  "ready": false
+}

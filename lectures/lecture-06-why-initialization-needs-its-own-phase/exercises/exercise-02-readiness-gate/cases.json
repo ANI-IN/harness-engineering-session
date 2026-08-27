@@ -1,0 +1,26 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "all-pass",
+      "args": ["fixtures/all-pass.json"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/all-pass.json", "kind": "json" }
+    },
+    {
+      "name": "blocked",
+      "args": ["fixtures/blocked.json"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/blocked.json", "kind": "json" }
+    },
+    {
+      "name": "advice-only",
+      "args": ["fixtures/advice-only.json"],
+      "stdin": null,
+      "expect": { "exit_code": 3, "stdout": "expected/advice-only.json", "kind": "json" }
+    }
+  ]
+}

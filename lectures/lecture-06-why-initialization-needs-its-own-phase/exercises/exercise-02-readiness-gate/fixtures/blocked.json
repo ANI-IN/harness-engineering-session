@@ -1,0 +1,9 @@
+{
+  "checks": [
+    {"id": "dependencies-pinned", "severity": "blocker", "passed": false},
+    {"id": "init-script", "severity": "blocker", "passed": true},
+    {"id": "verification-command", "severity": "blocker", "passed": true},
+    {"id": "progress-artifact", "severity": "advice", "passed": false},
+    {"id": "readme-freshness", "severity": "advice", "passed": true}
+  ]
+}

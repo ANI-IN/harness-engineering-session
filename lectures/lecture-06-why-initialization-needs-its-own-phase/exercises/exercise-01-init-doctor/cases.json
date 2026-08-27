@@ -1,0 +1,20 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "solid",
+      "args": ["fixtures/repos/repo-solid"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/solid.json", "kind": "json" }
+    },
+    {
+      "name": "hollow",
+      "args": ["fixtures/repos/repo-hollow"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/hollow.json", "kind": "json" }
+    }
+  ]
+}

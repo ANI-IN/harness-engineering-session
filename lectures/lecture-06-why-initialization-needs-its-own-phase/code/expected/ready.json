@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "id": "dependencies-pinned",
+      "passed": true,
+      "detail": "pyproject.toml + .python-version; package.json + .nvmrc"
+    },
+    {
+      "id": "init-script",
+      "passed": true,
+      "detail": "init.sh executable with strict mode"
+    },
+    {
+      "id": "verification-command",
+      "passed": true,
+      "detail": "AGENTS.md: ./verify.sh"
+    },
+    {
+      "id": "progress-artifact",
+      "passed": true,
+      "detail": "claude-progress.md with a Next best step line"
+    }
+  ],
+  "ready": true
+}

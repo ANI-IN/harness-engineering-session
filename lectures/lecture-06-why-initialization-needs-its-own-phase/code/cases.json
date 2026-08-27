@@ -1,0 +1,26 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "ready",
+      "args": ["fixtures/repos/repo-ready"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/ready.json", "kind": "json" }
+    },
+    {
+      "name": "broken",
+      "args": ["fixtures/repos/repo-broken"],
+      "stdin": null,
+      "expect": { "exit_code": 1, "stdout": "expected/broken.json", "kind": "json" }
+    },
+    {
+      "name": "missing-repo",
+      "args": ["fixtures/no-such-repo"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}

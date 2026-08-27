@@ -52,7 +52,7 @@ the harness-creator skill) follows the same conventions and lands next.
 | [03: Why the repository must become the system of record](lectures/lecture-03-why-the-repository-must-become-the-system-of-record/) | If it's not in the repo, it doesn't exist for the agent | Project 02 |
 | [04: Why one giant instruction file fails](lectures/lecture-04-why-one-giant-instruction-file-fails/) | Map, not manual: progressive disclosure | Project 02 |
 | [05: Why long-running tasks lose continuity](lectures/lecture-05-why-long-running-tasks-lose-continuity/) | Context decay; externalized state across sessions | Project 03 |
-| 06: Why initialization needs its own phase | init.sh as a first-class phase | Project 03 |
+| [06: Why initialization needs its own phase](lectures/lecture-06-why-initialization-needs-its-own-phase/) | init.sh as a first-class phase | Project 03 |
 
 | Project | You build |
 | --- | --- |

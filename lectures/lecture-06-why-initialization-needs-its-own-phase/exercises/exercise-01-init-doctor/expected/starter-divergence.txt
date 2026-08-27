@@ -1,0 +1,1 @@
+diverges at $.checks[0].detail: 'pyproject.toml' != 'pyproject.toml + .python-version'

@@ -1,0 +1,9 @@
+{
+  "blockers_failed": [
+    "dependencies-pinned"
+  ],
+  "advice_failed": [
+    "progress-artifact"
+  ],
+  "verdict": "blocked"
+}
