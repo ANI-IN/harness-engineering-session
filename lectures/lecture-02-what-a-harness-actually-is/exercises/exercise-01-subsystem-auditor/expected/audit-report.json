@@ -28,6 +28,35 @@
       "missing": []
     },
     {
+      "name": "repo-list-only",
+      "subsystems": {
+        "instructions": {
+          "present": true,
+          "evidence": "AGENTS.md"
+        },
+        "tools": {
+          "present": true,
+          "evidence": "verify.sh"
+        },
+        "environment": {
+          "present": true,
+          "evidence": "pyproject.toml + .python-version"
+        },
+        "state": {
+          "present": false,
+          "evidence": null
+        },
+        "feedback": {
+          "present": true,
+          "evidence": "Verification line in AGENTS.md"
+        }
+      },
+      "score": "4/5",
+      "missing": [
+        "state"
+      ]
+    },
+    {
       "name": "repo-no-state",
       "subsystems": {
         "instructions": {
@@ -87,7 +116,66 @@
         "state",
         "feedback"
       ]
+    },
+    {
+      "name": "repo-talks-tools",
+      "subsystems": {
+        "instructions": {
+          "present": true,
+          "evidence": "AGENTS.md"
+        },
+        "tools": {
+          "present": false,
+          "evidence": null
+        },
+        "environment": {
+          "present": true,
+          "evidence": "pyproject.toml + .python-version"
+        },
+        "state": {
+          "present": true,
+          "evidence": "feature_list.json + claude-progress.md"
+        },
+        "feedback": {
+          "present": true,
+          "evidence": "Verification line in AGENTS.md"
+        }
+      },
+      "score": "4/5",
+      "missing": [
+        "tools"
+      ]
+    },
+    {
+      "name": "repo-unpinned",
+      "subsystems": {
+        "instructions": {
+          "present": true,
+          "evidence": "AGENTS.md"
+        },
+        "tools": {
+          "present": true,
+          "evidence": "verify.sh"
+        },
+        "environment": {
+          "present": false,
+          "evidence": null
+        },
+        "state": {
+          "present": false,
+          "evidence": null
+        },
+        "feedback": {
+          "present": true,
+          "evidence": "Verification line in AGENTS.md"
+        }
+      },
+      "score": "3/5",
+      "missing": [
+        "environment",
+        "state"
+      ]
     }
   ],
-  "audited": 3
+  "audited": 6
 }

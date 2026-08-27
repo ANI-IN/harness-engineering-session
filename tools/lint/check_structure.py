@@ -71,6 +71,7 @@ EXERCISE_SECTIONS = [
     "How to verify",
     "Hints",
     "Solution walkthrough",
+    "Acceptance runs",
 ]
 
 

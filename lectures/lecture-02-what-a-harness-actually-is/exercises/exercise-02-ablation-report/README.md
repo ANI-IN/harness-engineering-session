@@ -117,3 +117,18 @@ Cross-track note: Python's `issues[0] if issues else None` and TypeScript's
 and the shared expected report holds both to the same bytes. The fixture
 reports themselves are the demo's committed outputs, so this exercise's
 numbers are regenerated whenever the demo's are.
+
+## Acceptance runs
+
+The four runs that gate this exercise, produced by execution and
+re-verified on every `make verify` (never hand-written):
+
+<!-- generated-block: uv run python tools/run_acceptance.py lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-02-ablation-report -->
+```text
+starter/python: exit 1 (as intended: diverges at $.ablations[0].outcome_changed: False != True)
+starter/typescript: exit 1 (as intended: diverges at $.ablations[0].outcome_changed: False != True)
+solution/python: exit 0 (PASS: pass (1 check))
+solution/typescript: exit 0 (PASS: pass (1 check))
+4/4 acceptance runs performed
+```
+<!-- /generated-block -->

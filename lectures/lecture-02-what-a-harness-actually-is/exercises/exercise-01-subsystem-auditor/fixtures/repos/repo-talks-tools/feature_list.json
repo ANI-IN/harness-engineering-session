@@ -1,0 +1,13 @@
+{
+  "project": "backup-tool",
+  "updated": "2026-08-26",
+  "features": [
+    {
+      "id": "snapshot",
+      "title": "Snapshot the data directory",
+      "behavior": "backup-tool snapshot writes a dated archive.",
+      "verification": "./verify.sh",
+      "status": "not-started"
+    }
+  ]
+}

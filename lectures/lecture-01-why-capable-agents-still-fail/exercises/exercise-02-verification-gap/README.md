@@ -116,3 +116,18 @@ Cross-track note: Python expresses the prefix check as `any(...)` over a
 slice, TypeScript as `.slice(...).some(...)`. The `no-claims` case also
 exercises the repository's integral-float rule: Python's `0.0` and
 TypeScript's `0` are the same JSON number after normalization.
+
+## Acceptance runs
+
+The four runs that gate this exercise, produced by execution and
+re-verified on every `make verify` (never hand-written):
+
+<!-- generated-block: uv run python tools/run_acceptance.py lectures/lecture-01-why-capable-agents-still-fail/exercises/exercise-02-verification-gap -->
+```text
+starter/python: exit 1 (as intended: diverges at $.runs[0].classification: 'unverified-done' != 'verified-done')
+starter/typescript: exit 1 (as intended: diverges at $.runs[0].classification: 'unverified-done' != 'verified-done')
+solution/python: exit 0 (PASS: pass (2 checks))
+solution/typescript: exit 0 (PASS: pass (2 checks))
+4/4 acceptance runs performed
+```
+<!-- /generated-block -->

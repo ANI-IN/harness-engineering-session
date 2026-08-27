@@ -1,9 +1,12 @@
 """subsystem-auditor exercise, Python starter.
 
-Two of the five subsystem audits are implemented (instructions, feedback).
-Your task: implement audit_tools, audit_environment, and audit_state per
-SPEC.md. Run ../../verify.sh --stack=python until it exits 0. Everything
-outside those three functions already works.
+All five audits run, but three are naive first drafts with a realistic
+mistake each (see SPEC.md "Starter state"): the tools audit trusts what the
+instructions MENTION instead of what exists, the environment audit checks
+the manifest but not the runtime pin, and the state audit checks the
+feature list but not the progress file. Fix audit_tools, audit_environment,
+and audit_state to the SPEC's criteria. Run ../../verify.sh --stack=python
+until it exits 0. Everything else already works.
 """
 
 from __future__ import annotations
@@ -28,20 +31,35 @@ def audit_instructions(repo: Path) -> dict:
 
 
 def audit_tools(repo: Path) -> dict:
-    # Exercise: present when verify.sh exists in the repo; evidence "verify.sh".
+    # Naive draft: trusts the instructions file's word for it. Describing a
+    # tool is not having it. Exercise: present when verify.sh EXISTS in the
+    # repo; evidence "verify.sh".
+    for name in ("AGENTS.md", "CLAUDE.md"):
+        path = repo / name
+        if path.is_file() and "verify.sh" in path.read_text(encoding="utf-8"):
+            return _finding(True, f"verify.sh mentioned in {name}")
     return _finding(False, None)
 
 
 def audit_environment(repo: Path) -> dict:
-    # Exercise: present when a manifest AND a runtime pin exist. Check the
-    # Python pair (pyproject.toml + .python-version) first, then the Node
-    # pair (package.json + .nvmrc); evidence is "<manifest> + <pin>".
+    # Naive draft: a manifest alone. Dependencies without a runtime pin
+    # reproduce the tree on the wrong interpreter. Exercise: require the
+    # pin too; check the Python pair (pyproject.toml + .python-version)
+    # first, then the Node pair (package.json + .nvmrc); evidence is
+    # "<manifest> + <pin>".
+    for manifest in ("pyproject.toml", "package.json"):
+        if (repo / manifest).is_file():
+            return _finding(True, manifest)
     return _finding(False, None)
 
 
 def audit_state(repo: Path) -> dict:
-    # Exercise: present only when BOTH feature_list.json and
-    # claude-progress.md exist; evidence "feature_list.json + claude-progress.md".
+    # Naive draft: the feature list alone. Scope without narrative still
+    # loses sessions. Exercise: present only when BOTH feature_list.json
+    # and claude-progress.md exist; evidence
+    # "feature_list.json + claude-progress.md".
+    if (repo / "feature_list.json").is_file():
+        return _finding(True, "feature_list.json")
     return _finding(False, None)
 
 

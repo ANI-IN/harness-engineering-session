@@ -44,8 +44,15 @@ audited in name order.
 
 `missing` lists absent subsystems in the canonical order instructions,
 tools, environment, state, feedback. For the committed fixtures:
-`repo-complete` scores 5/5, `repo-no-state` 4/5 (missing state),
-`repo-prompt-only` 1/5 (a prompt file alone is not a harness).
+
+| Repo | Score | Missing | What it is |
+| --- | --- | --- | --- |
+| `repo-complete` | 5/5 | none | the full minimal harness |
+| `repo-list-only` | 4/5 | state | a feature list with no progress file |
+| `repo-no-state` | 4/5 | state | working but amnesiac |
+| `repo-prompt-only` | 1/5 | all but instructions | a prompt file is not a harness |
+| `repo-talks-tools` | 4/5 | tools | instructions describe verify.sh; the file does not exist |
+| `repo-unpinned` | 3/5 | environment, state | a manifest with no runtime pin |
 
 ## Exit codes
 
@@ -56,11 +63,22 @@ tools, environment, state, feedback. For the committed fixtures:
 
 ## Starter state (the intended failure)
 
-The starter implements the instructions and feedback audits; tools,
-environment, and state always report absent. Verification fails with a
-report mismatch first diverging at `$.repos[0].missing: length 3 != 0`
-(repo-complete appears to be missing three subsystems it actually has).
-The starter must run cleanly and fail only by producing that wrong report.
+The starter is a genuine partial implementation: all five audits run, but
+three are naive first drafts, each with one realistic mistake the fixtures
+expose:
+
+| Naive audit | Its mistake | Trap repo that exposes it |
+| --- | --- | --- |
+| tools | trusts that the instructions *mention* `verify.sh` instead of checking the file exists | `repo-talks-tools` scores 5/5 instead of 4/5 |
+| environment | accepts a manifest without a runtime pin | `repo-unpinned` scores 4/5 instead of 3/5 |
+| state | accepts a feature list without a progress file | `repo-list-only` scores 5/5 instead of 4/5 |
+
+Verification fails with a report mismatch first diverging at
+`$.repos[0].subsystems.environment.evidence: 'pyproject.toml' !=
+'pyproject.toml + .python-version'`: on the very first repo, the naive
+environment audit's evidence names only half of the criterion. The starter
+must run cleanly and fail only by producing these wrong values; a crash or
+an all-absent report is a bug in the starter, not the intended state.
 
 ## Expected output
 

@@ -1,0 +1,13 @@
+{
+  "project": "search-tool",
+  "updated": "2026-08-26",
+  "features": [
+    {
+      "id": "index-files",
+      "title": "Index files",
+      "behavior": "search-tool index builds the local index.",
+      "verification": "./verify.sh",
+      "status": "in-progress"
+    }
+  ]
+}

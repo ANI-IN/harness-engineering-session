@@ -141,3 +141,18 @@ The two tracks differ only idiomatically: Python's rule uses a generator
 with `any(...)` over `prior`; TypeScript uses `Array.prototype.some` with
 optional chaining on `result`. The observable behavior is pinned to be
 identical by the shared expected report.
+
+## Acceptance runs
+
+The four runs that gate this exercise, produced by execution and
+re-verified on every `make verify` (never hand-written):
+
+<!-- generated-block: uv run python tools/run_acceptance.py lectures/lecture-01-why-capable-agents-still-fail/exercises/exercise-01-failure-triage -->
+```text
+starter/python: exit 1 (as intended: diverges at $.harness_failure_rate: 0.25 != 0.875)
+starter/typescript: exit 1 (as intended: diverges at $.harness_failure_rate: 0.25 != 0.875)
+solution/python: exit 0 (PASS: pass (1 check))
+solution/typescript: exit 0 (PASS: pass (1 check))
+4/4 acceptance runs performed
+```
+<!-- /generated-block -->

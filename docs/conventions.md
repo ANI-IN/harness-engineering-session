@@ -200,7 +200,9 @@ machine-checked:
   Related lectures.
 - **Exercise README**: Objective · Why this matters · Prerequisites ·
   Provided · Your task · Expected outcome · How to verify · Hints · Solution
-  walkthrough.
+  walkthrough · Acceptance runs (a generated block running
+  `tools/run_acceptance.py` on the exercise, so the published four-run
+  transcript is produced by execution, never written by hand).
 
 ## Command blocks
 

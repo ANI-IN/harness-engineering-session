@@ -1,9 +1,13 @@
 // subsystem-auditor exercise, TypeScript starter.
 //
-// Two of the five subsystem audits are implemented (instructions, feedback).
-// Your task: implement auditTools, auditEnvironment, and auditState per
-// SPEC.md. Run ../../verify.sh --stack=typescript until it exits 0.
-// Everything outside those three functions already works.
+// All five audits run, but three are naive first drafts with a realistic
+// mistake each (see SPEC.md "Starter state"): the tools audit trusts what
+// the instructions MENTION instead of what exists, the environment audit
+// checks the manifest but not the runtime pin, and the state audit checks
+// the feature list but not the progress file. Fix auditTools,
+// auditEnvironment, and auditState to the SPEC's criteria. Run
+// ../../verify.sh --stack=typescript until it exits 0. Everything else
+// already works.
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -33,21 +37,40 @@ function auditInstructions(repo: string): Finding {
   return finding(false, null);
 }
 
-function auditTools(_repo: string): Finding {
-  // Exercise: present when verify.sh exists in the repo; evidence "verify.sh".
+function auditTools(repo: string): Finding {
+  // Naive draft: trusts the instructions file's word for it. Describing a
+  // tool is not having it. Exercise: present when verify.sh EXISTS in the
+  // repo; evidence "verify.sh".
+  for (const name of ["AGENTS.md", "CLAUDE.md"]) {
+    if (fileExists(repo, name) && readFileSync(join(repo, name), "utf8").includes("verify.sh")) {
+      return finding(true, `verify.sh mentioned in ${name}`);
+    }
+  }
   return finding(false, null);
 }
 
-function auditEnvironment(_repo: string): Finding {
-  // Exercise: present when a manifest AND a runtime pin exist. Check the
-  // Python pair (pyproject.toml + .python-version) first, then the Node
-  // pair (package.json + .nvmrc); evidence is "<manifest> + <pin>".
+function auditEnvironment(repo: string): Finding {
+  // Naive draft: a manifest alone. Dependencies without a runtime pin
+  // reproduce the tree on the wrong interpreter. Exercise: require the
+  // pin too; check the Python pair (pyproject.toml + .python-version)
+  // first, then the Node pair (package.json + .nvmrc); evidence is
+  // "<manifest> + <pin>".
+  for (const manifest of ["pyproject.toml", "package.json"]) {
+    if (fileExists(repo, manifest)) {
+      return finding(true, manifest);
+    }
+  }
   return finding(false, null);
 }
 
-function auditState(_repo: string): Finding {
-  // Exercise: present only when BOTH feature_list.json and
-  // claude-progress.md exist; evidence "feature_list.json + claude-progress.md".
+function auditState(repo: string): Finding {
+  // Naive draft: the feature list alone. Scope without narrative still
+  // loses sessions. Exercise: present only when BOTH feature_list.json
+  // and claude-progress.md exist; evidence
+  // "feature_list.json + claude-progress.md".
+  if (fileExists(repo, "feature_list.json")) {
+    return finding(true, "feature_list.json");
+  }
   return finding(false, null);
 }
 
