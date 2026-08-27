@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 REPO_ROOT="$(cd ../.. && pwd)"
 # Resolve the pinned Node 20 toolchain (pnpm lives beside it); bare `pnpm`
 # would resolve through PATH order, which a newer Node elsewhere can shadow.
-NODE20_BIN="$(bash "$REPO_ROOT/tools/find_node20.sh")"
+NODE20_BIN="$(bash "$REPO_ROOT/tools/find_node20.sh" 2>/dev/null || true)"
 
 STACK="both"
 for arg in "$@"; do
@@ -45,6 +45,10 @@ if [ "${HARNESS_SKIP_UNIT_CONFORMANCE:-0}" != "1" ]; then
     (cd "$REPO_ROOT" && uv run pytest projects/project-03-multi-session-continuity -q)
   fi
   if [ "$STACK" = "typescript" ] || [ "$STACK" = "both" ]; then
+    if [ -z "$NODE20_BIN" ]; then
+      echo "verify: FAIL: no Node 20 toolchain found (required for --stack=$STACK; see make doctor TRACK=typescript)" >&2
+      exit 1
+    fi
     (cd "$REPO_ROOT" && "$NODE20_BIN/pnpm" exec vitest run --silent=true \
       projects/project-03-multi-session-continuity)
   fi

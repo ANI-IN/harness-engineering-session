@@ -26,19 +26,31 @@ identical observable behavior; `make conformance` enforces it.
 
 ## Setup
 
-Both tracks are installed from the repo root with one command:
+One command installs what your track needs, and `make doctor` checks the
+same scope, so the doc and the gate agree:
 
 ```sh
-make setup
+make setup TRACK=python       # Python track
+make setup TRACK=typescript   # TypeScript track
+make setup                    # both tracks + repo-level gates (contributors)
+make doctor TRACK=python      # verify exactly what your track requires
 ```
 
-That runs both package managers. If you only want one track, the underlying
-commands are:
+One asymmetry is stated plainly rather than hidden: **Python 3.12 and
+[uv](https://docs.astral.sh/uv/) are required for every track**, because
+the course's verification machinery (the conformance runner, the verify
+loop, every lint) is Python tooling by declared exception (see
+[conventions](./conventions.md)); uv reaches it with zero project
+installs. The TypeScript track additionally requires **Node.js 20 LTS**
+(see `.nvmrc`) and pnpm via
+[corepack](https://nodejs.org/api/corepack.html), which ships with Node.
+A Python-only machine passes `make doctor TRACK=python` and runs every
+`verify.sh --stack=python`; it cannot run the TypeScript side or the
+repo-level `make verify`/`make status` gates, which need both.
+
+The underlying per-track commands, if you bypass make:
 
 ### Python
-
-Requires **Python 3.12** and [uv](https://docs.astral.sh/uv/). uv installs the
-pinned interpreter for you:
 
 ```sh
 uv sync          # creates .venv with Python 3.12 + pytest + ruff
@@ -47,14 +59,16 @@ uv run pytest    # run any Python tests
 
 ### TypeScript
 
-Requires **Node.js 20 LTS** (see `.nvmrc`) and pnpm via
-[corepack](https://nodejs.org/api/corepack.html), which ships with Node:
-
 ```sh
 corepack enable pnpm
 pnpm install
 pnpm test        # run any TypeScript tests
 ```
+
+If `pnpm` prints "command not found" while `make doctor` is green, your
+shell's `node` is not the pinned Node 20 (`make` resolves the pin
+itself; your shell does not): put a Node 20 first on `PATH` and run
+`corepack enable pnpm` on it.
 
 ## Running any unit
 

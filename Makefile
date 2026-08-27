@@ -28,13 +28,21 @@ endif
 help: ## List available targets
 	@grep -E '^[a-z][a-z-]*:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  make %-22s %s\n", $$1, $$2}'
 
-setup: ## Install both toolchains (uv sync + pnpm install)
-	uv sync
-	$(PNPM) install --frozen-lockfile || $(PNPM) install
-	@echo "setup: OK (python + typescript toolchains installed)"
+# TRACK scopes setup and doctor to one track: python | typescript | both.
+# python + uv are required for every track (the verification machinery is
+# Python tooling); the Node toolchain is required for the TypeScript track
+# and for repo-level gates. See docs/choosing-your-track.md.
+TRACK ?= both
 
-doctor: ## Print toolchain versions and check them against the pins
-	@uv run python tools/lint/doctor.py
+setup: ## Install the toolchain(s) for TRACK=python|typescript|both (default both)
+	uv sync
+ifneq ($(TRACK),python)
+	$(PNPM) install --frozen-lockfile || $(PNPM) install
+endif
+	@echo "setup: OK (TRACK=$(TRACK))"
+
+doctor: ## Check toolchain versions against the pins for TRACK=python|typescript|both
+	@uv run python tools/lint/doctor.py --track=$(TRACK)
 
 status: ## Run every gate and print exit codes, floors, and tree counts as one artifact
 	@uv run python tools/report_status.py

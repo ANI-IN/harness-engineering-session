@@ -64,13 +64,15 @@ the harness-creator skill) follows the same conventions and lands next.
 
 Prerequisites: **Python 3.12** with [uv](https://docs.astral.sh/uv/), and
 **Node.js 20 LTS** with pnpm (via corepack, which ships with Node). You only
-need the toolchain for the track you choose; `make setup` installs both.
+need the toolchain for the track you choose, plus Python and uv either
+way (they power the verification machinery; see
+[choosing your track](docs/choosing-your-track.md)).
 
 ```sh
 git clone https://github.com/ANI-IN/harness
 cd harness
-make setup      # uv sync + pnpm install
-make doctor     # confirm toolchain versions match the pins
+make setup TRACK=python   # or TRACK=typescript, or plain `make setup` for both
+make doctor TRACK=python  # confirm exactly what your track requires
 make verify     # run everything - should be green on a fresh clone
 ```
 
