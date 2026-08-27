@@ -1,0 +1,26 @@
+{
+  "graph": "graph-declared",
+  "entry": "plan",
+  "nodes": 5,
+  "node_kinds": {
+    "code": 2,
+    "agent": 2,
+    "rollback": 1
+  },
+  "edges": 4,
+  "conditional_edges": 2,
+  "rollback_edges": 1,
+  "routers": [
+    {
+      "at": "verify",
+      "key": "review",
+      "values": [
+        "pass",
+        "fail"
+      ],
+      "uncovered": []
+    }
+  ],
+  "unreachable": [],
+  "complete": true
+}

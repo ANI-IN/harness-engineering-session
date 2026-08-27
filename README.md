@@ -58,6 +58,7 @@ links to a unit that runs today.
 | [11: Why observability belongs inside the harness](lectures/lecture-11-why-observability-belongs-inside-the-harness/) | The harness records what the session did, so the next session can repair rather than guess | Closest: [Project 04](projects/project-04-runtime-feedback-and-scope-control/) |
 | [12: Why every session must leave a clean state](lectures/lecture-12-why-every-session-must-leave-a-clean-state/) | The exit protocol: verify, roll back, record, hand off | Closest: [Project 03](projects/project-03-multi-session-continuity/), [Project 05](projects/project-05-self-verification-and-role-separation/) |
 | [13: Loop engineering](lectures/lecture-13-loop-engineering/) | Goal file, loop state, maker and checker, a stopping condition wired to the right signal | None |
+| [14: Graph engineering](lectures/lecture-14-graph-engineering/) | Nodes, edges, shared state, a router, and one rollback edge, in the standard library | None |
 
 | Project | You build |
 | --- | --- |

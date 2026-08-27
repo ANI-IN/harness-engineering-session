@@ -1,0 +1,7 @@
+{
+  "task": "declare the csv writer and its export directory",
+  "goal": [
+    { "path": "src/report.txt", "key": "writer", "value": "csv" },
+    { "path": "config/app.conf", "key": "export_dir", "value": "out/reports" }
+  ]
+}

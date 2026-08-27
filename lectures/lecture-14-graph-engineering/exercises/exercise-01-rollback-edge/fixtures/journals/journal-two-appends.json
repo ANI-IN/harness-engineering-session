@@ -1,0 +1,7 @@
+{
+  "session": "008",
+  "operations": [
+    { "op": "append", "path": "config/app.conf", "line": "export_dir=out/reports" },
+    { "op": "append", "path": "config/app.conf", "line": "writer_dir=out/csv" }
+  ]
+}

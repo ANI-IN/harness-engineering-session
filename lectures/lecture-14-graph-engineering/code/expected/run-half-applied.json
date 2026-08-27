@@ -1,0 +1,91 @@
+{
+  "graph": "graph-no-rollback",
+  "workspace": "workspace-conflicted",
+  "task": "declare the csv writer and its export directory",
+  "path": [
+    "plan",
+    "apply",
+    "verify"
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "node": "plan",
+      "kind": "code",
+      "reads": [
+        "task",
+        "goal",
+        "files"
+      ],
+      "writes": [
+        "plan"
+      ],
+      "outcome": "2 goals read; 2 need an edit: src/report.txt has no writer= line; config/app.conf declares export_dir=out/old, not export_dir=out/reports"
+    },
+    {
+      "step": 2,
+      "node": "apply",
+      "kind": "agent",
+      "reads": [
+        "plan",
+        "files"
+      ],
+      "writes": [
+        "applied",
+        "applied_ok",
+        "files"
+      ],
+      "outcome": "2 edits applied and scratch/apply-notes.txt written; 3 operations journalled"
+    },
+    {
+      "step": 3,
+      "node": "verify",
+      "kind": "agent",
+      "reads": [
+        "goal",
+        "files"
+      ],
+      "writes": [
+        "failures",
+        "review"
+      ],
+      "outcome": "review=fail; config/app.conf declares export_dir 2 times"
+    }
+  ],
+  "routing": [
+    {
+      "at": "verify",
+      "key": "review",
+      "value": "fail",
+      "edge": null,
+      "rollback": false,
+      "note": "no edge is declared for review == fail, so the walk stops here"
+    }
+  ],
+  "final_state": {
+    "review": "fail",
+    "applied_ok": true,
+    "committed": false,
+    "rolled_back": false,
+    "failures": [
+      "config/app.conf declares export_dir 2 times"
+    ],
+    "undone": []
+  },
+  "workspace_after": {
+    "config/app.conf": [
+      "service=reports",
+      "export_dir=out/old",
+      "export_dir=out/reports"
+    ],
+    "scratch/apply-notes.txt": [
+      "note=working notes written by the apply node"
+    ],
+    "src/report.txt": [
+      "module=report",
+      "writer=csv"
+    ]
+  },
+  "matches_opening_state": false,
+  "verdict": "half-applied"
+}

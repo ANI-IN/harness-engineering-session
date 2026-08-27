@@ -1,0 +1,13 @@
+{
+  "session": "006",
+  "operations": [
+    { "op": "append", "path": "src/report.txt", "line": "writer=csv" },
+    { "op": "append", "path": "src/report.txt", "line": "header=on" },
+    { "op": "append", "path": "config/app.conf", "line": "export_dir=out/reports" },
+    {
+      "op": "create",
+      "path": "scratch/apply-notes.txt",
+      "lines": ["probe=page-size", "note=manual"]
+    }
+  ]
+}

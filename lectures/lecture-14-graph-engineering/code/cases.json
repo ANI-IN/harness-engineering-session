@@ -1,0 +1,117 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "declared-graph-commits",
+      "args": [
+        "run",
+        "fixtures/graphs/graph-declared.json",
+        "fixtures/workspaces/workspace-clean"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/run-committed.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "declared-graph-rolls-back",
+      "args": [
+        "run",
+        "fixtures/graphs/graph-declared.json",
+        "fixtures/workspaces/workspace-conflicted"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/run-rolled-back.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "no-rollback-edge-leaves-half-applied",
+      "args": [
+        "run",
+        "fixtures/graphs/graph-no-rollback.json",
+        "fixtures/workspaces/workspace-conflicted"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/run-half-applied.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "misrouted-graph-commits-broken",
+      "args": [
+        "run",
+        "fixtures/graphs/graph-misrouted.json",
+        "fixtures/workspaces/workspace-conflicted"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/run-committed-broken.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "structure-of-the-declared-graph",
+      "args": [
+        "structure",
+        "fixtures/graphs/graph-declared.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/structure-declared.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "structure-finds-the-uncovered-routing-value",
+      "args": [
+        "structure",
+        "fixtures/graphs/graph-no-rollback.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/structure-no-rollback.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-workspace",
+      "args": [
+        "run",
+        "fixtures/graphs/graph-declared.json",
+        "fixtures/workspaces/no-such-workspace"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    },
+    {
+      "name": "missing-graph-file",
+      "args": [
+        "structure",
+        "fixtures/graphs/no-such-graph.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

@@ -41,6 +41,7 @@ minutes per lecture including exercises.
 | 11 | [Why observability belongs inside the harness](./lecture-11-why-observability-belongs-inside-the-harness/) | A session can only resume work whose history something recorded | Closest: [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
 | 12 | [Why every session must leave a clean state](./lecture-12-why-every-session-must-leave-a-clean-state/) | What a session leaves behind decides what the next one can do | Closest: [Project 03](../projects/project-03-multi-session-continuity/), [Project 05](../projects/project-05-self-verification-and-role-separation/) |
 | 13 | [Loop engineering](./lecture-13-loop-engineering/) | A loop is only as good as the signal its stopping condition reads | None |
+| 14 | [Graph engineering](./lecture-14-graph-engineering/) | Routing and rollback are structure you declare, not control flow you hope for | None |
 
 This index lists every lecture the course currently contains; the
 [curriculum map](../docs/curriculum-map.md) shows how they connect.

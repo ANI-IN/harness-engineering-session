@@ -1,0 +1,43 @@
+{
+  "workspace": "workspace-touched",
+  "session": "006",
+  "operations": [
+    {
+      "index": 0,
+      "op": "append",
+      "outcome": "reverted",
+      "path": "src/report.txt",
+      "target": "writer=csv",
+      "why": "removed the last line writer=csv from src/report.txt"
+    },
+    {
+      "index": 1,
+      "op": "append",
+      "outcome": "reverted",
+      "path": "src/report.txt",
+      "target": "header=on",
+      "why": "removed the last line header=on from src/report.txt"
+    },
+    {
+      "index": 2,
+      "op": "append",
+      "outcome": "kept",
+      "path": "config/app.conf",
+      "target": "export_dir=out/reports",
+      "why": "export_dir=out/reports is no longer the last line of config/app.conf, so removing it would discard a later change"
+    },
+    {
+      "index": 3,
+      "op": "create",
+      "outcome": "reverted",
+      "path": "scratch/apply-notes.txt",
+      "target": "scratch/apply-notes.txt",
+      "why": "removed scratch/apply-notes.txt, which still held only the lines this run wrote"
+    }
+  ],
+  "residue": [
+    "config/app.conf still carries export_dir=out/reports"
+  ],
+  "restored": false,
+  "verdict": "residue-left"
+}

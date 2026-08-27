@@ -1,0 +1,25 @@
+{
+  "workspace": "workspace-applied",
+  "session": "008",
+  "operations": [
+    {
+      "index": 0,
+      "op": "append",
+      "outcome": "reverted",
+      "path": "config/app.conf",
+      "target": "export_dir=out/reports",
+      "why": "removed the last line export_dir=out/reports from config/app.conf"
+    },
+    {
+      "index": 1,
+      "op": "append",
+      "outcome": "reverted",
+      "path": "config/app.conf",
+      "target": "writer_dir=out/csv",
+      "why": "removed the last line writer_dir=out/csv from config/app.conf"
+    }
+  ],
+  "residue": [],
+  "restored": true,
+  "verdict": "restored"
+}

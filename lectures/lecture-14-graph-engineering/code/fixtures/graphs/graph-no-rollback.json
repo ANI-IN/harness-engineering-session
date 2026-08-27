@@ -1,0 +1,31 @@
+{
+  "id": "graph-no-rollback",
+  "entry": "plan",
+  "nodes": [
+    {
+      "name": "plan",
+      "kind": "code",
+      "reads": ["task", "goal", "files"],
+      "edges": [{ "to": "apply" }]
+    },
+    {
+      "name": "apply",
+      "kind": "agent",
+      "reads": ["plan", "files"],
+      "edges": [{ "to": "verify" }]
+    },
+    {
+      "name": "verify",
+      "kind": "agent",
+      "reads": ["goal", "files"],
+      "router": { "key": "review", "values": ["pass", "fail"] },
+      "edges": [{ "when": "pass", "to": "commit" }]
+    },
+    {
+      "name": "commit",
+      "kind": "code",
+      "reads": ["review", "files"],
+      "edges": []
+    }
+  ]
+}

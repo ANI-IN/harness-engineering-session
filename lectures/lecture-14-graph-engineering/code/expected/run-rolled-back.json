@@ -1,0 +1,106 @@
+{
+  "graph": "graph-declared",
+  "workspace": "workspace-conflicted",
+  "task": "declare the csv writer and its export directory",
+  "path": [
+    "plan",
+    "apply",
+    "verify",
+    "undo"
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "node": "plan",
+      "kind": "code",
+      "reads": [
+        "task",
+        "goal",
+        "files"
+      ],
+      "writes": [
+        "plan"
+      ],
+      "outcome": "2 goals read; 2 need an edit: src/report.txt has no writer= line; config/app.conf declares export_dir=out/old, not export_dir=out/reports"
+    },
+    {
+      "step": 2,
+      "node": "apply",
+      "kind": "agent",
+      "reads": [
+        "plan",
+        "files"
+      ],
+      "writes": [
+        "applied",
+        "applied_ok",
+        "files"
+      ],
+      "outcome": "2 edits applied and scratch/apply-notes.txt written; 3 operations journalled"
+    },
+    {
+      "step": 3,
+      "node": "verify",
+      "kind": "agent",
+      "reads": [
+        "goal",
+        "files"
+      ],
+      "writes": [
+        "failures",
+        "review"
+      ],
+      "outcome": "review=fail; config/app.conf declares export_dir 2 times"
+    },
+    {
+      "step": 4,
+      "node": "undo",
+      "kind": "rollback",
+      "reads": [
+        "applied",
+        "files"
+      ],
+      "writes": [
+        "files",
+        "rolled_back",
+        "undone"
+      ],
+      "outcome": "3 journalled operations replayed backwards: removed scratch/apply-notes.txt; removed export_dir=out/reports from config/app.conf; removed writer=csv from src/report.txt"
+    }
+  ],
+  "routing": [
+    {
+      "at": "verify",
+      "key": "review",
+      "value": "fail",
+      "edge": "verify -> undo",
+      "rollback": true,
+      "note": "the router read review=fail and took the edge declared for it"
+    }
+  ],
+  "final_state": {
+    "review": "fail",
+    "applied_ok": true,
+    "committed": false,
+    "rolled_back": true,
+    "failures": [
+      "config/app.conf declares export_dir 2 times"
+    ],
+    "undone": [
+      "removed scratch/apply-notes.txt",
+      "removed export_dir=out/reports from config/app.conf",
+      "removed writer=csv from src/report.txt"
+    ]
+  },
+  "workspace_after": {
+    "config/app.conf": [
+      "service=reports",
+      "export_dir=out/old"
+    ],
+    "src/report.txt": [
+      "module=report"
+    ]
+  },
+  "matches_opening_state": true,
+  "verdict": "rolled-back"
+}

@@ -1,0 +1,41 @@
+{
+  "workspace": "workspace-applied",
+  "session": "007",
+  "operations": [
+    {
+      "index": 0,
+      "op": "append",
+      "outcome": "reverted",
+      "path": "src/report.txt",
+      "target": "writer=csv",
+      "why": "removed the last line writer=csv from src/report.txt"
+    },
+    {
+      "index": 1,
+      "op": "append",
+      "outcome": "reverted",
+      "path": "config/app.conf",
+      "target": "export_dir=out/reports",
+      "why": "removed the last line export_dir=out/reports from config/app.conf"
+    },
+    {
+      "index": 2,
+      "op": "append",
+      "outcome": "reverted",
+      "path": "config/app.conf",
+      "target": "writer_dir=out/csv",
+      "why": "removed the last line writer_dir=out/csv from config/app.conf"
+    },
+    {
+      "index": 3,
+      "op": "create",
+      "outcome": "reverted",
+      "path": "scratch/apply-notes.txt",
+      "target": "scratch/apply-notes.txt",
+      "why": "removed scratch/apply-notes.txt, which still held only the lines this run wrote"
+    }
+  ],
+  "residue": [],
+  "restored": true,
+  "verdict": "restored"
+}

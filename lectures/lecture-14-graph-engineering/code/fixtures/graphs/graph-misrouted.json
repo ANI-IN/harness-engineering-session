@@ -1,0 +1,40 @@
+{
+  "id": "graph-misrouted",
+  "entry": "plan",
+  "nodes": [
+    {
+      "name": "plan",
+      "kind": "code",
+      "reads": ["task", "goal", "files"],
+      "edges": [{ "to": "apply" }]
+    },
+    {
+      "name": "apply",
+      "kind": "agent",
+      "reads": ["plan", "files"],
+      "edges": [{ "to": "verify" }]
+    },
+    {
+      "name": "verify",
+      "kind": "agent",
+      "reads": ["goal", "files"],
+      "router": { "key": "applied_ok", "values": ["true", "false"] },
+      "edges": [
+        { "when": "true", "to": "commit" },
+        { "when": "false", "to": "undo" }
+      ]
+    },
+    {
+      "name": "commit",
+      "kind": "code",
+      "reads": ["review", "files"],
+      "edges": []
+    },
+    {
+      "name": "undo",
+      "kind": "rollback",
+      "reads": ["applied", "files"],
+      "edges": []
+    }
+  ]
+}

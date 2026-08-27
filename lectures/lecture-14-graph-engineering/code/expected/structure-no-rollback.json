@@ -1,0 +1,27 @@
+{
+  "graph": "graph-no-rollback",
+  "entry": "plan",
+  "nodes": 4,
+  "node_kinds": {
+    "code": 2,
+    "agent": 2
+  },
+  "edges": 3,
+  "conditional_edges": 1,
+  "rollback_edges": 0,
+  "routers": [
+    {
+      "at": "verify",
+      "key": "review",
+      "values": [
+        "pass",
+        "fail"
+      ],
+      "uncovered": [
+        "fail"
+      ]
+    }
+  ],
+  "unreachable": [],
+  "complete": false
+}
