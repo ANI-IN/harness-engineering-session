@@ -28,4 +28,4 @@ coverage/
 .idea/
 .vscode/
 *.swp
-kb-data/
+/projects/*/kb-data/

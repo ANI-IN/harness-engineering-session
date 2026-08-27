@@ -1,0 +1,18 @@
+Team meeting summary, sprint twelve
+
+Attendees agreed the first milestone is the smallest useful slice: create
+the data directory, load the document set, answer one grounded question,
+and prove the server starts. Each item must be demonstrated by a command
+and its captured output before it is called finished.
+
+Decisions recorded:
+
+Persistence stays plain files in a single data directory. A database adds
+operational surface the project does not need yet.
+
+The question answering path ships with a deterministic composer. Plugging
+in a real model is a later milestone and must not change the citation
+contract.
+
+Verification is part of the definition of done. A feature with no recorded
+command output is not done, whatever the code looks like.
