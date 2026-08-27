@@ -352,6 +352,38 @@ stopped); (g) files you created (list).
 
 ## Open concerns, not closed
 
+- **`make status` has an unexplained timing-dependent behaviour. The
+  symptom is suppressed; the cause is unknown.** A full `make status`
+  run intermittently leaves an empty, gitignored
+  `projects/<project>/kb-data/` behind, which `lint-structure` used to
+  report as an orphan directory, so the same unchanged tree passed or
+  failed depending on what had just run. `a5b1c40` stopped the orphan
+  check from judging gitignored scratch, which is right on its own
+  merits and is what makes the tree's verdict deterministic again, but
+  it treats the symptom.
+
+  Ruled out already, each clean in isolation, so do not repeat this
+  bisect: `make doctor`, `make verify-dedup`, `make conformance`,
+  `make lint`, `make lint-links`, `make lint-mermaid`,
+  `tools/check_readme_commands.py` run alone, project 02's `verify.sh`,
+  its pytest suite, its vitest suite, and `tools/gen_readme_blocks.py`.
+  Only a complete `make status` reproduces it. The most promising
+  untested lead is concurrency between gates or inside the readme
+  gate's worker pool: the shared `make setup` fence runs `pnpm install`
+  and `uv sync` while other fences are executing, which is both a race
+  and a gate mutating the toolchain it is verifying.
+
+  **If an empty `kb-data/` directory appears anywhere again, that is
+  this bug resurfacing. Escalate it and find the cause; do not skip it
+  a second time.**
+
+- **`docs.claude.com/en/docs/claude-code/overview` may have moved.** A
+  subagent observed it redirecting to `code.claude.com/docs/en/overview`.
+  `make lint-links-external` follows the redirect and reports 200, so
+  nothing is broken and no action is required. It is linked from several
+  lectures; if the redirect is ever retired those links break together.
+  Noted, deliberately not acted on.
+
 - **The kb `ask` contract.** `ask` changed shape across projects 01-03
   (keyword hits, then metadata, then chunk-grounded answers with a
   refusal path), each change declared under project 01's pre-1.0
@@ -428,7 +460,18 @@ stopped); (g) files you created (list).
   stayed green, because gates read the working tree, where the file is
   present, and only a fresh checkout failed. When adding a broad ignore
   rule, check it against `git ls-files --others --ignored
-  --exclude-standard -- lectures projects`.
+  --exclude-standard -- lectures projects`. `make check-fresh` now
+  catches the whole class rather than this one rule: it exports `HEAD`
+  and runs conformance inside the export, so every unit is proven from
+  tracked content on every status run and in CI. Pointed at `430f267`
+  it reproduces the shipped defect (6 failures, all lecture 09), which
+  is how it was validated.
+- **Do not let a subagent run the whole readme-command gate.** One of
+  its fences is the shared `make setup` stanza, which runs
+  `pnpm install`; in a worktree whose `node_modules` is a symlink that
+  aborts with `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`. The gate is
+  not at fault and passes in the main tree. Agents should scope the
+  fence check to their own README, as lecture 12's agent did.
 - **Seeded-defect escape hatches.** A broken link or an invalid
   `feature_list.json` is allowed only in a fixture named in the unit
   SPEC's section headed literally `Seeded defects`; both the link lint

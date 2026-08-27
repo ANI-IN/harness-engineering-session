@@ -172,6 +172,30 @@ the build if the deduplicated path could ever cover fewer cases than the
 full one. `make quick U=<unit-dir>` (doctor plus that unit's `verify.sh`)
 is the inner loop only; the commit gate remains `make status`.
 
+### Tracked content is the only content
+
+Every other gate reads the working tree, where a file can be present and
+uncommitted at the same time. Twice that gap shipped a broken tree while
+`make status` stayed green: an ignore rule withheld a project's corpus,
+then another withheld four of a lecture's workspace fixtures, and both
+were found by accident in a checkout that happened to lack them.
+
+`make check-fresh` (`tools/check_fresh_checkout.py`) removes the
+accident. It exports `HEAD` with `git archive`, so ignored and untracked
+files are absent by construction, and runs the whole conformance suite
+inside that export. A unit whose fixtures or expected outputs are not
+committed fails there, in both tracks, exactly as it would for someone
+cloning the repository. It runs in `make status` and in CI, and it is
+the reason a lecture no longer depends on being built in a worktree to
+get a clone check. `node_modules/` is linked in rather than exported: it
+is an installed dependency, not repository content.
+
+The companion rule is preventative: `.gitignore` negates `fixtures/` and
+`expected/` under `lectures/` and `projects/` after every broad pattern,
+and `lint-structure` fails on any git-ignored file inside a unit's
+grading authority. Adding a broad ignore rule means checking it against
+`git ls-files --others --ignored --exclude-standard -- lectures projects`.
+
 ### Fail-on-empty floors
 
 `tools/expected_counts.json` records the minimum number of conformance

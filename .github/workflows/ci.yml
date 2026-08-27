@@ -54,3 +54,6 @@ jobs:
 
       - name: Structure check
         run: make lint-structure
+
+      - name: Fresh-checkout check (units must pass from tracked content only)
+        run: make check-fresh

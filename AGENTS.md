@@ -34,8 +34,10 @@ entry point. It is a router; depth lives in the linked docs.
 
 ## Verification commands
 
-- Everything: `make verify && make conformance && make lint && make lint-links && make lint-mermaid && make lint-structure`
+- Everything: `make status` (every gate, with counts against the floors).
+- Everything, longhand: `make verify && make conformance && make lint && make lint-links && make lint-mermaid && make lint-structure && make check-fresh`
 - One unit: `./<unit>/verify.sh --stack=python|typescript|both`
+- Before committing a lecture, additionally: `make lint-links-external`.
 
 ## Definition of done
 
