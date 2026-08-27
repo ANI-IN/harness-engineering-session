@@ -1,0 +1,70 @@
+{
+  "runs": [
+    {
+      "id": "ex-1",
+      "task": "standardize API error responses",
+      "subsystem": "instructions",
+      "rule": "asked-for-repo-fact",
+      "evidence": "agent_question: \"Where are the API error-handling conventions documented?\""
+    },
+    {
+      "id": "ex-2",
+      "task": "cut a release",
+      "subsystem": "tools",
+      "rule": "command-unavailable",
+      "evidence": "shell_error: \"zsh: permission denied: ./scripts/release.sh\""
+    },
+    {
+      "id": "ex-3",
+      "task": "add request logging middleware",
+      "subsystem": "environment",
+      "rule": "dependency-or-runtime-missing",
+      "evidence": "shell_error: \"Error: Cannot find module 'express'\""
+    },
+    {
+      "id": "ex-4",
+      "task": "upgrade the build pipeline",
+      "subsystem": "environment",
+      "rule": "dependency-or-runtime-missing",
+      "evidence": "shell_error: \"error: unsupported Node version 14; this project expects version 20\""
+    },
+    {
+      "id": "ex-5",
+      "task": "continue the database migration",
+      "subsystem": "state",
+      "rule": "repeated-prior-work",
+      "evidence": "rework: \"re-read the entire migration plan that session 3 had already summarized\""
+    },
+    {
+      "id": "ex-6",
+      "task": "migrate the user endpoints",
+      "subsystem": "feedback",
+      "rule": "claim-without-passing-verification",
+      "evidence": "claim: \"all endpoints migrated\""
+    },
+    {
+      "id": "ex-7",
+      "task": "update the button styles",
+      "subsystem": "feedback",
+      "rule": "claim-without-passing-verification",
+      "evidence": "claim: \"styles updated across the app\""
+    },
+    {
+      "id": "ex-8",
+      "task": "add an index to the sessions table",
+      "subsystem": "unattributed",
+      "rule": null,
+      "evidence": null
+    }
+  ],
+  "summary": {
+    "instructions": 1,
+    "tools": 1,
+    "environment": 2,
+    "state": 1,
+    "feedback": 2,
+    "unattributed": 1
+  },
+  "total_runs": 8,
+  "harness_failure_rate": 0.875
+}

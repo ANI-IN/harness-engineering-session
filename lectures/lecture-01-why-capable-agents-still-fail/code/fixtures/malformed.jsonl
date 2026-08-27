@@ -1,0 +1,2 @@
+{"run": "run-1", "type": "task", "detail": "a valid first line"}
+this line is not JSON and must abort the triage

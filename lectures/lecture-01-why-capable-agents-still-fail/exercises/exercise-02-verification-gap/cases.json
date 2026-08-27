@@ -1,0 +1,28 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "basic",
+      "args": ["fixtures/claims.jsonl"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/gap-report.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "no-claims",
+      "args": ["fixtures/claims-none.jsonl"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/no-claims.json",
+        "kind": "json"
+      }
+    }
+  ]
+}

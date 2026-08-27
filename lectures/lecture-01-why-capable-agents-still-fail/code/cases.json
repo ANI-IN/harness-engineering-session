@@ -1,0 +1,38 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "basic",
+      "args": ["fixtures/runs.jsonl"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/triage-report.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "empty-transcript",
+      "args": ["fixtures/empty.jsonl"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/empty-report.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "malformed-line",
+      "args": ["fixtures/malformed.jsonl"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

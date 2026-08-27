@@ -123,11 +123,20 @@ def main() -> int:
     print(f"lint-links: {len(files)} markdown files scanned (relative links + anchors)")
 
     if args.external:
+        import json
+
+        exceptions_path = Path(__file__).parent / "link_exceptions.json"
+        exceptions = json.loads(exceptions_path.read_text(encoding="utf-8"))["exceptions"]
         urls = external_urls(files)
         print(f"lint-links: fetching {len(urls)} external URL(s)")
         for url in sorted(urls):
             status = fetch_status(url)
             ok = isinstance(status, int) and 200 <= status < 400
+            exception = exceptions.get(url)
+            if not ok and exception and status == exception["expect"]:
+                print(f"  [{status}*] {url} (bot-shielded; kept per link_exceptions.json, "
+                      f"verified {exception['verified']})")
+                continue
             print(f"  [{status}] {url}")
             if not ok:
                 sources = ", ".join(str(p.relative_to(REPO_ROOT)) for p in urls[url])

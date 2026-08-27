@@ -1,0 +1,14 @@
+{
+  "runs": [
+    {"id": "g1", "claimed": true, "verified_before_claim": true, "classification": "verified-done"},
+    {"id": "g2", "claimed": true, "verified_before_claim": false, "classification": "unverified-done"},
+    {"id": "g3", "claimed": true, "verified_before_claim": false, "classification": "unverified-done"},
+    {"id": "g4", "claimed": false, "verified_before_claim": false, "classification": "no-claim"},
+    {"id": "g5", "claimed": true, "verified_before_claim": true, "classification": "verified-done"},
+    {"id": "g6", "claimed": true, "verified_before_claim": false, "classification": "unverified-done"}
+  ],
+  "claims": 5,
+  "verified_claims": 2,
+  "unverified_claims": 3,
+  "verification_gap": 0.6
+}

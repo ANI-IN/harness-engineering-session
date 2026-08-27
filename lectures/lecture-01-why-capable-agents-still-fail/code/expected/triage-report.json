@@ -1,0 +1,56 @@
+{
+  "runs": [
+    {
+      "id": "run-1",
+      "task": "add a search endpoint to the API",
+      "subsystem": "instructions",
+      "rule": "asked-for-repo-fact",
+      "evidence": "agent_question: \"Which web framework does this service use?\""
+    },
+    {
+      "id": "run-2",
+      "task": "fix the flaky login test",
+      "subsystem": "tools",
+      "rule": "command-unavailable",
+      "evidence": "shell_error: \"bash: pnpm: command not found\""
+    },
+    {
+      "id": "run-3",
+      "task": "regenerate the weekly report",
+      "subsystem": "environment",
+      "rule": "dependency-or-runtime-missing",
+      "evidence": "shell_error: \"ModuleNotFoundError: No module named 'jinja2'\""
+    },
+    {
+      "id": "run-4",
+      "task": "continue the pagination work from yesterday",
+      "subsystem": "state",
+      "rule": "repeated-prior-work",
+      "evidence": "rework: \"re-mapped the API layout that the previous session had already documented\""
+    },
+    {
+      "id": "run-5",
+      "task": "add CSV export",
+      "subsystem": "feedback",
+      "rule": "claim-without-passing-verification",
+      "evidence": "claim: \"export implemented and working\""
+    },
+    {
+      "id": "run-6",
+      "task": "rename the config key",
+      "subsystem": "unattributed",
+      "rule": null,
+      "evidence": null
+    }
+  ],
+  "summary": {
+    "instructions": 1,
+    "tools": 1,
+    "environment": 1,
+    "state": 1,
+    "feedback": 1,
+    "unattributed": 1
+  },
+  "total_runs": 6,
+  "harness_failure_rate": 0.8333333333333334
+}

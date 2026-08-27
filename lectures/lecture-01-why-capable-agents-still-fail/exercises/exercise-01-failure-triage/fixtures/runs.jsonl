@@ -1,0 +1,26 @@
+{"run": "ex-1", "type": "task", "detail": "standardize API error responses"}
+{"run": "ex-1", "type": "agent_question", "detail": "Where are the API error-handling conventions documented?"}
+{"run": "ex-1", "type": "outcome", "detail": "abandoned"}
+{"run": "ex-2", "type": "task", "detail": "cut a release"}
+{"run": "ex-2", "type": "shell_error", "detail": "zsh: permission denied: ./scripts/release.sh"}
+{"run": "ex-2", "type": "outcome", "detail": "abandoned"}
+{"run": "ex-3", "type": "task", "detail": "add request logging middleware"}
+{"run": "ex-3", "type": "shell_error", "detail": "Error: Cannot find module 'express'"}
+{"run": "ex-3", "type": "outcome", "detail": "abandoned"}
+{"run": "ex-4", "type": "task", "detail": "upgrade the build pipeline"}
+{"run": "ex-4", "type": "shell_error", "detail": "error: unsupported Node version 14; this project expects version 20"}
+{"run": "ex-4", "type": "outcome", "detail": "abandoned"}
+{"run": "ex-5", "type": "task", "detail": "continue the database migration"}
+{"run": "ex-5", "type": "rework", "detail": "re-read the entire migration plan that session 3 had already summarized"}
+{"run": "ex-5", "type": "outcome", "detail": "shipped-broken"}
+{"run": "ex-6", "type": "task", "detail": "migrate the user endpoints"}
+{"run": "ex-6", "type": "verification", "detail": "pytest tests/endpoints", "result": "fail"}
+{"run": "ex-6", "type": "claim", "detail": "all endpoints migrated"}
+{"run": "ex-6", "type": "outcome", "detail": "shipped-broken"}
+{"run": "ex-7", "type": "task", "detail": "update the button styles"}
+{"run": "ex-7", "type": "claim", "detail": "styles updated across the app"}
+{"run": "ex-7", "type": "outcome", "detail": "shipped-broken"}
+{"run": "ex-8", "type": "task", "detail": "add an index to the sessions table"}
+{"run": "ex-8", "type": "verification", "detail": "pytest tests/db", "result": "pass"}
+{"run": "ex-8", "type": "claim", "detail": "index added and query verified"}
+{"run": "ex-8", "type": "outcome", "detail": "shipped-working"}

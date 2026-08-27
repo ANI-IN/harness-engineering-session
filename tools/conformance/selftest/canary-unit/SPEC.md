@@ -22,6 +22,7 @@ Reads the JSON file at `<input-file>`:
   "tags": [],
   "meta": {},
   "parent": null,
+  "whole_factor": <integer>,
   "notes_file": "<path to a text file; may use LF or CRLF line endings>"
 }
 ```

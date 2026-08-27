@@ -1,0 +1,20 @@
+{
+  "comment": "URLs that are live for humans but return an error to automated fetchers (bot protection). Each entry records the status automation receives, why the link is kept anyway, and when a human-equivalent check last confirmed the page. lint-links --external treats a listed URL answering its expected status as pass-with-note; anything else still fails.",
+  "exceptions": {
+    "https://github.com/ANI-IN/harness/issues": {
+      "expect": 404,
+      "reason": "This repository is currently private, so GitHub serves 404 to unauthenticated clients for all of its pages. Issues are enabled (verified via authenticated API). Drop this entry when the repo goes public.",
+      "verified": "2026-08-27"
+    },
+    "https://github.com/ANI-IN/harness/security/advisories/new": {
+      "expect": 404,
+      "reason": "Same as above: private repo, 404 to unauthenticated clients; also requires login even on public repos. Drop when the repo goes public.",
+      "verified": "2026-08-27"
+    },
+    "https://openai.com/index/harness-engineering/": {
+      "expect": 403,
+      "reason": "openai.com serves HTTP 403 to non-browser fetchers (curl, urllib, headless fetch all blocked). Page confirmed live via search index and multiple mirrors.",
+      "verified": "2026-08-27"
+    }
+  }
+}

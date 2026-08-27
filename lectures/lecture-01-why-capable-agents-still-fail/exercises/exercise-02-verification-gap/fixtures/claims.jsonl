@@ -1,0 +1,16 @@
+{"run": "g1", "type": "task", "detail": "add pagination to the list endpoint"}
+{"run": "g1", "type": "verification", "detail": "pytest tests/list", "result": "pass"}
+{"run": "g1", "type": "claim", "detail": "pagination done"}
+{"run": "g2", "type": "task", "detail": "fix the date formatting bug"}
+{"run": "g2", "type": "claim", "detail": "bug fixed"}
+{"run": "g3", "type": "task", "detail": "add retry logic to the client"}
+{"run": "g3", "type": "verification", "detail": "pytest tests/client", "result": "fail"}
+{"run": "g3", "type": "claim", "detail": "retries implemented"}
+{"run": "g4", "type": "task", "detail": "investigate the memory growth"}
+{"run": "g4", "type": "note", "detail": "profiling captured, no conclusion yet"}
+{"run": "g5", "type": "task", "detail": "rename the settings module"}
+{"run": "g5", "type": "verification", "detail": "pytest tests/settings", "result": "pass"}
+{"run": "g5", "type": "claim", "detail": "rename complete"}
+{"run": "g6", "type": "task", "detail": "tighten input validation"}
+{"run": "g6", "type": "claim", "detail": "validation tightened"}
+{"run": "g6", "type": "verification", "detail": "pytest tests/validation", "result": "pass"}

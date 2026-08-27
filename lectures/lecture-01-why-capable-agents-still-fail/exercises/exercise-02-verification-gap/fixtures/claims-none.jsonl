@@ -1,0 +1,3 @@
+{"run": "q1", "type": "task", "detail": "sketch the migration plan"}
+{"run": "q2", "type": "task", "detail": "collect baseline benchmarks"}
+{"run": "q2", "type": "verification", "detail": "pytest tests/bench", "result": "pass"}

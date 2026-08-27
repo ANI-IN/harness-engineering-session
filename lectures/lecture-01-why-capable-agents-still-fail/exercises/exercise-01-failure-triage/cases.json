@@ -1,0 +1,18 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "basic",
+      "args": ["fixtures/runs.jsonl"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/triage-report.json",
+        "kind": "json"
+      }
+    }
+  ]
+}
