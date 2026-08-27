@@ -15,7 +15,8 @@ Every `lecture-NN-<slug>/` directory contains:
   takeaways, exercises, further exploration.
 - **`code/`**: the demo, a shared `SPEC.md` + fixtures + expected outputs,
   implemented in `python/` and `typescript/`, checked by `verify.sh`.
-- **`exercises/`**: 2 exercises per lecture. Each gives you starter code
+- **`exercises/`**: 2 exercises for most lectures, 1 where the lecture's
+  mechanism is a single build (13 and 14). Each gives you starter code
   that runs but fails verification, and you modify it until
   `./verify.sh --stack=<your track>` exits 0. Committed solutions let you
   check your work.
@@ -39,6 +40,7 @@ minutes per lecture including exercises.
 | 10 | [Why end-to-end testing changes results](./lecture-10-why-end-to-end-testing-changes-results/) | Unit checks can all pass while the assembled path fails at a seam | [Project 05](../projects/project-05-self-verification-and-role-separation/) |
 | 11 | [Why observability belongs inside the harness](./lecture-11-why-observability-belongs-inside-the-harness/) | A session can only resume work whose history something recorded | Closest: [Project 04](../projects/project-04-runtime-feedback-and-scope-control/) |
 | 12 | [Why every session must leave a clean state](./lecture-12-why-every-session-must-leave-a-clean-state/) | What a session leaves behind decides what the next one can do | Closest: [Project 03](../projects/project-03-multi-session-continuity/), [Project 05](../projects/project-05-self-verification-and-role-separation/) |
+| 13 | [Loop engineering](./lecture-13-loop-engineering/) | A loop is only as good as the signal its stopping condition reads | None |
 
 This index lists every lecture the course currently contains; the
 [curriculum map](../docs/curriculum-map.md) shows how they connect.

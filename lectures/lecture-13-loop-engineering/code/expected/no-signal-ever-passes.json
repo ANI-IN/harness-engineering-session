@@ -1,0 +1,217 @@
+{
+  "loop": "wrong-target",
+  "goal": "the report exporter declares a writer, names an export directory, and carries a test case",
+  "stop_on": "checker",
+  "budget_ticks": 12,
+  "rounds": [
+    {
+      "round": 1,
+      "clock": 3,
+      "maker": {
+        "criterion": "writer-implemented",
+        "action": "appended writer=csv to src/report.txt",
+        "reports_done": true,
+        "why": "writer-implemented passes after the edit, and the maker reads the step it just finished as the job being finished"
+      },
+      "checker": {
+        "verdict": "fail",
+        "met": [
+          "writer-implemented"
+        ],
+        "unmet": [
+          "export-dir-wired",
+          "test-case-present"
+        ],
+        "checked": [
+          {
+            "criterion": "writer-implemented",
+            "status": "pass",
+            "detail": "src/report.txt declares writer once"
+          },
+          {
+            "criterion": "export-dir-wired",
+            "status": "fail",
+            "detail": "config/app.conf has no line starting with export_dir="
+          },
+          {
+            "criterion": "test-case-present",
+            "status": "fail",
+            "detail": "tests/report-test.txt missing"
+          }
+        ]
+      },
+      "stopping_condition": {
+        "reads": "checker",
+        "signal": "fail",
+        "decision": "continue"
+      }
+    },
+    {
+      "round": 2,
+      "clock": 6,
+      "maker": {
+        "criterion": "export-dir-wired",
+        "action": "appended export_dir=out/reports to config/app.conf",
+        "reports_done": true,
+        "why": "export-dir-wired passes after the edit, and the maker reads the step it just finished as the job being finished"
+      },
+      "checker": {
+        "verdict": "fail",
+        "met": [
+          "writer-implemented",
+          "export-dir-wired"
+        ],
+        "unmet": [
+          "test-case-present"
+        ],
+        "checked": [
+          {
+            "criterion": "writer-implemented",
+            "status": "pass",
+            "detail": "src/report.txt declares writer once"
+          },
+          {
+            "criterion": "export-dir-wired",
+            "status": "pass",
+            "detail": "config/app.conf has a line starting with export_dir="
+          },
+          {
+            "criterion": "test-case-present",
+            "status": "fail",
+            "detail": "tests/report-test.txt missing"
+          }
+        ]
+      },
+      "stopping_condition": {
+        "reads": "checker",
+        "signal": "fail",
+        "decision": "continue"
+      }
+    },
+    {
+      "round": 3,
+      "clock": 9,
+      "maker": {
+        "criterion": "test-case-present",
+        "action": "appended case=export to src/report.txt",
+        "reports_done": false,
+        "why": "test-case-present still fails after the edit: tests/report-test.txt missing"
+      },
+      "checker": {
+        "verdict": "fail",
+        "met": [
+          "writer-implemented",
+          "export-dir-wired"
+        ],
+        "unmet": [
+          "test-case-present"
+        ],
+        "checked": [
+          {
+            "criterion": "writer-implemented",
+            "status": "pass",
+            "detail": "src/report.txt declares writer once"
+          },
+          {
+            "criterion": "export-dir-wired",
+            "status": "pass",
+            "detail": "config/app.conf has a line starting with export_dir="
+          },
+          {
+            "criterion": "test-case-present",
+            "status": "fail",
+            "detail": "tests/report-test.txt missing"
+          }
+        ]
+      },
+      "stopping_condition": {
+        "reads": "checker",
+        "signal": "fail",
+        "decision": "continue"
+      }
+    },
+    {
+      "round": 4,
+      "clock": 12,
+      "maker": {
+        "criterion": null,
+        "action": "no step taken: every unmet criterion has already been attempted once",
+        "reports_done": false,
+        "why": "the maker changed nothing this round, so it claims nothing"
+      },
+      "checker": {
+        "verdict": "fail",
+        "met": [
+          "writer-implemented",
+          "export-dir-wired"
+        ],
+        "unmet": [
+          "test-case-present"
+        ],
+        "checked": [
+          {
+            "criterion": "writer-implemented",
+            "status": "pass",
+            "detail": "src/report.txt declares writer once"
+          },
+          {
+            "criterion": "export-dir-wired",
+            "status": "pass",
+            "detail": "config/app.conf has a line starting with export_dir="
+          },
+          {
+            "criterion": "test-case-present",
+            "status": "fail",
+            "detail": "tests/report-test.txt missing"
+          }
+        ]
+      },
+      "stopping_condition": {
+        "reads": "checker",
+        "signal": "fail",
+        "decision": "continue"
+      }
+    }
+  ],
+  "stop": {
+    "round": 5,
+    "clock": 12,
+    "fired_on": "clock",
+    "reason": "round 5 costs 3 ticks and the 12 tick budget has 0 left, so the loop cannot start it"
+  },
+  "loop_state": {
+    "loop": "wrong-target",
+    "clock": 12,
+    "status": "budget-exhausted",
+    "rounds": [
+      {
+        "round": 1,
+        "criterion": "writer-implemented",
+        "maker_reported": "done",
+        "checker_verdict": "fail"
+      },
+      {
+        "round": 2,
+        "criterion": "export-dir-wired",
+        "maker_reported": "done",
+        "checker_verdict": "fail"
+      },
+      {
+        "round": 3,
+        "criterion": "test-case-present",
+        "maker_reported": "not-done",
+        "checker_verdict": "fail"
+      },
+      {
+        "round": 4,
+        "criterion": null,
+        "maker_reported": "not-done",
+        "checker_verdict": "fail"
+      }
+    ]
+  },
+  "unmet": [
+    "test-case-present"
+  ],
+  "result": "budget-exhausted"
+}

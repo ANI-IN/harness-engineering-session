@@ -1,0 +1,74 @@
+{
+  "loop": "report-export",
+  "goal": "the report exporter declares a writer, names an export directory, and carries a test case",
+  "stop_on": "maker",
+  "budget_ticks": 12,
+  "rounds": [
+    {
+      "round": 1,
+      "clock": 3,
+      "maker": {
+        "criterion": "writer-implemented",
+        "action": "appended writer=csv to src/report.txt",
+        "reports_done": true,
+        "why": "writer-implemented passes after the edit, and the maker reads the step it just finished as the job being finished"
+      },
+      "checker": {
+        "verdict": "fail",
+        "met": [
+          "writer-implemented"
+        ],
+        "unmet": [
+          "export-dir-wired",
+          "test-case-present"
+        ],
+        "checked": [
+          {
+            "criterion": "writer-implemented",
+            "status": "pass",
+            "detail": "src/report.txt declares writer once"
+          },
+          {
+            "criterion": "export-dir-wired",
+            "status": "fail",
+            "detail": "config/app.conf has no line starting with export_dir="
+          },
+          {
+            "criterion": "test-case-present",
+            "status": "fail",
+            "detail": "tests/report-test.txt missing"
+          }
+        ]
+      },
+      "stopping_condition": {
+        "reads": "maker",
+        "signal": "pass",
+        "decision": "stop"
+      }
+    }
+  ],
+  "stop": {
+    "round": 1,
+    "clock": 3,
+    "fired_on": "maker",
+    "reason": "the stopping condition read the maker's signal as pass"
+  },
+  "loop_state": {
+    "loop": "report-export",
+    "clock": 3,
+    "status": "stopped-early",
+    "rounds": [
+      {
+        "round": 1,
+        "criterion": "writer-implemented",
+        "maker_reported": "done",
+        "checker_verdict": "fail"
+      }
+    ]
+  },
+  "unmet": [
+    "export-dir-wired",
+    "test-case-present"
+  ],
+  "result": "stopped-early"
+}

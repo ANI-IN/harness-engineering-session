@@ -1,0 +1,73 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "maker-signal-stops-with-work-remaining",
+      "args": [
+        "fixtures/loop-report-export",
+        "--stop-on=maker"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/stop-on-maker.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "checker-signal-reaches-the-goal",
+      "args": [
+        "fixtures/loop-report-export",
+        "--stop-on=checker"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/stop-on-checker.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "no-signal-ever-passes-so-the-clock-ends-it",
+      "args": [
+        "fixtures/loop-wrong-target",
+        "--stop-on=checker"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/no-signal-ever-passes.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-loop-directory",
+      "args": [
+        "fixtures/loop-no-such-loop",
+        "--stop-on=checker"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    },
+    {
+      "name": "unknown-stop-signal",
+      "args": [
+        "fixtures/loop-report-export",
+        "--stop-on=budget"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

@@ -153,7 +153,7 @@ canonical term everywhere, including the harness artifact headers.
 **Seeded defect**: a bug placed in a fixture on purpose, whose exact symptom
 and catching stage are declared in SPEC.md so both tracks fail identically.
 
-## Loop and graph vocabulary (lectures 13-14, later pass)
+## Loop and graph vocabulary
 
 **Loop**: an agent invocation wrapped in automation: a goal, a verification
 step, a stopping condition, and externalized loop state, repeated without a
