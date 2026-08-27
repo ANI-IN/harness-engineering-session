@@ -27,10 +27,10 @@ uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py" \
 
 if uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py" \
   --unit "$(pwd)" --stack "$STACK" --stage starter >/dev/null 2>&1; then
-  echo "verify: FAIL: the starter already passes the v2 cases; it must be a genuine starting point" >&2
+  echo "verify: FAIL: the starter already passes the v3 cases; it must be a genuine starting point" >&2
   exit 1
 fi
-echo "verify: starter stage fails the v2 cases as intended (genuine starting point)"
+echo "verify: starter stage fails the v3 cases as intended (genuine starting point)"
 
 if [ "$STACK" = "python" ] || [ "$STACK" = "both" ]; then
   (cd "$REPO_ROOT" && uv run pytest projects/project-03-multi-session-continuity -q)
