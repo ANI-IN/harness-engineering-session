@@ -1,0 +1,22 @@
+{
+  "documents": [
+    {
+      "id": "architecture-notes",
+      "title": "Architecture notes",
+      "filename": "architecture-notes.md",
+      "lines": 25
+    },
+    {
+      "id": "retrieval-plan",
+      "title": "Retrieval plan",
+      "filename": "retrieval-plan.md",
+      "lines": 24
+    },
+    {
+      "id": "team-meeting",
+      "title": "team-meeting.txt",
+      "filename": "team-meeting.txt",
+      "lines": 18
+    }
+  ]
+}

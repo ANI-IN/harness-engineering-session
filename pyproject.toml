@@ -19,7 +19,7 @@ dev = [
 package = false
 
 [tool.pytest.ini_options]
-testpaths = ["tools"]
+testpaths = ["tools", "projects"]
 addopts = "-q"
 
 [tool.ruff]

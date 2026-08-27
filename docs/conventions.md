@@ -43,8 +43,16 @@ Exercises replace the two implementation dirs with
 `starter/{python,typescript}/` and `solution/{python,typescript}/`; the
 conformance runner executes the **solution**, `verify.sh` exercises both.
 
-There is no third layout. A file that exists in one track and not the other
-must be explained by a line in that unit's SPEC.md.
+Projects whose starter is an experimental condition rather than a partial
+implementation (project 01's starter is a task prompt, by design) keep a
+complete `solution/{python,typescript}/` next to that non-code `starter/`;
+the conformance runner still executes the solution stage, and the
+project's SPEC.md and README state what the starter is. Projects may also
+carry `harness/` (language-neutral harness artifacts) and per-track
+`tests/` inside each solution, run by `make verify`.
+
+There is no other layout. A file that exists in one track and not the
+other must be explained by a line in that unit's SPEC.md.
 
 ## Workspace shape (single root toolchain)
 

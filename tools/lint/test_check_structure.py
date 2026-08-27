@@ -54,6 +54,30 @@ def test_complete_unit_passes(tmp_path):
     assert errors == []
 
 
+def test_solution_staged_unit_with_prompt_only_starter_passes(tmp_path):
+    _tree(
+        tmp_path,
+        "projects/project-01-x",
+        files=("SPEC.md", "cases.json"),
+        dirs=("fixtures", "expected", "starter", "solution/python", "solution/typescript"),
+    )
+    errors: list[str] = []
+    check_structure.check_units(errors, tmp_path)
+    assert errors == []
+
+
+def test_solution_staged_unit_missing_a_stack_detected(tmp_path):
+    _tree(
+        tmp_path,
+        "projects/project-01-x",
+        files=("SPEC.md", "cases.json"),
+        dirs=("fixtures", "expected", "starter", "solution/python"),
+    )
+    errors: list[str] = []
+    check_structure.check_units(errors, tmp_path)
+    assert any("lacks both stacks" in error for error in errors)
+
+
 def test_readme_sections_out_of_order_detected(tmp_path):
     lecture = _tree(tmp_path, "lectures/lecture-01-x")
     sections = [

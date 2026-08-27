@@ -57,7 +57,8 @@ Reading the graph:
   learning objectives; they sit between the lecture and its project in the
   learning flow (lecture → exercises → project).
 - A **solid arrow into a project** means the project is the hands-on
-  composition of that lecture's mechanism: project 01 runs the
+  composition of that lecture's mechanism:
+  [project 01](../projects/project-01-baseline-vs-minimal-harness/) runs the
   harness-vs-no-harness experiment (lectures 01-02), project 02 makes a
   workspace agent-readable (lectures 03-04), project 03 makes work survive
   session boundaries (lectures 05-06).

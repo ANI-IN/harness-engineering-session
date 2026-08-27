@@ -1,0 +1,95 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "init-creates-and-seeds",
+      "args": ["init", "--data-dir", "kb-data", "--seed", "fixtures/kb-data/documents"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/init.json",
+        "kind": "json",
+        "files": [
+          {
+            "path": "kb-data/documents/architecture-notes.md",
+            "expected": "fixtures/kb-data/documents/architecture-notes.md",
+            "kind": "text"
+          }
+        ]
+      }
+    },
+    {
+      "name": "list-documents",
+      "args": ["list", "--data-dir", "fixtures/kb-data"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/list.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "list-before-init",
+      "args": ["list", "--data-dir", "missing-dir"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": null,
+        "kind": "text"
+      }
+    },
+    {
+      "name": "ask-grounded",
+      "args": ["ask", "--data-dir", "fixtures/kb-data", "Which lines become citations in the ranking?"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/ask-ranking.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "ask-no-match",
+      "args": ["ask", "--data-dir", "fixtures/kb-data", "zeppelin cargo weather"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/ask-nomatch.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "serve-self-check",
+      "args": ["serve", "--data-dir", "fixtures/kb-data", "--self-check"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/self-check.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "usage-error",
+      "args": ["frobnicate"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    },
+    {
+      "name": "controlled-experiment",
+      "args": ["experiment", "--workdir", "work"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/experiment.json",
+        "kind": "json"
+      }
+    }
+  ]
+}

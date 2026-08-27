@@ -1,0 +1,9 @@
+{
+  "self_check": {
+    "health": {
+      "status": "ok",
+      "documents": 3
+    },
+    "documents": 3
+  }
+}

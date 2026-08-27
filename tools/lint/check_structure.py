@@ -137,7 +137,17 @@ def check_units(errors: list[str], root: Path) -> None:
                 for stage in ("starter", "solution")
                 for stack in ("python", "typescript")
             )
-            if not (plain or staged):
+            # Third accepted shape (projects): a complete dual-track
+            # solution/ next to a non-code starter/, where the starter is an
+            # experimental condition (e.g. a task prompt), not a partial
+            # implementation. The conformance runner executes the solution
+            # stage by default for such units.
+            solution_staged = (
+                (unit / "starter").is_dir()
+                and (unit / "solution" / "python").is_dir()
+                and (unit / "solution" / "typescript").is_dir()
+            )
+            if not (plain or staged or solution_staged):
                 missing = [
                     stack for stack in ("python", "typescript") if not (unit / stack).is_dir()
                 ]

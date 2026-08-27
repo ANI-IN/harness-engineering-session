@@ -246,8 +246,10 @@ nobody. Full per-configuration reports are pinned in
 
 Both are graded by shared expected output: `./verify.sh --stack=<yours>`
 exits 0 when your track's implementation is correct. The related project
-for this lecture is Project 01 (baseline vs minimal harness), which lands
-with the projects phase of this course.
+for this lecture is
+[Project 01: baseline vs minimal harness](../../projects/project-01-baseline-vs-minimal-harness/),
+which places this lecture's subsystems into a working directory and
+measures what they change.
 
 ## Further exploration
 

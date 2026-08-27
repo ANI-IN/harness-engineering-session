@@ -1,0 +1,20 @@
+{
+  "question": "Which lines become citations in the ranking?",
+  "citations": [
+    {
+      "document": "retrieval-plan",
+      "title": "Retrieval plan",
+      "line": 16,
+      "excerpt": "The ranking keeps the two best scoring lines and returns them as citations.",
+      "score": 3
+    },
+    {
+      "document": "architecture-notes",
+      "title": "Architecture notes",
+      "line": 16,
+      "excerpt": "Answers carry citations that name the source document and the exact line",
+      "score": 1
+    }
+  ],
+  "answer": "Based on \"Retrieval plan\" (line 16): The ranking keeps the two best scoring lines and returns them as citations. See also \"Architecture notes\" (line 16)."
+}

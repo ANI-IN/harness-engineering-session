@@ -1,0 +1,13 @@
+{
+  "data_dir": "kb-data",
+  "created": [
+    "kb-data",
+    "kb-data/documents",
+    "kb-data/index"
+  ],
+  "seeded": [
+    "architecture-notes.md",
+    "retrieval-plan.md",
+    "team-meeting.txt"
+  ]
+}

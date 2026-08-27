@@ -246,7 +246,11 @@ Applying this in a real repository:
 | [02: verification-gap](./exercises/exercise-02-verification-gap/) | A claims auditor that classifies every run and computes the verification gap | Medium | ~30 min |
 
 Both are graded by shared expected output: `./verify.sh --stack=<yours>`
-exits 0 when your track's implementation is correct.
+exits 0 when your track's implementation is correct. The related project
+for this lecture is
+[Project 01: baseline vs minimal harness](../../projects/project-01-baseline-vs-minimal-harness/),
+which turns this lecture's failure transcript into a controlled
+experiment.
 
 ## Further exploration
 
