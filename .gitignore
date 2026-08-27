@@ -29,3 +29,15 @@ coverage/
 .vscode/
 *.swp
 /projects/*/kb-data/
+
+# --- never ignore the grading authority ---
+# Fixtures and expected outputs are committed content: they grade both
+# tracks. Broad rules above (kb-data/, *.log) have twice swallowed one,
+# leaving the working tree green while a fresh clone failed. These
+# negations are enforced by check_ignored_content in
+# tools/lint/check_structure.py, which fails the build on any ignored file
+# under a unit's fixtures/ or expected/.
+!lectures/**/fixtures/**
+!lectures/**/expected/**
+!projects/**/fixtures/**
+!projects/**/expected/**

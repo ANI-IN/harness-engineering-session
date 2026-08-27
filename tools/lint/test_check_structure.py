@@ -305,3 +305,56 @@ def test_single_project_fixture_is_not_grouped(tmp_path):
     errors: list[str] = []
     check_structure.check_corpus_copies(errors, tmp_path)
     assert errors == []
+
+
+def _git_repo(root: Path, ignore: str) -> None:
+    """Minimal git work tree with the given .gitignore body."""
+    import subprocess
+
+    (root / ".gitignore").write_text(ignore, encoding="utf-8")
+    subprocess.run(["git", "init", "-q"], cwd=root, check=True, timeout=60)
+
+
+def test_ignored_fixture_detected(tmp_path):
+    """The failure that shipped twice: a broad rule swallows committed content."""
+    _git_repo(tmp_path, "*.log\n")
+    base = _tree(tmp_path, "lectures/lecture-01-x/code/fixtures/workspace/logs")
+    (base / "run.log").write_text("recorded run\n", encoding="utf-8")
+    errors: list[str] = []
+    check_structure.check_ignored_content(errors, tmp_path)
+    assert any("grading authority" in error and "run.log" in error for error in errors)
+
+
+def test_ignored_expected_output_detected(tmp_path):
+    _git_repo(tmp_path, "*.log\n")
+    base = _tree(tmp_path, "lectures/lecture-01-x/code/expected")
+    (base / "session.log").write_text("pinned output\n", encoding="utf-8")
+    errors: list[str] = []
+    check_structure.check_ignored_content(errors, tmp_path)
+    assert any("session.log" in error for error in errors)
+
+
+def test_ignored_build_artifact_outside_fixtures_allowed(tmp_path):
+    """__pycache__ under an implementation tree is a legitimate ignore."""
+    _git_repo(tmp_path, "__pycache__/\n")
+    base = _tree(tmp_path, "lectures/lecture-01-x/code/python/__pycache__")
+    (base / "main.cpython-312.pyc").write_text("bytecode\n", encoding="utf-8")
+    errors: list[str] = []
+    check_structure.check_ignored_content(errors, tmp_path)
+    assert errors == []
+
+
+def test_committed_fixture_not_reported(tmp_path):
+    _git_repo(tmp_path, "*.log\n!lectures/**/fixtures/**\n")
+    base = _tree(tmp_path, "lectures/lecture-01-x/code/fixtures/workspace/logs")
+    (base / "run.log").write_text("recorded run\n", encoding="utf-8")
+    errors: list[str] = []
+    check_structure.check_ignored_content(errors, tmp_path)
+    assert errors == []
+
+
+def test_outside_a_git_work_tree_is_a_no_op(tmp_path):
+    _tree(tmp_path, "lectures/lecture-01-x/code/fixtures")
+    errors: list[str] = []
+    check_structure.check_ignored_content(errors, tmp_path)
+    assert errors == []

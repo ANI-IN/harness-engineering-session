@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -338,6 +339,52 @@ def check_orphans(errors: list[str], root: Path) -> None:
                 errors.append(f"{_rel(directory, root)}: orphan directory (no files)")
 
 
+GRADING_AUTHORITY_DIRS = ("fixtures", "expected")
+
+
+def ignored_unit_files(root: Path) -> list[str]:
+    """Repository-relative paths under lectures/ or projects/ that git ignores.
+
+    Returns an empty list when git is unavailable or `root` is not a work
+    tree, so the check degrades to a no-op instead of a false failure.
+    """
+    try:
+        proc = subprocess.run(
+            [
+                "git", "ls-files", "--others", "--ignored", "--exclude-standard",
+                "-z", "--", "lectures", "projects",
+            ],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return []
+    if proc.returncode != 0:
+        return []
+    return [entry for entry in proc.stdout.split("\0") if entry]
+
+
+def check_ignored_content(errors: list[str], root: Path) -> None:
+    """Fixtures and expected outputs must be committed, never ignored.
+
+    Twice a broad ignore rule has silently swallowed committed curriculum
+    content: `kb-data/` took a project's corpus, `*.log` took a lecture's
+    workspace fixtures. Both times every gate stayed green, because the
+    gates read the working tree, where the file is present; only a fresh
+    clone failed. A file inside a unit's `fixtures/` or `expected/` is the
+    grading authority by definition, so git ignoring one is the defect.
+    """
+    for rel in ignored_unit_files(root):
+        if any(part in GRADING_AUTHORITY_DIRS for part in Path(rel).parts):
+            errors.append(
+                f"{rel}: git-ignored, but it is a unit's grading authority "
+                f"(fixtures/ or expected/); a fresh clone would not have it. "
+                f"Anchor or negate the .gitignore rule and commit the file"
+            )
+
+
 def counts(root: Path) -> dict[str, int]:
     return {
         "lectures": len(list(root.glob("lectures/lecture-*"))),
@@ -368,6 +415,7 @@ def check_tree(root: Path, floors: dict[str, int] | None = None) -> list[str]:
     check_section_orders(errors, root)
     check_corpus_copies(errors, root)
     check_orphans(errors, root)
+    check_ignored_content(errors, root)
     if floors is not None:
         check_floors(errors, root, floors)
     return errors
