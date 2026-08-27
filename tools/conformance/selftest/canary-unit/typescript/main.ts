@@ -17,6 +17,7 @@ interface CanaryInput {
   readonly tags: readonly string[];
   readonly meta: Readonly<Record<string, unknown>>;
   readonly parent: string | null;
+  readonly whole_factor: number;
   readonly notes_file: string;
 }
 
@@ -50,6 +51,7 @@ export function canary(raw: string): Record<string, unknown> {
   const data = JSON.parse(raw) as CanaryInput;
   return {
     notes: readNotes(data.notes_file),
+    whole: data.whole_factor,
     parent: data.parent,
     meta: data.meta,
     tags: data.tags,

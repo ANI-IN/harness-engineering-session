@@ -43,6 +43,9 @@ def canary(raw: str) -> dict[str, object]:
         "tags": data["tags"],
         "meta": data["meta"],
         "parent": data["parent"],
+        # Deliberately a float where JS can only emit an integer;
+        # canonical JSON unifies 2.0 with 2 (RFC 8785 semantics).
+        "whole": float(data["whole_factor"]),
         "notes": read_notes(data["notes_file"]),
     }
 

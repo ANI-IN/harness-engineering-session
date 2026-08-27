@@ -44,9 +44,18 @@ def normalize_paths_in_text(text: str) -> str:
 
 
 def _normalize_json_value(value: Any) -> Any:
-    """Recursively normalize path separators inside JSON string values."""
+    """Recursively normalize path separators and unify integral floats.
+
+    JavaScript has a single number type, so 1.0 can only serialize as 1;
+    Python distinguishes float from int. Canonical JSON treats them as the
+    same number (RFC 8785 semantics): integral floats become integers.
+    """
     if isinstance(value, str):
         return normalize_paths_in_text(value)
+    if isinstance(value, bool):  # bool is an int subclass; keep it out of the int branch
+        return value
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
     if isinstance(value, list):
         return [_normalize_json_value(item) for item in value]
     if isinstance(value, dict):

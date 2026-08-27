@@ -38,7 +38,14 @@ class TestNormalizeJson:
         # 0.1 + 0.2 prints as 0.30000000000000004 in both languages' shortest
         # repr; canonical serialization keeps them identical.
         assert normalize_json("[0.30000000000000004]") == "[\n  0.30000000000000004\n]\n"
-        assert normalize_json("[1.0]") == "[\n  1.0\n]\n"
+
+    def test_integral_floats_unify_with_integers(self):
+        # Python emits 1.0 where JavaScript can only emit 1; canonical JSON
+        # treats them as the same number (RFC 8785 semantics).
+        assert normalize_json("[1.0]") == "[\n  1\n]\n"
+        assert normalize_json('{"rate": 0.0}') == '{\n  "rate": 0\n}\n'
+        assert normalize_json("[1.5]") == "[\n  1.5\n]\n"
+        assert normalize_json("[true, false]") == "[\n  true,\n  false\n]\n"
 
     def test_path_separators_inside_strings(self):
         out = normalize_json(json.dumps({"p": "a\\b\\c.txt"}))

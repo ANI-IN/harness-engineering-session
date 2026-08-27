@@ -94,8 +94,10 @@ compares outputs after the normalization pass defined in
 3. Output ends with exactly one newline (empty stays empty).
 4. JSON payloads are re-serialized canonically: sorted keys, 2-space indent.
 5. Path separators normalize to POSIX `/` (in text and inside JSON strings).
-6. Floats inside JSON round-trip through canonical serialization; floats in
-   plain text must be explicitly formatted by the unit per its SPEC.md.
+6. Floats inside JSON round-trip through canonical serialization, and
+   integral floats unify with integers (Python's `1.0` and JavaScript's `1`
+   are the same JSON number, per RFC 8785 semantics); floats in plain text
+   must be explicitly formatted by the unit per its SPEC.md.
 7. Canonical JSON emits literal UTF-8: Python's default `ensure_ascii`
    escaping and TypeScript's literal output normalize to the same bytes.
 

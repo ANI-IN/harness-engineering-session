@@ -37,6 +37,7 @@ Writes a JSON report with exactly these fields:
 | `tags` | echoed empty list |
 | `meta` | echoed empty object |
 | `parent` | echoed null |
+| `whole` | `whole_factor` echoed as a number (see divergence table) |
 | `notes` | statistics over `notes_file`, see below |
 
 `notes` is nested more than two levels deep by design:
@@ -85,6 +86,7 @@ exactly one line: `wrote <file>`.
 | Indentation | 2-space | 4-space |
 | Trailing whitespace | none | two trailing spaces per line |
 | Non-ASCII in JSON (stdout and written file) | `\uXXXX` escapes (`ensure_ascii=True`) | literal UTF-8 (`café`, `☕`, `🚀`) |
+| Integral numbers (`whole` field) | float `2.0` | integer `2` (JS has one number type) |
 | stderr wording | `canary: ...` (2 lines) | `[canary] ...` (3 lines) |
 
 Raw outputs therefore always differ; after normalization (canonical JSON
