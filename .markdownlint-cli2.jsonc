@@ -1,0 +1,14 @@
+{
+  // Markdown lint policy for the whole course.
+  // Kept intentionally small: formatting freedom where it aids teaching,
+  // strictness where drift would hurt (headings, code fences, links).
+  "config": {
+    "default": true,
+    "MD013": false, // line length: prose and tables read better unwrapped
+    "MD033": false, // inline HTML: needed for <details> progressive hints
+    "MD024": { "siblings_only": true }, // repeated headings across sections are fine
+    "MD041": false // first line need not be a top-level heading (front links)
+  },
+  "globs": ["**/*.md"],
+  "ignores": ["node_modules/**", "_reference/**", "RESEARCH.md", "PROPOSAL.md", "BUILD_PROGRESS.md"]
+}

@@ -1,0 +1,31 @@
+[project]
+name = "harness-course"
+version = "0.1.0"
+description = "Root Python toolchain for the Harness Engineering course: shared test runner, conformance runner, and lint tooling."
+requires-python = "==3.12.*"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "jsonschema>=4.23",
+    "pytest>=8.3",
+    "ruff>=0.9",
+]
+
+# This root is a toolchain, not an installable package. Curriculum units keep
+# plain source trees under <unit>/python/ and are executed through this root
+# environment (see docs/conventions.md, "Workspace shape").
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tools"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["_reference"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]

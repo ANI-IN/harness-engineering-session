@@ -1,0 +1,56 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+        node-version: ["20"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Enable pnpm via corepack
+        run: corepack enable pnpm
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Setup
+        run: make setup
+
+      - name: Doctor
+        run: make doctor
+
+      - name: Verify
+        run: make verify
+
+      - name: Conformance
+        run: make conformance
+
+      - name: Lint
+        run: make lint
+
+      - name: Link check (relative)
+        run: make lint-links
+
+      - name: Mermaid check
+        run: make lint-mermaid
+
+      - name: Structure check
+        run: make lint-structure

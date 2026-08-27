@@ -1,0 +1,36 @@
+{
+  "$schema": "./feature_list.schema.json",
+  "project": "example-notes-app",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "note-create",
+      "title": "Create a note",
+      "behavior": "`notes add <title>` creates a markdown file under data/notes/ and prints its path.",
+      "verification": "./verify.sh note-create",
+      "status": "passing",
+      "evidence": {
+        "command": "./verify.sh note-create",
+        "observed": "exit 0; created data/notes/first-note.md; 3 assertions passed",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "note-list",
+      "title": "List notes",
+      "behavior": "`notes list` prints one line per stored note: id, title, modified date.",
+      "verification": "./verify.sh note-list",
+      "status": "in-progress",
+      "depends_on": ["note-create"],
+      "notes": "Sorting by modified date not implemented yet; listing works."
+    },
+    {
+      "id": "note-search",
+      "title": "Search notes",
+      "behavior": "`notes search <term>` prints matching notes with the matching line quoted.",
+      "verification": "./verify.sh note-search",
+      "status": "not-started",
+      "depends_on": ["note-list"]
+    }
+  ]
+}

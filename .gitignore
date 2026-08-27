@@ -1,0 +1,30 @@
+# --- build-session working files (never shipped) ---
+_reference/
+RESEARCH.md
+PROPOSAL.md
+build_state.json
+BUILD_PROGRESS.md
+
+# --- dependencies ---
+node_modules/
+.venv/
+
+# --- build / test caches and outputs ---
+dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+coverage/
+.coverage
+*.tsbuildinfo
+.vite/
+.vitest/
+
+# --- logs and OS/editor noise ---
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.swp
