@@ -1,0 +1,18 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "basic",
+      "args": ["fixtures/repos"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/audit-report.json",
+        "kind": "json"
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "project": "notes-tool",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "stamp-header",
+      "title": "Stamp the notes header",
+      "behavior": "The notes file begins with a stamped header line.",
+      "verification": "run_check date-format",
+      "status": "passing",
+      "evidence": {
+        "command": "run_check date-format",
+        "observed": "check passed on header artifact",
+        "date": "2026-08-26"
+      }
+    },
+    {
+      "id": "format-dates",
+      "title": "Format dates",
+      "behavior": "Dates in the notes artifact use the project's date convention.",
+      "verification": "run_check date-format",
+      "status": "not-started"
+    },
+    {
+      "id": "archive-notes",
+      "title": "Archive notes",
+      "behavior": "Old notes move to the archive.",
+      "verification": "run_check date-format",
+      "status": "not-started",
+      "depends_on": ["format-dates"]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "baseline": {
+    "outcome": "completed-verified",
+    "issues": 0
+  },
+  "ablations": [
+    {
+      "disabled": "instructions",
+      "outcome": "failed-verification",
+      "outcome_changed": true,
+      "issues": 1,
+      "signature": "convention violation: wrote 08/27/2026 where ISO 8601 UTC is required (caught by run_check)"
+    },
+    {
+      "disabled": "state",
+      "outcome": "completed-redundant",
+      "outcome_changed": true,
+      "issues": 1,
+      "signature": "re-implemented stamp-header, already passing in feature_list.json; format-dates remains not-started"
+    },
+    {
+      "disabled": "environment",
+      "outcome": "error",
+      "outcome_changed": true,
+      "issues": 1,
+      "signature": "formatter dependency unavailable; date rendering failed"
+    },
+    {
+      "disabled": "tools",
+      "outcome": "blocked",
+      "outcome_changed": true,
+      "issues": 1,
+      "signature": "write_file not permitted; work product could not be written"
+    },
+    {
+      "disabled": "feedback",
+      "outcome": "claimed-unverified",
+      "outcome_changed": true,
+      "issues": 1,
+      "signature": "completion claimed without running run_check date-format"
+    }
+  ],
+  "all_degraded": true
+}

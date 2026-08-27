@@ -1,0 +1,93 @@
+{
+  "repos": [
+    {
+      "name": "repo-complete",
+      "subsystems": {
+        "instructions": {
+          "present": true,
+          "evidence": "AGENTS.md"
+        },
+        "tools": {
+          "present": true,
+          "evidence": "verify.sh"
+        },
+        "environment": {
+          "present": true,
+          "evidence": "pyproject.toml + .python-version"
+        },
+        "state": {
+          "present": true,
+          "evidence": "feature_list.json + claude-progress.md"
+        },
+        "feedback": {
+          "present": true,
+          "evidence": "Verification line in AGENTS.md"
+        }
+      },
+      "score": "5/5",
+      "missing": []
+    },
+    {
+      "name": "repo-no-state",
+      "subsystems": {
+        "instructions": {
+          "present": true,
+          "evidence": "AGENTS.md"
+        },
+        "tools": {
+          "present": true,
+          "evidence": "verify.sh"
+        },
+        "environment": {
+          "present": true,
+          "evidence": "pyproject.toml + .python-version"
+        },
+        "state": {
+          "present": false,
+          "evidence": null
+        },
+        "feedback": {
+          "present": true,
+          "evidence": "Verification line in AGENTS.md"
+        }
+      },
+      "score": "4/5",
+      "missing": [
+        "state"
+      ]
+    },
+    {
+      "name": "repo-prompt-only",
+      "subsystems": {
+        "instructions": {
+          "present": true,
+          "evidence": "AGENTS.md"
+        },
+        "tools": {
+          "present": false,
+          "evidence": null
+        },
+        "environment": {
+          "present": false,
+          "evidence": null
+        },
+        "state": {
+          "present": false,
+          "evidence": null
+        },
+        "feedback": {
+          "present": false,
+          "evidence": null
+        }
+      },
+      "score": "1/5",
+      "missing": [
+        "tools",
+        "environment",
+        "state",
+        "feedback"
+      ]
+    }
+  ],
+  "audited": 3
+}

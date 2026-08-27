@@ -1,0 +1,56 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "full",
+      "args": ["fixtures/workspace"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/full.json", "kind": "json" }
+    },
+    {
+      "name": "disable-instructions",
+      "args": ["fixtures/workspace", "--disable=instructions"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/disable-instructions.json", "kind": "json" }
+    },
+    {
+      "name": "disable-state",
+      "args": ["fixtures/workspace", "--disable=state"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/disable-state.json", "kind": "json" }
+    },
+    {
+      "name": "disable-environment",
+      "args": ["fixtures/workspace", "--disable=environment"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/disable-environment.json", "kind": "json" }
+    },
+    {
+      "name": "disable-tools",
+      "args": ["fixtures/workspace", "--disable=tools"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/disable-tools.json", "kind": "json" }
+    },
+    {
+      "name": "disable-feedback",
+      "args": ["fixtures/workspace", "--disable=feedback"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/disable-feedback.json", "kind": "json" }
+    },
+    {
+      "name": "ablation-table",
+      "args": ["fixtures/workspace", "--ablation-table"],
+      "stdin": null,
+      "expect": { "exit_code": 0, "stdout": "expected/ablation-table.txt", "kind": "text" }
+    },
+    {
+      "name": "unknown-subsystem",
+      "args": ["fixtures/workspace", "--disable=prompts"],
+      "stdin": null,
+      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+    }
+  ]
+}

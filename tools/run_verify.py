@@ -22,12 +22,21 @@ SEARCH_ROOTS = ("lectures", "projects", "tools/conformance/selftest")
 COUNTS_MANIFEST = REPO_ROOT / "tools" / "expected_counts.json"
 
 
+EXEMPT_PARTS = {"fixtures", "expected", "starter", "solution"}
+
+
 def discover_scripts(root: Path) -> list[Path]:
+    """Find unit verify.sh scripts. Scripts inside fixtures/, expected/,
+    starter/, or solution/ are unit *content* (e.g. a fixture repo being
+    audited), not verification entry points, and are never executed here."""
     scripts = []
     for search_root in SEARCH_ROOTS:
         base = root / search_root
         if base.is_dir():
-            scripts.extend(sorted(base.rglob("verify.sh")))
+            scripts.extend(
+                script for script in sorted(base.rglob("verify.sh"))
+                if not any(part in EXEMPT_PARTS for part in script.relative_to(base).parts)
+            )
     return scripts
 
 

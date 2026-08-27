@@ -69,6 +69,18 @@ def test_all_json_templates_parse():
         json.loads(path.read_text(encoding="utf-8"))
 
 
+def test_every_fixture_feature_list_validates(schema):
+    """Curriculum fixtures named feature_list.json must be real instances of
+    the canonical artifact, not lookalikes in a divergent dialect."""
+    found = sorted(REPO_ROOT.glob("lectures/**/feature_list.json")) + sorted(
+        REPO_ROOT.glob("projects/**/feature_list.json")
+    )
+    assert found, "expected at least one fixture feature_list.json in the curriculum"
+    for path in found:
+        instance = json.loads(path.read_text(encoding="utf-8"))
+        jsonschema.Draft202012Validator(schema).validate(instance)
+
+
 def test_init_sh_is_executable():
     mode = (TEMPLATES / "init.sh").stat().st_mode
     assert mode & 0o111, "library/templates/init.sh must be executable"

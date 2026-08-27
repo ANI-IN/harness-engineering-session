@@ -1,0 +1,40 @@
+{
+  "disabled": "environment",
+  "feature": "format-dates",
+  "convention": "ISO 8601 UTC",
+  "steps": [
+    {
+      "subsystem": "instructions",
+      "ok": true,
+      "note": "read convention from AGENTS.md: dates are ISO 8601 UTC (YYYY-MM-DDTHH:MM:SSZ)"
+    },
+    {
+      "subsystem": "state",
+      "ok": true,
+      "note": "feature_list.json: next feature is format-dates"
+    },
+    {
+      "subsystem": "environment",
+      "ok": false,
+      "note": "disabled: formatter unavailable"
+    },
+    {
+      "subsystem": "tools",
+      "ok": false,
+      "note": "skipped: nothing to write (environment failure)"
+    },
+    {
+      "subsystem": "feedback",
+      "ok": false,
+      "note": "skipped: no artifact to check"
+    }
+  ],
+  "artifact": {
+    "written": false,
+    "content": null
+  },
+  "outcome": "error",
+  "issues": [
+    "formatter dependency unavailable; date rendering failed"
+  ]
+}

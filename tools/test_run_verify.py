@@ -32,3 +32,14 @@ def test_one_failure_among_many_still_fails(tmp_path):
 def test_below_floor_fails(tmp_path):
     (tmp_path / "lectures").mkdir()
     assert run_verify.run_all(tmp_path, floor=1) == 1
+
+
+def test_fixture_and_stage_scripts_are_not_executed(tmp_path):
+    _script(tmp_path, "lectures/lecture-01-x/verify.sh", 0)
+    _script(tmp_path, "lectures/lecture-01-x/fixtures/repos/r/verify.sh", 1)
+    _script(tmp_path, "lectures/lecture-01-x/starter/python/verify.sh", 1)
+    scripts = run_verify.discover_scripts(tmp_path)
+    assert [str(s.relative_to(tmp_path)) for s in scripts] == [
+        "lectures/lecture-01-x/verify.sh"
+    ]
+    assert run_verify.run_all(tmp_path, floor=1) == 0

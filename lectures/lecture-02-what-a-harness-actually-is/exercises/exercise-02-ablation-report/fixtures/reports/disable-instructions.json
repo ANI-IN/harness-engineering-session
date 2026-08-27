@@ -1,0 +1,40 @@
+{
+  "disabled": "instructions",
+  "feature": "format-dates",
+  "convention": "MM/DD/YYYY (guessed)",
+  "steps": [
+    {
+      "subsystem": "instructions",
+      "ok": false,
+      "note": "disabled: no AGENTS.md; guessing convention MM/DD/YYYY"
+    },
+    {
+      "subsystem": "state",
+      "ok": true,
+      "note": "feature_list.json: next feature is format-dates"
+    },
+    {
+      "subsystem": "environment",
+      "ok": true,
+      "note": "formatter dependency installed"
+    },
+    {
+      "subsystem": "tools",
+      "ok": true,
+      "note": "write_file: artifact written"
+    },
+    {
+      "subsystem": "feedback",
+      "ok": true,
+      "note": "run_check date-format: FAIL (convention violation caught)"
+    }
+  ],
+  "artifact": {
+    "written": true,
+    "content": "date: 08/27/2026"
+  },
+  "outcome": "failed-verification",
+  "issues": [
+    "convention violation: wrote 08/27/2026 where ISO 8601 UTC is required (caught by run_check)"
+  ]
+}

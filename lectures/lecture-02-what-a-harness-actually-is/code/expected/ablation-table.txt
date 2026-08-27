@@ -1,0 +1,7 @@
+disabled | outcome | issues
+(none) | completed-verified | 0
+instructions | failed-verification | 1
+state | completed-redundant | 1
+environment | error | 1
+tools | blocked | 1
+feedback | claimed-unverified | 1

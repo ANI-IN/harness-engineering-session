@@ -1,0 +1,40 @@
+{
+  "disabled": "state",
+  "feature": "stamp-header",
+  "convention": "ISO 8601 UTC",
+  "steps": [
+    {
+      "subsystem": "instructions",
+      "ok": true,
+      "note": "read convention from AGENTS.md: dates are ISO 8601 UTC (YYYY-MM-DDTHH:MM:SSZ)"
+    },
+    {
+      "subsystem": "state",
+      "ok": false,
+      "note": "disabled: no feature list; starting from stamp-header"
+    },
+    {
+      "subsystem": "environment",
+      "ok": true,
+      "note": "formatter dependency installed"
+    },
+    {
+      "subsystem": "tools",
+      "ok": true,
+      "note": "write_file: artifact written"
+    },
+    {
+      "subsystem": "feedback",
+      "ok": true,
+      "note": "run_check date-format: pass"
+    }
+  ],
+  "artifact": {
+    "written": true,
+    "content": "header: notes v1 (2026-08-27T00:00:00Z)"
+  },
+  "outcome": "completed-redundant",
+  "issues": [
+    "re-implemented stamp-header, already passing in feature_list.json; format-dates remains not-started"
+  ]
+}

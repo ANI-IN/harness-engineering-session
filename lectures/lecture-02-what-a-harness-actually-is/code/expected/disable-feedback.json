@@ -1,0 +1,40 @@
+{
+  "disabled": "feedback",
+  "feature": "format-dates",
+  "convention": "ISO 8601 UTC",
+  "steps": [
+    {
+      "subsystem": "instructions",
+      "ok": true,
+      "note": "read convention from AGENTS.md: dates are ISO 8601 UTC (YYYY-MM-DDTHH:MM:SSZ)"
+    },
+    {
+      "subsystem": "state",
+      "ok": true,
+      "note": "feature_list.json: next feature is format-dates"
+    },
+    {
+      "subsystem": "environment",
+      "ok": true,
+      "note": "formatter dependency installed"
+    },
+    {
+      "subsystem": "tools",
+      "ok": true,
+      "note": "write_file: artifact written"
+    },
+    {
+      "subsystem": "feedback",
+      "ok": false,
+      "note": "disabled: completion claimed without running the check"
+    }
+  ],
+  "artifact": {
+    "written": true,
+    "content": "date: 2026-08-27T00:00:00Z"
+  },
+  "outcome": "claimed-unverified",
+  "issues": [
+    "completion claimed without running run_check date-format"
+  ]
+}
