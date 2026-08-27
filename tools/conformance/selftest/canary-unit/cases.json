@@ -15,6 +15,23 @@
       }
     },
     {
+      "name": "report-to-subdirectory",
+      "args": ["fixtures/input.json", "--out", "out/nested/report.json"],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/report-stdout.txt",
+        "kind": "text",
+        "files": [
+          {
+            "path": "out/nested/report.json",
+            "expected": "expected/basic.json",
+            "kind": "json"
+          }
+        ]
+      }
+    },
+    {
       "name": "missing-input",
       "args": ["fixtures/no-such-file.json"],
       "stdin": null,

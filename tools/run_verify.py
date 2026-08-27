@@ -44,8 +44,14 @@ def run_all(root: Path, floor: int) -> int:
     failures = 0
     for script in scripts:
         label = script.relative_to(root) if script.is_relative_to(root) else script
+        command = ["bash", str(script), "--stack=both"]
+        # Exercises default to checking the learner's starter workspace; the
+        # repo-level invariant is --target=ci (starter fails as intended AND
+        # solution passes). See docs/conventions.md.
+        if "exercises" in script.parts:
+            command.append("--target=ci")
         print(f"verify: running {label}")
-        proc = subprocess.run(["bash", str(script), "--stack=both"], cwd=script.parent)
+        proc = subprocess.run(command, cwd=script.parent)
         if proc.returncode != 0:
             print(f"verify: FAIL: {label} exited {proc.returncode}")
             failures += 1

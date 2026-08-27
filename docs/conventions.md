@@ -96,10 +96,30 @@ compares outputs after the normalization pass defined in
 5. Path separators normalize to POSIX `/` (in text and inside JSON strings).
 6. Floats inside JSON round-trip through canonical serialization; floats in
    plain text must be explicitly formatted by the unit per its SPEC.md.
+7. Canonical JSON emits literal UTF-8: Python's default `ensure_ascii`
+   escaping and TypeScript's literal output normalize to the same bytes.
 
 **Any divergence the normalizer cannot absorb is a spec bug in the unit, never
 a runner setting.** If two tracks disagree after normalization, the spec is
 under-specified: tighten SPEC.md and fix the implementations.
+
+### Semantic rules the normalizer cannot carry (SPEC.md obligations)
+
+Three divergence classes are about behavior, not formatting. The normalizer
+does not touch them; every SPEC.md inherits these rules and implementations
+must obey them (the conformance canary demonstrates all three):
+
+- **stderr is diagnostics only.** The observable contract is stdout, exit
+  codes, and written files. stderr is never asserted and never compared;
+  anything that must match goes to stdout or a file.
+- **Input line endings are the implementation's job.** The normalizer
+  applies to outputs only. Fixture inputs may deliberately contain CRLF;
+  implementations treat LF and CRLF alike as line separators (Python text
+  mode does this automatically; TypeScript must split on `/\r?\n/`).
+- **String lengths count Unicode code points**, not UTF-16 code units.
+  `mega🚀rocket` has length 11. TypeScript implementations use code-point
+  iteration (`[...str].length`), never `String.length`, wherever a SPEC
+  involves lengths or indexing.
 
 ## The verification contract
 
@@ -112,6 +132,24 @@ Every `verify.sh`, and every conformance run:
 - writes nothing outside its own unit directory or a temp directory;
 - is deterministic: injected clocks, fixed seeds, and the deterministic fake
   agent replace time, randomness, and model calls.
+
+Exercise `verify.sh` scripts additionally accept
+`--target=starter|solution|ci` (default `starter`, the learner's workspace):
+`starter` and `solution` check that stage's implementation against
+`expected/`; `ci` asserts the repo invariant instead (the pristine starter
+fails for its intended reason AND the solution passes). The repo-level
+verify loop (`tools/run_verify.py`) calls exercise scripts with
+`--target=ci`.
+
+### Fail-on-empty floors
+
+`tools/expected_counts.json` records the minimum number of conformance
+units, verify scripts, lectures, exercises, and projects the tree must
+contain. Discovery reporting fewer is a build failure, so a broken glob can
+never look like success. **The commit that lands a unit must bump the
+relevant floors in the same commit, and a unit is not done until
+`make conformance` and `make verify` have been run green with the raised
+floors.**
 
 ## Exercise anatomy
 

@@ -106,6 +106,14 @@ def minimum_units() -> int:
     return int(manifest["min_conformance_units"])
 
 
+def resolve_entry(unit: Path, entry: str, stage: str | None) -> str:
+    """Staged units (starter/ + solution/) write cases.json entries relative
+    to the stage directory; plain units write them relative to the unit."""
+    if (unit / "solution").is_dir() and (unit / "starter").is_dir():
+        return f"{stage or 'solution'}/{entry}"
+    return entry
+
+
 def _entry_command(unit: Path, entry: str) -> list[str]:
     path = unit / entry
     if entry.endswith(".py"):
@@ -186,13 +194,15 @@ def run_case(unit: Path, entry: str, case: dict, stack: str, workdir: Path) -> C
     return CaseResult(unit_label(unit), name, stack, True, stdout_normalized=got_stdout)
 
 
-def run_unit(unit: Path, stacks: tuple[str, ...] = ALL_STACKS) -> UnitReport:
+def run_unit(
+    unit: Path, stacks: tuple[str, ...] = ALL_STACKS, stage: str | None = None
+) -> UnitReport:
     config = json.loads((unit / "cases.json").read_text(encoding="utf-8"))
     report = UnitReport(unit_label(unit))
     by_case: dict[str, dict[str, CaseResult]] = {}
 
     for stack in stacks:
-        entry = config["entry"][stack]
+        entry = resolve_entry(unit, config["entry"][stack], stage)
         for case in config["cases"]:
             with tempfile.TemporaryDirectory(prefix="conformance-") as tmp:
                 workdir = Path(tmp)
@@ -227,6 +237,10 @@ def main() -> int:
         "--stack", choices=["python", "typescript", "both"], default="both",
         help="restrict execution to one stack (cross-stack diff needs both)",
     )
+    parser.add_argument(
+        "--stage", choices=["starter", "solution"], default=None,
+        help="for staged units (exercises): which stage to execute (default solution)",
+    )
     args = parser.parse_args()
     stacks = ALL_STACKS if args.stack == "both" else (args.stack,)
 
@@ -249,7 +263,7 @@ def main() -> int:
     failures = 0
     checked = 0
     for unit in units:
-        report = run_unit(unit, stacks)
+        report = run_unit(unit, stacks, args.stage)
         checked += len(report.results)
         status = "OK" if report.ok else "FAIL"
         print(f"conformance: {report.unit}: {status}")

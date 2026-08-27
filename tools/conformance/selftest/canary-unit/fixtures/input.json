@@ -1,5 +1,9 @@
 {
-  "label": "canary",
+  "label": "canary café ☕",
   "factors": [0.1, 0.2],
-  "segments": ["data", "notes", "first.md"]
+  "segments": ["data", "notes", "first.md"],
+  "tags": [],
+  "meta": {},
+  "parent": null,
+  "notes_file": "fixtures/notes.txt"
 }

@@ -1,6 +1,19 @@
 {
-  "label": "canary",
+  "label": "canary café ☕",
+  "meta": {},
+  "notes": {
+    "lines": 3,
+    "words": {
+      "longest": {
+        "length": 11,
+        "text": "mega🚀rocket"
+      },
+      "total": 9
+    }
+  },
+  "parent": null,
   "path": "data/notes/first.md",
   "segment_count": 3,
-  "sum": 0.30000000000000004
+  "sum": 0.30000000000000004,
+  "tags": []
 }

@@ -36,9 +36,12 @@ entry point. It is a router; depth lives in the linked docs.
 ## Definition of done
 
 - [ ] The relevant `verify.sh` and `make conformance` exit 0.
-- [ ] All six lint targets pass.
+- [ ] All lint targets pass.
 - [ ] New content follows the README section orders in conventions.md.
 - [ ] Cross-links added both directions (lecture ↔ exercise ↔ project).
+- [ ] The same commit that lands a unit bumps `tools/expected_counts.json`,
+      and `make conformance` + `make verify` ran green with the raised
+      floors before the commit.
 
 ## End of session
 
