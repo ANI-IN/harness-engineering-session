@@ -1,0 +1,55 @@
+{
+  "repo": "repo-ready",
+  "budget": 12,
+  "events": [
+    {
+      "step": 1,
+      "action": "read the progress log",
+      "outcome": "resume point found; no re-derivation"
+    },
+    {
+      "step": 2,
+      "action": "install dependencies",
+      "outcome": "pinned interpreter; install clean"
+    },
+    {
+      "step": 3,
+      "action": "run init.sh",
+      "outcome": "environment verified strictly"
+    },
+    {
+      "step": 4,
+      "action": "feature step 1",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 5,
+      "action": "feature step 2",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 6,
+      "action": "feature step 3",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 7,
+      "action": "feature step 4",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 8,
+      "action": "feature step 5",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 9,
+      "action": "run the verification command (AGENTS.md: ./verify.sh)",
+      "outcome": "pass"
+    }
+  ],
+  "steps_spent": 9,
+  "setup_overhead": 0,
+  "feature_completed": true,
+  "verified": true
+}

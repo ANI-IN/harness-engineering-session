@@ -1,5 +1,28 @@
 # SPEC: init-check
 
+Two surfaces over the same four readiness checks: `replay`, the
+behavioral demo, and `doctor`, the gate that predicts it.
+
+## The replay (the demo, pinned)
+
+`main replay <repo-dir>` runs a scripted session with a step budget of
+12 after a fixed feature task (five feature steps plus one verification
+step). Costs derive from the doctor's checks and nothing else:
+
+| Failing check | When it bites | Cost |
+| --- | --- | --- |
+| `progress-artifact` | session start | 2 extra steps of re-derivation |
+| `dependencies-pinned` | dependency install | 1 extra step (mid-install failure, pin by hand) |
+| `init-script` | after feature step 2 | 2 extra steps (mysterious failure traced to the half-built environment) |
+| `verification-command` | at completion | the finished feature is claimed unverified |
+
+Output: `{"repo", "budget", "events": [{"step", "action", "outcome"}],
+"steps_spent", "setup_overhead", "feature_completed", "verified"}`. Exit
+0 when the feature completed AND was verified; 1 otherwise. On the
+committed fixtures the broken repository exhausts its budget at feature
+step four (exit 1) and the ready repository finishes verified in nine
+steps (exit 0); the pinned transcripts are the lecture's argument.
+
 The startup-readiness doctor: four file-based checks that decide whether a
 fresh session can start from a known-good state. Both tracks read the same
 repositories and must emit the same report; `expected/` is the grading
@@ -8,7 +31,8 @@ authority.
 ## CLI surface
 
 ```text
-main <repo-dir>
+main <repo-dir>            # the doctor
+main replay <repo-dir>     # the session replay
 ```
 
 ## The four checks (fixed order)

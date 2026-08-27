@@ -1,10 +1,15 @@
-"""init-check: the startup-readiness doctor.
+"""init-check: the session replay and the startup-readiness doctor.
 
-Runs the four readiness checks a fresh session depends on, in order, and
-delivers a verdict: exit 0 when every later session can start from a
-known-good state, exit 1 when initialization still owes something. All
-checks are file-based and language-neutral; SPEC.md pins each rule and the
-seeded symptoms in the broken fixture.
+`replay` is the demo: a scripted session with a fixed step budget attempts
+the same feature task against a repository, and every failing readiness
+check injects its cost at the exact moment it bites (a missing progress
+log costs re-derivation at the start; a missing pin costs a mid-install
+failure; a non-strict init script costs a mysterious mid-feature failure).
+On the broken fixture the budget runs out mid-feature: the collapsing
+session is demonstrated, not narrated. `doctor` (the original surface)
+runs the same four checks up front and predicts the replay, which is the
+lecture's argument: initialization is the phase that buys the session
+back. SPEC.md pins the rules, the step costs, and the seeded symptoms.
 """
 
 from __future__ import annotations
@@ -84,9 +89,93 @@ def doctor(repo: Path) -> dict:
     return {"checks": checks, "ready": all(check["passed"] for check in checks)}
 
 
+STEP_BUDGET = 12
+FEATURE_STEPS = 5
+
+
+def replay(repo: Path) -> dict:
+    """The scripted session (SPEC.md, "The replay"). Costs derive from the
+    same four checks the doctor runs; nothing here re-inspects files."""
+    verdict = {check["id"]: check for check in doctor(repo)["checks"]}
+    events = []
+    remaining = STEP_BUDGET
+
+    def spend(action: str, outcome: str) -> bool:
+        nonlocal remaining
+        if remaining <= 0:
+            return False
+        remaining -= 1
+        events.append({"step": STEP_BUDGET - remaining, "action": action, "outcome": outcome})
+        return True
+
+    overhead = 0
+    if verdict["progress-artifact"]["passed"]:
+        spend("read the progress log", "resume point found; no re-derivation")
+    else:
+        spend("read the progress log", "missing; the session starts by guessing")
+        spend("re-derive project state", "scan the repository structure")
+        spend("re-derive project state", "reconstruct decisions already made once")
+        overhead += 2
+    if verdict["dependencies-pinned"]["passed"]:
+        spend("install dependencies", "pinned interpreter; install clean")
+    else:
+        spend("install dependencies", "wrong interpreter; ModuleNotFoundError mid-install")
+        spend("pin and reinstall", "environment rebuilt by hand")
+        overhead += 1
+    strict_init = verdict["init-script"]["passed"]
+    spend(
+        "run init.sh",
+        "environment verified strictly" if strict_init
+        else "exited 0 over a half-built environment (no strict mode)",
+    )
+
+    completed = True
+    for step in range(1, FEATURE_STEPS + 1):
+        if not spend(f"feature step {step}", "progress on the export feature"):
+            completed = False
+            break
+        if step == 2 and not strict_init:
+            ok = spend(
+                "feature test fails mysteriously",
+                "traced back to the half-built environment init.sh hid",
+            )
+            ok = ok and spend("rebuild the environment", "the loud failure init.sh owed us")
+            overhead += 2
+            if not ok:
+                completed = False
+                break
+
+    verified = False
+    if completed:
+        if verdict["verification-command"]["passed"]:
+            command = verdict["verification-command"]["detail"]
+            verified = spend(f"run the verification command ({command})", "pass")
+            completed = verified
+        else:
+            spend("claim done", "no verification command recorded; the claim is unbacked")
+
+    return {
+        "repo": repo.name,
+        "budget": STEP_BUDGET,
+        "events": events,
+        "steps_spent": STEP_BUDGET - remaining,
+        "setup_overhead": overhead,
+        "feature_completed": completed,
+        "verified": verified,
+    }
+
+
 def main(argv: list[str]) -> int:
+    if len(argv) == 3 and argv[1] == "replay":
+        repo = Path(argv[2])
+        if not repo.is_dir():
+            print(f"error: not a directory: {repo}", file=sys.stderr)
+            return 2
+        report = replay(repo)
+        print(json.dumps(report, indent=2))
+        return 0 if report["feature_completed"] and report["verified"] else 1
     if len(argv) != 2:
-        print("usage: main.py <repo-dir>", file=sys.stderr)
+        print("usage: main.py <repo-dir> | main.py replay <repo-dir>", file=sys.stderr)
         return 2
     repo = Path(argv[1])
     if not repo.is_dir():

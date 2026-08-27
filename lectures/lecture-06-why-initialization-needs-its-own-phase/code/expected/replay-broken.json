@@ -1,0 +1,70 @@
+{
+  "repo": "repo-broken",
+  "budget": 12,
+  "events": [
+    {
+      "step": 1,
+      "action": "read the progress log",
+      "outcome": "missing; the session starts by guessing"
+    },
+    {
+      "step": 2,
+      "action": "re-derive project state",
+      "outcome": "scan the repository structure"
+    },
+    {
+      "step": 3,
+      "action": "re-derive project state",
+      "outcome": "reconstruct decisions already made once"
+    },
+    {
+      "step": 4,
+      "action": "install dependencies",
+      "outcome": "wrong interpreter; ModuleNotFoundError mid-install"
+    },
+    {
+      "step": 5,
+      "action": "pin and reinstall",
+      "outcome": "environment rebuilt by hand"
+    },
+    {
+      "step": 6,
+      "action": "run init.sh",
+      "outcome": "exited 0 over a half-built environment (no strict mode)"
+    },
+    {
+      "step": 7,
+      "action": "feature step 1",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 8,
+      "action": "feature step 2",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 9,
+      "action": "feature test fails mysteriously",
+      "outcome": "traced back to the half-built environment init.sh hid"
+    },
+    {
+      "step": 10,
+      "action": "rebuild the environment",
+      "outcome": "the loud failure init.sh owed us"
+    },
+    {
+      "step": 11,
+      "action": "feature step 3",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 12,
+      "action": "feature step 4",
+      "outcome": "progress on the export feature"
+    }
+  ],
+  "steps_spent": 12,
+  "setup_overhead": 5,
+  "feature_completed": false,
+  "verified": false
+}

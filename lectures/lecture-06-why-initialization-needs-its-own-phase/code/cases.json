@@ -5,22 +5,66 @@
   },
   "cases": [
     {
-      "name": "ready",
-      "args": ["fixtures/repos/repo-ready"],
+      "name": "replay-broken-collapses",
+      "args": [
+        "replay",
+        "fixtures/repos/repo-broken"
+      ],
       "stdin": null,
-      "expect": { "exit_code": 0, "stdout": "expected/ready.json", "kind": "json" }
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/replay-broken.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "replay-ready-completes",
+      "args": [
+        "replay",
+        "fixtures/repos/repo-ready"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/replay-ready.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "ready",
+      "args": [
+        "fixtures/repos/repo-ready"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/ready.json",
+        "kind": "json"
+      }
     },
     {
       "name": "broken",
-      "args": ["fixtures/repos/repo-broken"],
+      "args": [
+        "fixtures/repos/repo-broken"
+      ],
       "stdin": null,
-      "expect": { "exit_code": 1, "stdout": "expected/broken.json", "kind": "json" }
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/broken.json",
+        "kind": "json"
+      }
     },
     {
       "name": "missing-repo",
-      "args": ["fixtures/no-such-repo"],
+      "args": [
+        "fixtures/no-such-repo"
+      ],
       "stdin": null,
-      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
     }
   ]
 }

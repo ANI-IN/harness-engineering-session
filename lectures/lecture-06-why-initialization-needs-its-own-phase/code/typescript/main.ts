@@ -76,7 +76,13 @@ const CHECKS: [string, (repo: string) => CheckResult][] = [
   ["progress-artifact", checkProgressArtifact],
 ];
 
-export function doctor(repo: string): { checks: object[]; ready: boolean } {
+interface Check {
+  id: string;
+  passed: boolean;
+  detail: string;
+}
+
+export function doctor(repo: string): { checks: Check[]; ready: boolean } {
   const checks = CHECKS.map(([id, run]) => {
     const [passed, detail] = run(repo);
     return { id, passed, detail };
@@ -84,10 +90,105 @@ export function doctor(repo: string): { checks: object[]; ready: boolean } {
   return { checks, ready: checks.every((check) => check.passed) };
 }
 
+const STEP_BUDGET = 12;
+const FEATURE_STEPS = 5;
+
+// The scripted session (SPEC.md, "The replay"). Costs derive from the
+// same four checks the doctor runs; nothing here re-inspects files.
+export function replay(repo: string) {
+  const verdict = new Map(doctor(repo).checks.map((check) => [check.id, check]));
+  const events: Array<{ step: number; action: string; outcome: string }> = [];
+  let remaining = STEP_BUDGET;
+
+  const spend = (action: string, outcome: string): boolean => {
+    if (remaining <= 0) {
+      return false;
+    }
+    remaining -= 1;
+    events.push({ step: STEP_BUDGET - remaining, action, outcome });
+    return true;
+  };
+
+  let overhead = 0;
+  if (verdict.get("progress-artifact")?.passed) {
+    spend("read the progress log", "resume point found; no re-derivation");
+  } else {
+    spend("read the progress log", "missing; the session starts by guessing");
+    spend("re-derive project state", "scan the repository structure");
+    spend("re-derive project state", "reconstruct decisions already made once");
+    overhead += 2;
+  }
+  if (verdict.get("dependencies-pinned")?.passed) {
+    spend("install dependencies", "pinned interpreter; install clean");
+  } else {
+    spend("install dependencies", "wrong interpreter; ModuleNotFoundError mid-install");
+    spend("pin and reinstall", "environment rebuilt by hand");
+    overhead += 1;
+  }
+  const strictInit = verdict.get("init-script")?.passed ?? false;
+  spend(
+    "run init.sh",
+    strictInit
+      ? "environment verified strictly"
+      : "exited 0 over a half-built environment (no strict mode)",
+  );
+
+  let completed = true;
+  for (let step = 1; step <= FEATURE_STEPS; step += 1) {
+    if (!spend(`feature step ${step}`, "progress on the export feature")) {
+      completed = false;
+      break;
+    }
+    if (step === 2 && !strictInit) {
+      let ok = spend(
+        "feature test fails mysteriously",
+        "traced back to the half-built environment init.sh hid",
+      );
+      ok = ok && spend("rebuild the environment", "the loud failure init.sh owed us");
+      overhead += 2;
+      if (!ok) {
+        completed = false;
+        break;
+      }
+    }
+  }
+
+  let verified = false;
+  if (completed) {
+    if (verdict.get("verification-command")?.passed) {
+      const command = verdict.get("verification-command")?.detail ?? "";
+      verified = spend(`run the verification command (${command})`, "pass");
+      completed = verified;
+    } else {
+      spend("claim done", "no verification command recorded; the claim is unbacked");
+    }
+  }
+
+  return {
+    repo: repo.replace(/\/+$/, "").split("/").pop() ?? repo,
+    budget: STEP_BUDGET,
+    events,
+    steps_spent: STEP_BUDGET - remaining,
+    setup_overhead: overhead,
+    feature_completed: completed,
+    verified,
+  };
+}
+
 function main(argv: readonly string[]): number {
+  if (argv.length === 4 && argv[2] === "replay") {
+    const repo = argv[3] as string;
+    if (!existsSync(repo) || !statSync(repo).isDirectory()) {
+      console.error(`error: not a directory: ${repo}`);
+      return 2;
+    }
+    const report = replay(repo);
+    process.stdout.write(JSON.stringify(report, null, 2) + "\n");
+    return report.feature_completed && report.verified ? 0 : 1;
+  }
   const repo = argv[2];
   if (!repo || argv.length !== 3) {
-    console.error("usage: main.ts <repo-dir>");
+    console.error("usage: main.ts <repo-dir> | main.ts replay <repo-dir>");
     return 2;
   }
   if (!existsSync(repo) || !statSync(repo).isDirectory()) {

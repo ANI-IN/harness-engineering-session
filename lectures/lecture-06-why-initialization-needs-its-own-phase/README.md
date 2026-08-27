@@ -95,11 +95,146 @@ assumes the invariants `Ready` certifies. The demo's
 
 ## Demo
 
-`code/` contains **init-check**: the startup-readiness doctor, run against
-`repo-ready` (fully initialized, including the dual-ecosystem `init.sh`)
-and `repo-broken` (three seeded gaps). Run it from the repo root:
+`code/` contains **init-check**: two fixture repositories, `repo-ready`
+(fully initialized, including the dual-ecosystem `init.sh`) and
+`repo-broken` (three seeded gaps), plus two surfaces over the same four
+readiness checks. The demo is behavioral: `replay` sends a scripted
+session with a 12-step budget after the same feature task in each
+repository, and every failing check injects its cost at the exact moment
+it bites. Run it from the repo root.
 
-### Python
+### The session that collapses
+
+#### Python
+
+<!-- fence-exit: 1 -->
+```sh
+L=lectures/lecture-06-why-initialization-needs-its-own-phase
+uv run python $L/code/python/main.py replay $L/code/fixtures/repos/repo-broken
+```
+
+#### TypeScript
+
+<!-- fence-exit: 1 -->
+```sh
+L=lectures/lecture-06-why-initialization-needs-its-own-phase
+pnpm exec tsx $L/code/typescript/main.ts replay $L/code/fixtures/repos/repo-broken
+```
+
+The transcript, generated from the Python run by `make verify` (the
+TypeScript run is held identical by `make conformance`):
+
+<!-- generated-block: uv run python lectures/lecture-06-why-initialization-needs-its-own-phase/code/python/main.py replay lectures/lecture-06-why-initialization-needs-its-own-phase/code/fixtures/repos/repo-broken || true -->
+```json
+{
+  "repo": "repo-broken",
+  "budget": 12,
+  "events": [
+    {
+      "step": 1,
+      "action": "read the progress log",
+      "outcome": "missing; the session starts by guessing"
+    },
+    {
+      "step": 2,
+      "action": "re-derive project state",
+      "outcome": "scan the repository structure"
+    },
+    {
+      "step": 3,
+      "action": "re-derive project state",
+      "outcome": "reconstruct decisions already made once"
+    },
+    {
+      "step": 4,
+      "action": "install dependencies",
+      "outcome": "wrong interpreter; ModuleNotFoundError mid-install"
+    },
+    {
+      "step": 5,
+      "action": "pin and reinstall",
+      "outcome": "environment rebuilt by hand"
+    },
+    {
+      "step": 6,
+      "action": "run init.sh",
+      "outcome": "exited 0 over a half-built environment (no strict mode)"
+    },
+    {
+      "step": 7,
+      "action": "feature step 1",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 8,
+      "action": "feature step 2",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 9,
+      "action": "feature test fails mysteriously",
+      "outcome": "traced back to the half-built environment init.sh hid"
+    },
+    {
+      "step": 10,
+      "action": "rebuild the environment",
+      "outcome": "the loud failure init.sh owed us"
+    },
+    {
+      "step": 11,
+      "action": "feature step 3",
+      "outcome": "progress on the export feature"
+    },
+    {
+      "step": 12,
+      "action": "feature step 4",
+      "outcome": "progress on the export feature"
+    }
+  ],
+  "steps_spent": 12,
+  "setup_overhead": 5,
+  "feature_completed": false,
+  "verified": false
+}
+```
+<!-- /generated-block -->
+
+Interpretation: the missing progress log costs three steps of
+re-derivation before any work starts; the unpinned interpreter fails
+mid-install; the non-strict `init.sh` exits 0 over a half-built
+environment whose failure surfaces two feature steps later and costs two
+more steps to trace. Twelve steps are gone at feature step four of five:
+`feature_completed: false`, exit 1. Nothing in the transcript is
+narrated; every event is derived from the same four checks the doctor
+runs.
+
+### The same session on a ready repository
+
+#### Python
+
+```sh
+L=lectures/lecture-06-why-initialization-needs-its-own-phase
+uv run python $L/code/python/main.py replay $L/code/fixtures/repos/repo-ready
+```
+
+#### TypeScript
+
+```sh
+L=lectures/lecture-06-why-initialization-needs-its-own-phase
+pnpm exec tsx $L/code/typescript/main.ts replay $L/code/fixtures/repos/repo-ready
+```
+
+Nine steps: no re-derivation, a clean install, a strict init, five
+feature steps, and a passing verification run. The difference between
+the two transcripts is the entire budget initialization buys back.
+
+### The doctor that predicts it
+
+The `doctor` surface runs the same four checks up front, which is why a
+gate at session start can prevent the collapse above (both tracks print
+the same report and exit 1 on the broken repository):
+
+#### Python
 
 <!-- fence-exit: 1 -->
 ```sh
@@ -107,18 +242,13 @@ L=lectures/lecture-06-why-initialization-needs-its-own-phase
 uv run python $L/code/python/main.py $L/code/fixtures/repos/repo-broken
 ```
 
-### TypeScript
+#### TypeScript
 
 <!-- fence-exit: 1 -->
 ```sh
 L=lectures/lecture-06-why-initialization-needs-its-own-phase
 pnpm exec tsx $L/code/typescript/main.ts $L/code/fixtures/repos/repo-broken
 ```
-
-Both tracks print the same report and exit 1 (initialization still owes
-this repository something). The block below is generated from the Python
-run by `make verify` (the TypeScript run is held identical by
-`make conformance`):
 
 <!-- generated-block: uv run python lectures/lecture-06-why-initialization-needs-its-own-phase/code/python/main.py lectures/lecture-06-why-initialization-needs-its-own-phase/code/fixtures/repos/repo-broken || true -->
 ```json
@@ -150,11 +280,10 @@ run by `make verify` (the TypeScript run is held identical by
 ```
 <!-- /generated-block -->
 
-Interpretation: three failures, each naming its exact gap (the missing
-pin, the missing strict mode, the missing progress log), and one passing
-check, because a broken repo is rarely broken everywhere and a doctor
-must report per-check. Against `repo-ready` the same command reports four
-passes and exit 0; that report is pinned in
+Three failures, each naming its exact gap, and one passing check, because
+a broken repo is rarely broken everywhere and a doctor must report
+per-check. Against `repo-ready` the same command reports four passes and
+exit 0; that report is pinned in
 [`code/expected/ready.json`](./code/expected/ready.json), and the
 fixture's [`init.sh`](./code/fixtures/repos/repo-ready/init.sh) is the
 single-file dual-ecosystem exception, labeled as such in its header.
