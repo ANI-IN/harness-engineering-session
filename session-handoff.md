@@ -367,11 +367,31 @@ stopped); (g) files you created (list).
   `make lint`, `make lint-links`, `make lint-mermaid`,
   `tools/check_readme_commands.py` run alone, project 02's `verify.sh`,
   its pytest suite, its vitest suite, and `tools/gen_readme_blocks.py`.
-  Only a complete `make status` reproduces it. The most promising
-  untested lead is concurrency between gates or inside the readme
-  gate's worker pool: the shared `make setup` fence runs `pnpm install`
-  and `uv sync` while other fences are executing, which is both a race
-  and a gate mutating the toolchain it is verifying.
+  Only a complete `make status` reproduces it.
+
+  **The setup-fence race is also ruled out, by measurement.** Twenty
+  `make status` runs before the fix in `tools/check_readme_commands.py`
+  and nine after, each run starting from a tree with no `kb-data/`
+  anywhere:
+
+  | | runs | left an empty `kb-data/` | failed the gate |
+  | --- | --- | --- | --- |
+  | before the fix | 20 | 7 | 2 |
+  | after the fix | 9 | 8 | 0 |
+
+  The scratch did not stop; it got more frequent, which is variance, not
+  a regression, but it is certainly not a cure. So serializing the
+  installer fixed the CI failure and the false reds and did nothing for
+  this. Two symptoms, two causes.
+
+  What the measurement did add: in the after-arm, seven of the eight
+  leftovers were **project 03 alone**, where the before-arm spread
+  across projects 01 to 04. Project 03 is the one to instrument first.
+  Its README fences and its `verify.sh` are the obvious suspects, and
+  the cleanup that should remove the directory is the `finally` in
+  `run_readme_fences`, so the question worth answering is what makes
+  that `finally` fail to remove a directory it just removed at entry, or
+  what recreates the directory after it ran.
 
   **If an empty `kb-data/` directory appears anywhere again, that is
   this bug resurfacing. Escalate it and find the cause; do not skip it

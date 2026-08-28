@@ -78,6 +78,32 @@ def discover_fences(root: Path = REPO_ROOT) -> list[Fence]:
     return fences
 
 
+SHARED_STATE = re.compile(
+    r"\bmake setup\b"
+    r"|\bpnpm (install|add|remove|update)\b"
+    r"|\bnpm (install|i|ci|add)\b"
+    r"|\buv (sync|add|remove|pip)\b"
+    r"|\bcorepack\b"
+    r"|node_modules"
+    r"|\.venv\b"
+    r"|pnpm-lock\.yaml|uv\.lock|package-lock\.json"
+)
+
+
+def mutates_shared_state(fence: Fence) -> bool:
+    """True when running this fence beside another could break that other one.
+
+    Every fence in a run shares one toolchain. A fence that installs into it,
+    or touches node_modules, .venv, or a lockfile, must never overlap a
+    sibling: `pnpm install` tears down and recreates `node_modules/.bin/`
+    while a sibling is launching `pnpm exec tsx` out of it, and the sibling
+    dies with "cannot open ./node_modules/.bin/tsx: No such file". That
+    failed CI once while 61 fences of the identical form passed in the same
+    run, which is the signature of a race rather than a missing install.
+    """
+    return bool(SHARED_STATE.search(fence.script))
+
+
 def run_readme_fences(readme: Path, fences: list[Fence]) -> list[str]:
     """Run one README's fences in order; returns failure messages."""
     failures = []
@@ -125,11 +151,42 @@ def main() -> int:
         claimed.add(key)
         by_readme.setdefault(fence.readme, []).append(fence)
 
+    # Two phases, because the toolchain is shared. Fences that mutate it run
+    # alone, first; everything else runs in the pool afterwards. The split is
+    # by classification, not by timing, so a future fence that adds an
+    # installer is serialized automatically instead of failing CI at random
+    # on a machine with fewer cores.
+    serial: list[tuple[Path, Fence]] = []
+    parallel: dict[Path, list[Fence]] = {}
+    for readme, group in by_readme.items():
+        for fence in group:
+            if mutates_shared_state(fence):
+                serial.append((readme, fence))
+            else:
+                parallel.setdefault(readme, []).append(fence)
+
     failures: list[str] = []
+    for readme, fence in sorted(serial, key=lambda item: item[1].label):
+        failures.extend(run_readme_fences(readme, [fence]))
+
+    # The invariant, asserted rather than assumed: nothing in the parallel
+    # phase may touch what every worker shares.
+    escaped = [
+        fence.label
+        for group in parallel.values()
+        for fence in group
+        if mutates_shared_state(fence)
+    ]
+    for label in escaped:
+        failures.append(
+            f"{label}: mutates shared toolchain state but was dispatched to the "
+            f"parallel phase; it must run in the serial phase"
+        )
+
     with ThreadPoolExecutor(max_workers=6) as pool:
         futures = [
             pool.submit(run_readme_fences, readme, group)
-            for readme, group in sorted(by_readme.items())
+            for readme, group in sorted(parallel.items())
         ]
         for future in futures:
             failures.extend(future.result())
@@ -139,7 +196,8 @@ def main() -> int:
         print(f"readme-commands: FAIL {failure}")
     print(
         f"readme-commands: {len(fences)} fence(s) in {len(by_readme)} README(s), "
-        f"{unique} unique, {len(failures)} failure(s)"
+        f"{unique} unique, {len(serial)} serialized (shared toolchain state), "
+        f"{len(failures)} failure(s)"
     )
     return 1 if failures else 0
 

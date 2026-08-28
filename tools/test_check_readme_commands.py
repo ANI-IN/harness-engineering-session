@@ -66,3 +66,44 @@ def test_real_tree_meets_the_floor():
     assert len(fences) >= 26
     sections = {fence.section for fence in fences}
     assert {"Setup", "Usage", "Demo", "Demo flow"} <= sections
+
+
+def _fence(script: str) -> crc.Fence:
+    return crc.Fence(
+        readme=Path("projects/project-01-x/README.md"),
+        section="Setup",
+        index=1,
+        script=script,
+        expected_exit=0,
+    )
+
+
+def test_installer_fences_are_classified_as_shared_state():
+    """The fence that broke CI: `make setup` beside `pnpm exec tsx`."""
+    for script in (
+        "make setup",
+        "pnpm install --frozen-lockfile",
+        "uv sync",
+        "corepack enable pnpm",
+        "./node_modules/.bin/tsx main.ts",
+        "rm -rf .venv",
+    ):
+        assert crc.mutates_shared_state(_fence(script)), script
+
+
+def test_ordinary_fences_are_not_shared_state():
+    for script in (
+        "L=lectures/lecture-13-loop-engineering\npnpm exec tsx $L/code/typescript/main.ts $L/x",
+        "uv run python projects/project-01-x/solution/python/main.py list",
+        "P=projects/project-04-x\nrm -rf $P/kb-data && cp -R $P/fixtures/kb-corrupt $P/kb-data",
+    ):
+        assert not crc.mutates_shared_state(_fence(script)), script
+
+
+def test_the_real_tree_serializes_exactly_the_installer_fences():
+    """Regression guard: every discovered installer must be in the serial set."""
+    fences = crc.discover_fences()
+    shared = [f for f in fences if crc.mutates_shared_state(f)]
+    assert shared, "expected at least the shared `make setup` stanza"
+    for fence in shared:
+        assert "make setup" in fence.script, fence.label
