@@ -155,8 +155,8 @@ re-verified on every `make verify` (never hand-written):
 
 <!-- generated-block: uv run python tools/run_acceptance.py lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-01-subsystem-auditor -->
 ```text
-starter/python: exit 1 (as intended: diverges at $.repos[0].subsystems.environment.evidence: 'pyproject.toml' != 'pyproject.toml + .python-version')
-starter/typescript: exit 1 (as intended: diverges at $.repos[0].subsystems.environment.evidence: 'pyproject.toml' != 'pyproject.toml + .python-version')
+starter/python: exit 1 (as intended: diverges at $.repos[0].subsystems.feedback.evidence: 'Verification line in AGENTS.md' != 'Verification line in AGENTS.md: ./verify.sh')
+starter/typescript: exit 1 (as intended: diverges at $.repos[0].subsystems.feedback.evidence: 'Verification line in AGENTS.md' != 'Verification line in AGENTS.md: ./verify.sh')
 solution/python: exit 0 (PASS: pass (1 check))
 solution/typescript: exit 0 (PASS: pass (1 check))
 4/4 acceptance runs performed

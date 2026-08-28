@@ -1,0 +1,16 @@
+{
+  "loop": "report-export",
+  "rounds_done": 2,
+  "attempted": [
+    {
+      "round": 1,
+      "criterion": "writer-implemented",
+      "outcome": "met"
+    },
+    {
+      "round": 2,
+      "criterion": "test-case-present",
+      "outcome": "unmet"
+    }
+  ]
+}

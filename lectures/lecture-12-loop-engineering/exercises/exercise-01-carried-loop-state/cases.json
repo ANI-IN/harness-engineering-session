@@ -1,0 +1,56 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "resumed-blocked-attempt",
+      "args": [
+        "fixtures/loop-resumed-blocked"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/resumed-blocked.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "resumed-one-round-left",
+      "args": [
+        "fixtures/loop-resumed-clean"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/resumed-clean.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "fresh-start",
+      "args": [
+        "fixtures/loop-fresh-start"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/fresh-start.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "not-a-loop-directory",
+      "args": [
+        "fixtures/loop-no-such-loop"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

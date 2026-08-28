@@ -76,17 +76,27 @@ Exit code 2 remains usage error or unreadable input (stdout empty).
 
 ## Starter state (the intended failure)
 
-The starter accepts any recorded evidence entry as proof and prints the
-verified detail for it. On `hollow-evidence.json` it still catches
-`test-layout` (no entry at all), so its verdict and exit code match the
-expected ones, but it backs the typecheck and the failing run.
-Verification fails first at
-`$.claims[1].detail: 'verified: ./verify.sh --feature delete-endpoint reported exit 0' != 'evidence names a different command (npx tsc --noEmit, not ./verify.sh --feature delete-endpoint)'`:
-a claim declared verified by a command that never ran. The starter must
-run cleanly and fail only by producing those wrong details (and the
-shorter `unbacked` list that follows). `ready.json` and
-`wip-exceeded.json` pass for the starter, because their evidence is
-genuine.
+The starter is a genuine partial implementation. Its evidence rule is
+complete and correct: it rejects a missing evidence entry, an entry naming
+a different command, and an entry recording a failing run. What it never
+asks is whether there is a command to run at all.
+
+A feature whose `verification` is the empty string satisfies every one of
+those comparisons. Its evidence names the same empty command, and the run
+it records reads as passing, so an unverifiable feature is reported as
+verified. That is the empty-input case: the gate's logic is right and its
+input is degenerate, and nothing rejects the degenerate input.
+
+`fixtures/empty-verification.json` is the trap. Both drafts exit 1 on it,
+because its second feature has no evidence under either rule, so the
+recorded divergence is a value and not an exit code:
+
+```text
+diverges at $.claims[0].detail: 'verified:  reported exit 0' != 'the feature declares no verification command'
+```
+
+The fix is one branch, checked before the evidence branches: a feature that
+declares no verification command is unbacked, whatever its evidence says.
 
 ## Expected output
 

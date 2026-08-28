@@ -458,7 +458,7 @@ at round 1 no matter how many rounds the goal needed.
 
 | Exercise | You build | Difficulty | Time |
 | --- | --- | --- | --- |
-| [01: stopping-condition](./exercises/exercise-01-stopping-condition/) | The rule that ends a loop: which signal stops it, and the budget that stops it when nothing else does | Medium | ~25 min |
+| [01: carried-loop-state](./exercises/exercise-01-carried-loop-state/) | The memory that makes a loop different from repeated retries: read it, choose from it, write it back | Medium | ~30 min |
 
 It is graded by shared expected output: `./verify.sh --stack=<yours>`
 exits 0 when your track's implementation is correct.

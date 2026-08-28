@@ -58,8 +58,11 @@ function auditFeedback(repo: string): Finding {
   for (const name of ["AGENTS.md", "CLAUDE.md"]) {
     if (!fileExists(repo, name)) continue;
     const lines = readFileSync(join(repo, name), "utf8").split(/\r?\n/);
-    if (lines.some((line) => line.trim().startsWith("- Verification:"))) {
-      return finding(true, `Verification line in ${name}`);
+    for (const line of lines) {
+      if (line.trim().startsWith("- Verification:")) {
+        const command = (line.split(":").slice(1).join(":") ?? "").trim();
+        if (command) return finding(true, `Verification line in ${name}: ${command}`);
+      }
     }
   }
   return finding(false, null);

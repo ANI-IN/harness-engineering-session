@@ -1,0 +1,18 @@
+{
+  "project": "notes-tool",
+  "updated": "2026-08-26",
+  "features": [
+    {
+      "id": "note-create",
+      "title": "Create a note",
+      "behavior": "notes add creates a note file.",
+      "verification": "./verify.sh",
+      "status": "passing",
+      "evidence": {
+        "command": "./verify.sh",
+        "observed": "exit 0",
+        "date": "2026-08-26"
+      }
+    }
+  ]
+}

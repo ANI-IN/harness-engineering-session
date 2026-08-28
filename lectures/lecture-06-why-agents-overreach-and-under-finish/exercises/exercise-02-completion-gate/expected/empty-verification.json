@@ -1,0 +1,24 @@
+{
+  "claims": [
+    {
+      "id": "export-endpoint",
+      "evidence_ok": false,
+      "detail": "the feature declares no verification command"
+    },
+    {
+      "id": "search-endpoint",
+      "evidence_ok": false,
+      "detail": "no evidence recorded"
+    }
+  ],
+  "may_activate": false,
+  "unbacked": [
+    "export-endpoint",
+    "search-endpoint"
+  ],
+  "verdict": "unbacked-claims",
+  "wip": {
+    "in_progress": [],
+    "limit": 1
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "loop": "report-export",
+  "goal": "the report exporter declares a writer, carries a test case, and names an export directory",
+  "max_rounds": 3,
+  "rounds": [
+    {
+      "round": 3,
+      "memory_read": [
+        "writer-implemented",
+        "test-case-present"
+      ],
+      "chosen_criterion": "export-dir-wired",
+      "step_taken": "appended export_dir=out/reports to config/app.conf",
+      "criterion_met_after": "met",
+      "detail": "config/app.conf declares export_dir once",
+      "unmet_after": [
+        "test-case-present"
+      ]
+    }
+  ],
+  "state_written": {
+    "loop": "report-export",
+    "rounds_done": 3,
+    "attempted": [
+      {
+        "round": 1,
+        "criterion": "writer-implemented",
+        "outcome": "met"
+      },
+      {
+        "round": 2,
+        "criterion": "test-case-present",
+        "outcome": "unmet"
+      },
+      {
+        "round": 3,
+        "criterion": "export-dir-wired",
+        "outcome": "met"
+      }
+    ]
+  },
+  "stop": {
+    "after_round": 3,
+    "reason": "the loop has run 3 of its 3 rounds, so it cannot start another"
+  },
+  "unmet": [
+    "test-case-present"
+  ],
+  "verdict": "budget-exhausted"
+}

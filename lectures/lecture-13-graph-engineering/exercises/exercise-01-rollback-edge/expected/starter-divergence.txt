@@ -1,1 +1,0 @@
-diverges at $.operations[0].outcome: 'kept' != 'reverted'

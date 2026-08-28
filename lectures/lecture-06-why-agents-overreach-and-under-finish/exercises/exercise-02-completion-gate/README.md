@@ -144,10 +144,10 @@ re-verified on every `make verify` (never hand-written):
 
 <!-- generated-block: uv run python tools/run_acceptance.py lectures/lecture-06-why-agents-overreach-and-under-finish/exercises/exercise-02-completion-gate -->
 ```text
-starter/python: exit 1 (as intended: diverges at $.claims[1].detail: 'verified: ./verify.sh --feature delete-endpoint reported exit 0' != 'evidence names a different command (npx tsc --noEmit, not ./verify.sh --feature delete-endpoint)')
-starter/typescript: exit 1 (as intended: diverges at $.claims[1].detail: 'verified: ./verify.sh --feature delete-endpoint reported exit 0' != 'evidence names a different command (npx tsc --noEmit, not ./verify.sh --feature delete-endpoint)')
-solution/python: exit 0 (PASS: pass (4 checks))
-solution/typescript: exit 0 (PASS: pass (4 checks))
+starter/python: exit 1 (as intended: diverges at $.claims[0].detail: 'verified:  reported exit 0' != 'the feature declares no verification command')
+starter/typescript: exit 1 (as intended: diverges at $.claims[0].detail: 'verified:  reported exit 0' != 'the feature declares no verification command')
+solution/python: exit 0 (PASS: pass (5 checks))
+solution/typescript: exit 0 (PASS: pass (5 checks))
 4/4 acceptance runs performed
 ```
 <!-- /generated-block -->

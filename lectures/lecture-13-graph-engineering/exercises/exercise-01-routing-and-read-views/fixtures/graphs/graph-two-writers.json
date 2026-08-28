@@ -1,0 +1,66 @@
+{
+  "id": "graph-two-writers",
+  "entry": "plan",
+  "nodes": [
+    {
+      "name": "plan",
+      "kind": "code",
+      "reads": ["task", "goal", "files"],
+      "writes": ["plan", "status"],
+      "ops": [
+        { "op": "name-the-task", "reads": ["task"], "writes": ["status"] },
+        { "op": "list-undeclared-goals", "reads": ["goal", "files"], "writes": ["plan"] }
+      ],
+      "edges": [{ "to": "apply" }]
+    },
+    {
+      "name": "apply",
+      "kind": "agent",
+      "reads": ["plan", "files"],
+      "writes": ["files", "applied", "status"],
+      "ops": [
+        { "op": "append-planned-lines", "reads": ["plan", "files"], "writes": ["files", "applied"] },
+        { "op": "flag-writes-landed", "reads": ["plan"], "writes": ["status"] }
+      ],
+      "edges": [{ "to": "verify" }]
+    },
+    {
+      "name": "verify",
+      "kind": "agent",
+      "reads": ["goal", "files"],
+      "writes": ["review", "failures"],
+      "ops": [
+        { "op": "regrade-every-goal", "reads": ["goal", "files"], "writes": ["review", "failures"] }
+      ],
+      "router": { "key": "status", "values": ["planned", "applied"] },
+      "edges": [
+        { "when": "applied", "to": "commit" },
+        { "when": "planned", "to": "undo" }
+      ]
+    },
+    {
+      "name": "commit",
+      "kind": "code",
+      "reads": ["review", "files"],
+      "writes": ["committed"],
+      "ops": [
+        { "op": "record-the-run", "reads": ["review", "files"], "writes": ["committed"] }
+      ],
+      "edges": []
+    },
+    {
+      "name": "undo",
+      "kind": "rollback",
+      "reads": ["applied", "files"],
+      "writes": ["files", "undone", "rolled_back"],
+      "ops": [
+        {
+          "op": "replay-journal-backwards",
+          "reads": ["applied", "files"],
+          "writes": ["files", "undone", "rolled_back"]
+        }
+      ],
+      "edges": []
+    }
+  ]
+}

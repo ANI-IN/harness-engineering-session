@@ -1,0 +1,119 @@
+{
+  "graph": "graph-order-accidents",
+  "order": [
+    "plan",
+    "apply",
+    "verify",
+    "undo",
+    "commit"
+  ],
+  "decisions": [
+    {
+      "at": "apply",
+      "key": "review",
+      "last_writer": "none",
+      "grade": "unwritten"
+    },
+    {
+      "at": "verify",
+      "key": "review",
+      "last_writer": "verify",
+      "grade": "independent"
+    }
+  ],
+  "views": [
+    {
+      "node": "plan",
+      "declared": [
+        "files",
+        "goal",
+        "task"
+      ],
+      "used": [
+        "files",
+        "goal",
+        "task"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "apply",
+      "declared": [
+        "files",
+        "plan"
+      ],
+      "used": [
+        "files",
+        "plan"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "verify",
+      "declared": [
+        "files",
+        "goal"
+      ],
+      "used": [
+        "files",
+        "goal",
+        "plan"
+      ],
+      "read_without_grant": [
+        "plan"
+      ],
+      "granted_unused": []
+    },
+    {
+      "node": "undo",
+      "declared": [
+        "applied",
+        "files"
+      ],
+      "used": [
+        "applied",
+        "files"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "commit",
+      "declared": [
+        "files",
+        "review"
+      ],
+      "used": [
+        "review"
+      ],
+      "read_without_grant": [],
+      "granted_unused": [
+        "files"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "kind": "unwritten-routing-key",
+      "node": "apply",
+      "key": "review",
+      "detail": "the router at apply reads review, which no node writes on the way to apply, so the edge it takes is whatever the state carried in"
+    },
+    {
+      "kind": "undeclared-read",
+      "node": "verify",
+      "key": "plan",
+      "detail": "op reuse-the-plan of verify reads plan, which the graph does not grant verify, so it works only while the shared state happens to carry that key"
+    },
+    {
+      "kind": "unused-read-view",
+      "node": "commit",
+      "key": "files",
+      "detail": "the graph grants commit the key files and no op of commit reads it, so commit sees more shared state than it uses"
+    }
+  ],
+  "sound": false,
+  "verdict": "unsound"
+}

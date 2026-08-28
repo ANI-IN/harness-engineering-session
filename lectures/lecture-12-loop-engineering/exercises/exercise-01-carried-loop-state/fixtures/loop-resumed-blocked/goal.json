@@ -1,0 +1,43 @@
+{
+  "loop": "report-export",
+  "goal": "the report exporter declares a writer, carries a test case, and names an export directory",
+  "max_rounds": 3,
+  "criteria": [
+    {
+      "id": "writer-implemented",
+      "check": {
+        "kind": "key-declared-once",
+        "path": "src/report.txt",
+        "key": "writer"
+      },
+      "step": {
+        "path": "src/report.txt",
+        "line": "writer=csv"
+      }
+    },
+    {
+      "id": "test-case-present",
+      "check": {
+        "kind": "file-has-line",
+        "path": "tests/report-test.txt",
+        "prefix": "case="
+      },
+      "step": {
+        "path": "src/report.txt",
+        "line": "case=export"
+      }
+    },
+    {
+      "id": "export-dir-wired",
+      "check": {
+        "kind": "key-declared-once",
+        "path": "config/app.conf",
+        "key": "export_dir"
+      },
+      "step": {
+        "path": "config/app.conf",
+        "line": "export_dir=out/reports"
+      }
+    }
+  ]
+}

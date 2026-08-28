@@ -35,7 +35,10 @@ export function gate(features: Feature[]): [object, number] {
     const command = feature.verification;
     let ok: boolean;
     let detail: string;
-    if (evidence === null) {
+    if (command.trim() === "") {
+      ok = false;
+      detail = "the feature declares no verification command";
+    } else if (evidence === null) {
       ok = false;
       detail = "no evidence recorded";
     } else if (evidence.command !== command) {

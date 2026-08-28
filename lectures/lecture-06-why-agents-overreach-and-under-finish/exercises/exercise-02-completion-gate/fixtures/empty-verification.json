@@ -1,0 +1,25 @@
+{
+  "project": "notes-api",
+  "updated": "2026-08-27",
+  "features": [
+    {
+      "id": "export-endpoint",
+      "title": "Export endpoint",
+      "behavior": "GET /api/export streams every note as CSV.",
+      "verification": "",
+      "status": "passing",
+      "evidence": {
+        "command": "",
+        "observed": "exit 0",
+        "date": "2026-08-27"
+      }
+    },
+    {
+      "id": "search-endpoint",
+      "title": "Search endpoint",
+      "behavior": "GET /api/search returns ranked, paginated results.",
+      "verification": "./verify.sh --feature search-endpoint",
+      "status": "passing"
+    }
+  ]
+}

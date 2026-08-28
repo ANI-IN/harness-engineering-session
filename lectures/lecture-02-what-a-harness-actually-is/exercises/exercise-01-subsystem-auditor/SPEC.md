@@ -63,22 +63,28 @@ tools, environment, state, feedback. For the committed fixtures:
 
 ## Starter state (the intended failure)
 
-The starter is a genuine partial implementation: all five audits run, but
-three are naive first drafts, each with one realistic mistake the fixtures
+The starter is a genuine partial implementation: all five audits run, and
+two are naive first drafts, each with one realistic mistake the fixtures
 expose:
 
 | Naive audit | Its mistake | Trap repo that exposes it |
 | --- | --- | --- |
 | tools | trusts that the instructions *mention* `verify.sh` instead of checking the file exists | `repo-talks-tools` scores 5/5 instead of 4/5 |
-| environment | accepts a manifest without a runtime pin | `repo-unpinned` scores 4/5 instead of 3/5 |
-| state | accepts a feature list without a progress log | `repo-list-only` scores 5/5 instead of 4/5 |
+| feedback | treats the `- Verification:` tag as the fact, without reading what follows it | `repo-empty-verification` scores 5/5 instead of 4/5 |
+
+The feedback mistake is the malformed-line case: a line can carry the tag
+and still name no command, and a subsystem whose command is the empty
+string cannot tell anyone whether the work passed. The correct audit reads
+what follows the colon, requires it to be non-empty, and reports the command
+it found, so the evidence names something a reader can run.
 
 Verification fails with a report mismatch first diverging at
-`$.repos[0].subsystems.environment.evidence: 'pyproject.toml' !=
-'pyproject.toml + .python-version'`: on the very first repo, the naive
-environment audit's evidence names only half of the criterion. The starter
-must run cleanly and fail only by producing these wrong values; a crash or
-an all-absent report is a bug in the starter, not the intended state.
+`$.repos[0].subsystems.feedback.evidence: 'Verification line in AGENTS.md'
+!= 'Verification line in AGENTS.md: ./verify.sh'`: on the very first repo,
+the naive audit's evidence names the tag it matched instead of the command
+it found. The starter must run cleanly and fail only by producing these
+wrong values; a crash or an all-absent report is a bug in the starter, not
+the intended state.
 
 ## Expected output
 

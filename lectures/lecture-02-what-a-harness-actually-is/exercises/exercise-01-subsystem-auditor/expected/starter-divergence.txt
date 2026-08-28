@@ -1,1 +1,1 @@
-diverges at $.repos[0].subsystems.environment.evidence: 'pyproject.toml' != 'pyproject.toml + .python-version'
+diverges at $.repos[0].subsystems.feedback.evidence: 'Verification line in AGENTS.md' != 'Verification line in AGENTS.md: ./verify.sh'

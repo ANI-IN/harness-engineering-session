@@ -1,0 +1,97 @@
+{
+  "graph": "graph-misrouted",
+  "order": [
+    "plan",
+    "apply",
+    "verify",
+    "commit",
+    "undo"
+  ],
+  "decisions": [
+    {
+      "at": "verify",
+      "key": "applied_ok",
+      "last_writer": "apply",
+      "grade": "self-reported"
+    }
+  ],
+  "views": [
+    {
+      "node": "plan",
+      "declared": [
+        "files",
+        "goal",
+        "task"
+      ],
+      "used": [
+        "files",
+        "goal",
+        "task"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "apply",
+      "declared": [
+        "files",
+        "plan"
+      ],
+      "used": [
+        "files",
+        "plan"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "verify",
+      "declared": [
+        "files",
+        "goal"
+      ],
+      "used": [
+        "files",
+        "goal"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "commit",
+      "declared": [
+        "files",
+        "review"
+      ],
+      "used": [
+        "files",
+        "review"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "undo",
+      "declared": [
+        "applied",
+        "files"
+      ],
+      "used": [
+        "applied",
+        "files"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    }
+  ],
+  "findings": [
+    {
+      "kind": "self-reported-routing",
+      "node": "verify",
+      "key": "applied_ok",
+      "detail": "the router at verify reads applied_ok, and the last node to write applied_ok on the way to verify is apply, so apply decides the edge out of the node that judges its work"
+    }
+  ],
+  "sound": false,
+  "verdict": "unsound"
+}

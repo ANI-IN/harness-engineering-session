@@ -1,0 +1,68 @@
+{
+  "entry": {
+    "python": "python/main.py",
+    "typescript": "typescript/main.ts"
+  },
+  "cases": [
+    {
+      "name": "two-writers-of-the-routed-key",
+      "args": [
+        "fixtures/graphs/graph-two-writers.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/two-writers.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "router-on-the-judged-nodes-own-field",
+      "args": [
+        "fixtures/graphs/graph-misrouted.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/misrouted.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "read-views-and-a-key-written-later",
+      "args": [
+        "fixtures/graphs/graph-order-accidents.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/order-accidents.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "declared-graph-is-sound",
+      "args": [
+        "fixtures/graphs/graph-declared.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/declared.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "missing-graph-file",
+      "args": [
+        "fixtures/graphs/no-such-graph.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
+    }
+  ]
+}

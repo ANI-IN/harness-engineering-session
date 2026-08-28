@@ -1,1 +1,0 @@
-diverges at $.rounds[0].decision: 'stop-done' != 'continue'

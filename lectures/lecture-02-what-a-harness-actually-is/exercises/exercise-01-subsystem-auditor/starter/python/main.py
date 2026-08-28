@@ -42,28 +42,24 @@ def audit_tools(repo: Path) -> dict:
 
 
 def audit_environment(repo: Path) -> dict:
-    # Naive draft: a manifest alone. Dependencies without a runtime pin
-    # reproduce the tree on the wrong interpreter. Exercise: require the
-    # pin too; check the Python pair (pyproject.toml + .python-version)
-    # first, then the Node pair (package.json + .nvmrc); evidence is
-    # "<manifest> + <pin>".
-    for manifest in ("pyproject.toml", "package.json"):
-        if (repo / manifest).is_file():
-            return _finding(True, manifest)
+    if (repo / "pyproject.toml").is_file() and (repo / ".python-version").is_file():
+        return _finding(True, "pyproject.toml + .python-version")
+    if (repo / "package.json").is_file() and (repo / ".nvmrc").is_file():
+        return _finding(True, "package.json + .nvmrc")
     return _finding(False, None)
 
 
 def audit_state(repo: Path) -> dict:
-    # Naive draft: the feature list alone. Scope without narrative still
-    # loses sessions. Exercise: present only when BOTH feature_list.json
-    # and claude-progress.md exist; evidence
-    # "feature_list.json + claude-progress.md".
-    if (repo / "feature_list.json").is_file():
-        return _finding(True, "feature_list.json")
+    if (repo / "feature_list.json").is_file() and (repo / "claude-progress.md").is_file():
+        return _finding(True, "feature_list.json + claude-progress.md")
     return _finding(False, None)
 
 
 def audit_feedback(repo: Path) -> dict:
+    # Naive draft: the tag is treated as the fact. A `- Verification:` line
+    # with nothing after the colon names no command, so nothing can be run.
+    # Exercise: read what follows the colon, require it to be non-empty, and
+    # report it as evidence ("Verification line in <file>: <command>").
     for name in ("AGENTS.md", "CLAUDE.md"):
         path = repo / name
         if path.is_file():

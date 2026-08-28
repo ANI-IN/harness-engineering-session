@@ -35,15 +35,22 @@ export function gate(features: Feature[]): [object, number] {
     const command = feature.verification;
     let ok: boolean;
     let detail: string;
-    // Naive draft: an evidence entry was recorded, so the claim is
-    // backed, and the detail names the command the feature should have
-    // run. Exercise: evidence must name this feature's own verification
-    // command AND record a passing run (observed starts with "exit 0");
-    // a different command and a failing run are each an unbacked claim
-    // with its own detail (SPEC.md, "The evidence rule").
+    // Naive draft: every branch below is right, but the gate never asks
+    // whether there is a command to run at all. A feature whose
+    // `verification` is the empty string satisfies every comparison here
+    // (its evidence names the same empty command, and the run it records
+    // "passed"), so an unverifiable feature reads as verified. Exercise:
+    // refuse a feature that declares no verification command, before
+    // looking at its evidence (SPEC.md, "The evidence rule").
     if (evidence === null) {
       ok = false;
       detail = "no evidence recorded";
+    } else if (evidence.command !== command) {
+      ok = false;
+      detail = `evidence names a different command (${evidence.command}, not ${command})`;
+    } else if (!evidence.observed.startsWith("exit 0")) {
+      ok = false;
+      detail = `evidence records a failing run (${evidence.observed})`;
     } else {
       ok = true;
       detail = `verified: ${command} reported exit 0`;

@@ -1,0 +1,46 @@
+{
+  "loop": "report-export",
+  "goal": "the report exporter declares a writer, names an export directory, and carries a test case",
+  "max_rounds": 3,
+  "rounds": [
+    {
+      "round": 3,
+      "memory_read": [
+        "writer-implemented",
+        "export-dir-wired"
+      ],
+      "chosen_criterion": "test-case-present",
+      "step_taken": "created tests/report-test.txt with case=export",
+      "criterion_met_after": "met",
+      "detail": "tests/report-test.txt has a line starting with case=",
+      "unmet_after": []
+    }
+  ],
+  "state_written": {
+    "loop": "report-export",
+    "rounds_done": 3,
+    "attempted": [
+      {
+        "round": 1,
+        "criterion": "writer-implemented",
+        "outcome": "met"
+      },
+      {
+        "round": 2,
+        "criterion": "export-dir-wired",
+        "outcome": "met"
+      },
+      {
+        "round": 3,
+        "criterion": "test-case-present",
+        "outcome": "met"
+      }
+    ]
+  },
+  "stop": {
+    "after_round": 3,
+    "reason": "every criterion of the goal is met after round 3"
+  },
+  "unmet": [],
+  "verdict": "goal-reached"
+}

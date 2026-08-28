@@ -6,27 +6,63 @@
   "cases": [
     {
       "name": "ready",
-      "args": ["fixtures/ready.json"],
+      "args": [
+        "fixtures/ready.json"
+      ],
       "stdin": null,
-      "expect": { "exit_code": 0, "stdout": "expected/ready.json", "kind": "json" }
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/ready.json",
+        "kind": "json"
+      }
+    },
+    {
+      "name": "empty-verification",
+      "args": [
+        "fixtures/empty-verification.json"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/empty-verification.json",
+        "kind": "json"
+      }
     },
     {
       "name": "hollow-evidence",
-      "args": ["fixtures/hollow-evidence.json"],
+      "args": [
+        "fixtures/hollow-evidence.json"
+      ],
       "stdin": null,
-      "expect": { "exit_code": 1, "stdout": "expected/hollow-evidence.json", "kind": "json" }
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/hollow-evidence.json",
+        "kind": "json"
+      }
     },
     {
       "name": "wip-exceeded",
-      "args": ["fixtures/wip-exceeded.json"],
+      "args": [
+        "fixtures/wip-exceeded.json"
+      ],
       "stdin": null,
-      "expect": { "exit_code": 1, "stdout": "expected/wip-exceeded.json", "kind": "json" }
+      "expect": {
+        "exit_code": 1,
+        "stdout": "expected/wip-exceeded.json",
+        "kind": "json"
+      }
     },
     {
       "name": "missing-file",
-      "args": ["fixtures/no-such-list.json"],
+      "args": [
+        "fixtures/no-such-list.json"
+      ],
       "stdin": null,
-      "expect": { "exit_code": 2, "stdout": null, "kind": "text" }
+      "expect": {
+        "exit_code": 2,
+        "stdout": null,
+        "kind": "text"
+      }
     }
   ]
 }

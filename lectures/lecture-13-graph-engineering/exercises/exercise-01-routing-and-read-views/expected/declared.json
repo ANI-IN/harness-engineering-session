@@ -1,0 +1,90 @@
+{
+  "graph": "graph-declared",
+  "order": [
+    "plan",
+    "apply",
+    "verify",
+    "commit",
+    "undo"
+  ],
+  "decisions": [
+    {
+      "at": "verify",
+      "key": "review",
+      "last_writer": "verify",
+      "grade": "independent"
+    }
+  ],
+  "views": [
+    {
+      "node": "plan",
+      "declared": [
+        "files",
+        "goal",
+        "task"
+      ],
+      "used": [
+        "files",
+        "goal",
+        "task"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "apply",
+      "declared": [
+        "files",
+        "plan"
+      ],
+      "used": [
+        "files",
+        "plan"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "verify",
+      "declared": [
+        "files",
+        "goal"
+      ],
+      "used": [
+        "files",
+        "goal"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "commit",
+      "declared": [
+        "files",
+        "review"
+      ],
+      "used": [
+        "files",
+        "review"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    },
+    {
+      "node": "undo",
+      "declared": [
+        "applied",
+        "files"
+      ],
+      "used": [
+        "applied",
+        "files"
+      ],
+      "read_without_grant": [],
+      "granted_unused": []
+    }
+  ],
+  "findings": [],
+  "sound": true,
+  "verdict": "sound"
+}

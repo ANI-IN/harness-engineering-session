@@ -52,7 +52,9 @@ def audit_feedback(repo: Path) -> dict:
         if path.is_file():
             for line in path.read_text(encoding="utf-8").split("\n"):
                 if line.strip().startswith("- Verification:"):
-                    return _finding(True, f"Verification line in {name}")
+                    command = line.split(":", 1)[1].strip()
+                    if command:
+                        return _finding(True, f"Verification line in {name}: {command}")
     return _finding(False, None)
 
 

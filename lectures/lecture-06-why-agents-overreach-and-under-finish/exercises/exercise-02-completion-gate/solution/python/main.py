@@ -24,7 +24,9 @@ def gate(features: list[dict]) -> tuple[dict, int]:
             continue
         evidence = feature.get("evidence")
         command = feature["verification"]
-        if evidence is None:
+        if not command.strip():
+            ok, detail = False, "the feature declares no verification command"
+        elif evidence is None:
             ok, detail = False, "no evidence recorded"
         elif evidence["command"] != command:
             ok, detail = False, (

@@ -651,7 +651,7 @@ the runs sit above it.
 
 | Exercise | You build | Difficulty | Time |
 | --- | --- | --- | --- |
-| [01: rollback-edge](./exercises/exercise-01-rollback-edge/) | The undo node a rollback edge leads to, and the replay order that makes it complete | Medium | ~25 min |
+| [01: routing-and-read-views](./exercises/exercise-01-routing-and-read-views/) | The checks a graph's structure cannot see: whose write a router reads, and whether a node's declared view matches what it reads | Medium | ~30 min |
 
 It is graded by shared expected output: `./verify.sh --stack=<yours>`
 exits 0 when your track's implementation is correct.

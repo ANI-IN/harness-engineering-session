@@ -50,31 +50,27 @@ function auditTools(repo: string): Finding {
 }
 
 function auditEnvironment(repo: string): Finding {
-  // Naive draft: a manifest alone. Dependencies without a runtime pin
-  // reproduce the tree on the wrong interpreter. Exercise: require the
-  // pin too; check the Python pair (pyproject.toml + .python-version)
-  // first, then the Node pair (package.json + .nvmrc); evidence is
-  // "<manifest> + <pin>".
-  for (const manifest of ["pyproject.toml", "package.json"]) {
-    if (fileExists(repo, manifest)) {
-      return finding(true, manifest);
-    }
+  if (fileExists(repo, "pyproject.toml") && fileExists(repo, ".python-version")) {
+    return finding(true, "pyproject.toml + .python-version");
+  }
+  if (fileExists(repo, "package.json") && fileExists(repo, ".nvmrc")) {
+    return finding(true, "package.json + .nvmrc");
   }
   return finding(false, null);
 }
 
 function auditState(repo: string): Finding {
-  // Naive draft: the feature list alone. Scope without narrative still
-  // loses sessions. Exercise: present only when BOTH feature_list.json
-  // and claude-progress.md exist; evidence
-  // "feature_list.json + claude-progress.md".
-  if (fileExists(repo, "feature_list.json")) {
-    return finding(true, "feature_list.json");
+  if (fileExists(repo, "feature_list.json") && fileExists(repo, "claude-progress.md")) {
+    return finding(true, "feature_list.json + claude-progress.md");
   }
   return finding(false, null);
 }
 
 function auditFeedback(repo: string): Finding {
+  // Naive draft: the tag is treated as the fact. A `- Verification:` line
+  // with nothing after the colon names no command, so nothing can be run.
+  // Exercise: read what follows the colon, require it to be non-empty, and
+  // report it as evidence ("Verification line in <file>: <command>").
   for (const name of ["AGENTS.md", "CLAUDE.md"]) {
     if (!fileExists(repo, name)) continue;
     const lines = readFileSync(join(repo, name), "utf8").split(/\r?\n/);
