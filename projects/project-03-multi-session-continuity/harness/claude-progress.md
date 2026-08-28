@@ -24,5 +24,5 @@
 - Implemented `kb continuity`: every step in both sessions is a fresh
   child process of the track's CLI; the report derives the resume verdict.
 - Verified all eleven features with their own commands; evidence recorded.
-- Next best step: proceed to Project 04 (runtime feedback and scope
-  control) when it lands.
+- Next best step: proceed to Project 04, runtime feedback and scope
+  control, whose starter is this project's solution.

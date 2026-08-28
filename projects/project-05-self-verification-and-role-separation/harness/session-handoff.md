@@ -18,8 +18,9 @@
 
 ## Next best step
 
-- Compose projects 01-05 into the observable-harness capstone when that
-  work item opens.
+- Reconcile `kb index --rebuild` with the log after a delete: the chunk
+  record goes, the `delete/done` pair stays, and nothing decides which is
+  authoritative. Reproduce on a workspace with a deleted document.
 
 ## Commands
 

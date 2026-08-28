@@ -19,5 +19,7 @@
   project 03.
 - Verified all seventeen features with their own commands; evidence
   recorded.
-- Next best step: compose projects 01-05 into the observable-harness
-  capstone when that work item opens.
+- Next best step: `kb delete` drops a chunk record but leaves the log's
+  `delete/done` pair unreconciled after a rebuild; reproduce with
+  `kb index --rebuild` on a workspace that has deleted a document, then
+  decide whether the log or the index is authoritative.

@@ -5,10 +5,12 @@ its exercises make you build that mechanism, and each project composes the
 mechanisms of two lectures into a working system. The library holds the
 copy-ready templates those systems are built from.
 
-This map covers every built unit, lectures 01-13 and projects 01-05: the foundation sequence
-(lectures 01-06, projects 01-03), the scope-control and feature-list
-lectures that project 04 industrializes, and the premature-claim lecture
-that project 05 puts under a rubric.
+This map covers every built unit: lectures 01-13 and projects 01-05. The
+foundation is lectures 01 to 05 with projects 01 to 03, which also draws on
+lecture 11 for the continuity artifacts; lectures 06 and 07 are the
+scope-control and feature-list pair project 04 industrializes; lectures 08
+and 09 are the verification pair project 05 puts under a rubric. Lectures
+10, 12 and 13 have no paired project.
 
 ```mermaid
 flowchart LR

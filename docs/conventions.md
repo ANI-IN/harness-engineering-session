@@ -33,7 +33,7 @@ its credibility for everything else it claims.
   `NN` is always two digits (`01`, not `1`), including in prose and headings.
 - Slugs are lowercase kebab-case, derived from the title.
 - Agent-facing entry files use their ecosystem-canonical uppercase names:
-  `AGENTS.md`, `CLAUDE.md`, `SPEC.md`, `README.md`, `SKILL.md`.
+  `AGENTS.md`, `CLAUDE.md`, `SPEC.md`, `README.md`.
 - Human-facing documents and scripts are kebab-case: `session-handoff.md`,
   `clean-state-checklist.md`, `verify.sh`.
 - Machine-readable state keeps its module-canonical name `feature_list.json`

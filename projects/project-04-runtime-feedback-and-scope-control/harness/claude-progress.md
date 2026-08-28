@@ -21,5 +21,5 @@
   check to the workspace doctor.
 - Verified all fifteen features with their own commands; evidence
   recorded.
-- Next best step: proceed to Project 05 (self-verification and role
-  separation) when it lands.
+- Next best step: proceed to Project 05, self-verification and role
+  separation, whose starter is this project's solution.

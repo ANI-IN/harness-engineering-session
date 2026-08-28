@@ -108,7 +108,7 @@ def _check_section_order(md: Path, required: list[str], errors: list[str], root:
 
 def check_readmes(errors: list[str], root: Path) -> None:
     needs_readme = []
-    for top in ("lectures", "projects", "skills", "library", "tools"):
+    for top in ("lectures", "projects", "library", "tools"):
         base = root / top
         if not base.is_dir():
             continue
@@ -344,7 +344,7 @@ def check_orphans(errors: list[str], root: Path) -> None:
     made `make status` non-deterministic: the same tree passed or failed
     depending on what a previous gate had just finished doing.
     """
-    for top in ("lectures", "projects", "skills", "library", "docs", "tools"):
+    for top in ("lectures", "projects", "library", "docs", "tools"):
         base = root / top
         if not base.is_dir():
             continue

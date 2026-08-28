@@ -39,6 +39,18 @@ COURSE_DEFINITION_FILE = "docs/glossary.md"
 COURSE_DEFINITION_MARKER = "**Module**:"
 
 ROADMAP_PHRASES = (
+    # Added after "when that work item opens" shipped in three files: the
+    # ban is on promising unbuilt work, and these are the forms that promise
+    # it without using any of the words originally listed.
+    "when that work item opens",
+    "when that work opens",
+    "when that lands",
+    "once that lands",
+    "when it lands",
+    "arrives with the second half",
+    "arrive with the full",
+    "ships with the full",
+    "second half of the module",
     "next release", "coming soon", "will be added", "in a future", "not yet built",
 )
 INLINE_CODE_RE = re.compile(r"`[^`]*`")

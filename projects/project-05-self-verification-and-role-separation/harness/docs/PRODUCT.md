@@ -42,7 +42,7 @@ re-verified against version 4, nothing is "carried over".
 
 ## Non-goals for this milestone
 
-The observable-harness capstone composes what projects 01-05 built.
-Contracts are frozen within this milestone; the surface is pre-1.0
-across projects, and any break a successor makes is declared in its
-SPEC's delta table, never silent.
+Nothing outside the delete surface and the role-separation apparatus
+belongs in this milestone. Contracts are frozen within it; the surface is
+pre-1.0, and any break a successor makes is declared in its SPEC's delta
+table, never silent.
