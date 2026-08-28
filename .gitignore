@@ -45,3 +45,10 @@ coverage/
 !lectures/**/expected/**
 !projects/**/fixtures/**
 !projects/**/expected/**
+
+# The root session handoff is working state, not curriculum: it records a
+# session's open items and next step, which do not belong in a clone. The
+# artifact is still taught (lecture 11, library/templates/session-handoff.md)
+# and every project ships one under harness/, so this pattern is anchored to
+# the repository root and leaves those tracked.
+/session-handoff.md

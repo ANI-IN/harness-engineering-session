@@ -473,7 +473,6 @@ under [Lectures](#lectures).
 | [docs/curriculum-map.md](docs/curriculum-map.md) | How the units connect |
 | [docs/choosing-your-track.md](docs/choosing-your-track.md) | Python or TypeScript: what differs, what is shared |
 | [docs/session-plan.md](docs/session-plan.md) | The four hours, and what they cut |
-| [session-handoff.md](session-handoff.md) | Current state, open concerns, standing conventions |
 
 Terms this module gives specific meanings to: a **harness** is the execution
 system around the agent; a **plug point** is where a real model would sit and
@@ -566,7 +565,7 @@ rules this module now enforces. See
 | `make lint-shared-helpers` | Duplicated lecture helpers stay identical or declare why not |
 | `make lint-authorship` | No co-author trailers or tool attributions in commit bodies |
 | `make quick U=<unit>` | Inner loop for one unit. Not the commit gate |
-| `make resume` | Print the session handoff, HEAD, and tree state |
+| `make resume` | Print HEAD, unpushed count, tree state, and a local `session-handoff.md` if one exists |
 
 Unit level: every `verify.sh` accepts `--stack=python`, `--stack=typescript`
 or `--stack=both`, and an exercise's also accepts `--target=starter`,

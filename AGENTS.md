@@ -8,10 +8,13 @@ entry point. It is a router; depth lives in the linked docs.
 
 ## Startup workflow
 
-1. `make resume`: prints `session-handoff.md` when a previous session left
-   work in flight (the exact next unit, the first command, and the
-   standing rules that live nowhere else). Read all of it before anything
-   else; when it is absent, nothing is in flight.
+1. `make resume`: prints HEAD, the unpushed count and the tree state, plus
+   `session-handoff.md` when one is present. That handoff is deliberately
+   **not** committed here: it is working state, not curriculum, so a clone
+   does not carry one and `make resume` will say nothing is in flight. The
+   artifact itself is still taught, by lecture 11 and
+   [library/templates/session-handoff.md](library/templates/session-handoff.md),
+   and every project ships one in its `harness/`.
 2. `make setup`: install both toolchains; `make doctor` confirms the pins.
 3. Read [docs/conventions.md](docs/conventions.md): the standard every
    folder follows. It is authoritative.
