@@ -35,8 +35,6 @@ After this lecture and its exercises you can:
   workspace's declared checks and the gate that re-executes them. Here
   the checks are what the second session runs first, and the question
   starts where their verdict lands.
-- [Lecture 03](../lecture-03-why-the-repository-must-become-the-system-of-record/):
-  the repository as the only thing an agent remembers.
 - A working toolchain (`make setup`, `make doctor`;
   [choosing your track](../../docs/choosing-your-track.md)).
 - The glossary's [feedback subsystem](../../docs/glossary.md#core-model)
@@ -57,9 +55,7 @@ not hidden. What is missing is the fact that would let you fix it: the
 value that 0 replaced. It is not in `config/app.conf`, because 0
 overwrote it. It is not in the session note, which speaks in paragraphs
 about the task. It was in the first session's terminal, and the terminal
-is gone. You can pick a number that satisfies the check, and the check
-will go green, but you have not restored the work; you have made the
-symptom stop.
+is gone.
 
 Anthropic's write-up on long-running application development reports the
 same dependency at the level of a whole harness. The evaluator in their
@@ -71,11 +67,6 @@ and update the QAs prompt." Logs were the input to the repair. Nothing
 else in the system held the reasoning that had to change.
 
 > Source: [Anthropic: Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
-
-This is the same problem distributed systems solved with request
-tracing: a service's final state tells you where it ended up, and a
-trace tells you how it got there, which is what you need when the two
-disagree ([Dapper](https://research.google/pubs/pub36356/)).
 
 ## Concepts
 
@@ -143,7 +134,7 @@ sequenceDiagram
     Note over R: with no log, that lookup has no answer and R exits 1
 ```
 
-Walkthrough: the two sessions share the workspace and nothing else. The
+The two sessions share the workspace and nothing else. The
 build session's transcript is stdout, which is why the diagram shows it
 ending with the session rather than crossing to the right. The lookup at
 the fourth-from-last arrow is the whole lecture: it is one query against

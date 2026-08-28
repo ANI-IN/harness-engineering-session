@@ -331,7 +331,7 @@ The choices most likely to surprise a reader, and why:
 ```text
 docs/           conventions, glossary, curriculum map, track chooser, session plan
 lectures/       lecture-NN-<slug>/ - README, demo (code/), exercises/
-projects/       project-NN-<slug>/ - README, SPEC, starter/, solution/, tests
+projects/       project-NN-<slug>/ - README, SPEC, fixtures/, expected/, harness/, starter/, solution/, tests
 library/        copy-ready harness templates, single-sourced
 tools/          conformance runner, gates, linters
 ```

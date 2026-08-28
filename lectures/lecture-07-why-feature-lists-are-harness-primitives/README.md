@@ -41,12 +41,10 @@ After this lecture and its exercises you can:
 
 ## The problem
 
-You ask an agent to finish a small shop: accounts, a cart, checkout, an
-order export. It works for a while and reports "done". Accounts work.
-The cart total is wrong on the second item. Checkout was rebuilt from
-scratch even though it already worked. The export does not exist. Nobody
-lied; the agent measured "done" against the only record it had, and that
-record was a note written from memory at the end of the previous session:
+You ask an agent to finish a small shop and it reports "done". One
+feature is subtly wrong, one was rebuilt from scratch, one does not
+exist. Nobody lied; the agent measured "done" against the only record it
+had, a note written from memory at the end of the previous session:
 
 ```text
 - auth: done, login and signup work
@@ -54,11 +52,10 @@ record was a note written from memory at the end of the previous session:
 - payments: still need to do this
 ```
 
-Read that as the next session must: is `cart` done? What would show it?
-Is `payments` still open, or did someone finish it after writing the
-note? Where is the export? Prose cannot answer, and a session that cannot
-answer guesses. Both vendor write-ups on long-running agent work reach the
-same design: the record of what is done lives in a machine-readable file
+Is `cart` done? What would show it? Where is the export? Prose cannot
+answer, and a session that cannot answer guesses. Both vendor write-ups
+on long-running agent work reach the same design: the record of what is
+done lives in a machine-readable file
 in the repository, not in conversation. Anthropic's harness has its
 initializer write the feature list as JSON, every entry starting as
 failing, and lets the coding agent flip an entry only after end-to-end
@@ -122,7 +119,7 @@ stateDiagram-v2
     Passing --> [*]: final, reported by handoff
 ```
 
-Walkthrough: nothing moves without a component. The scheduler (the
+Nothing moves without a component. The scheduler (the
 demo's `plan`, the `next` array) chooses among entries that are not
 `passing`; the gate (exercise 01) admits an entry into `in-progress`
 only while no other entry is there, and into `passing` only on evidence

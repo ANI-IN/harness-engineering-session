@@ -210,6 +210,11 @@ def check_corpus_copies(errors: list[str], root: Path) -> None:
     project must be byte-identical to the earliest project's copy unless
     the later project's SPEC.md declares
     `Corpus-divergence: <fixtures-relative-path> (<reason>)`."""
+    # `harness/` is deliberately NOT policed here. Its artifacts accrete
+    # across projects by design (each project's SPEC declares the delta), so
+    # byte-identity is the wrong rule: init.sh and session-handoff.md are
+    # supposed to grow from one project to the next. Only `fixtures/`, where
+    # a silent edit shifts one project's expected outputs alone, is checked.
     groups: dict = {}
     for project in sorted(root.glob("projects/project-*")):
         fixtures = project / "fixtures"

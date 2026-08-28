@@ -327,7 +327,7 @@ Both tracks must reproduce the *same* failure, not two different failures.
 
 ## README anatomy
 
-Every directory under `lectures/`, `projects/`, `skills/`, `library/`, and
+Every directory under `lectures/`, `projects/`, `library/`, and
 `tools/` has a `README.md`. No orphan folders. Section orders are fixed and
 machine-checked:
 
@@ -360,7 +360,7 @@ same two headings every time:
 ```
 
 Never show only one track. The only exceptions are the declared single-track
-units (`tools/`, `skills/harness-creator/scripts/`), which say so in one
+units (`tools/`), which say so in one
 sentence, and ecosystem-specific notes, which are labeled as such.
 
 ## Mermaid diagrams

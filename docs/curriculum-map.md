@@ -5,7 +5,7 @@ its exercises make you build that mechanism, and each project composes the
 mechanisms of two lectures into a working system. The library holds the
 copy-ready templates those systems are built from.
 
-This map covers every built unit, lectures 01-14 and projects 01-05: the foundation sequence
+This map covers every built unit, lectures 01-13 and projects 01-05: the foundation sequence
 (lectures 01-06, projects 01-03), the scope-control and feature-list
 lectures that project 04 industrializes, and the premature-claim lecture
 that project 05 puts under a rubric.

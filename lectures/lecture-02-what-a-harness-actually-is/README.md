@@ -30,15 +30,10 @@ After this lecture and its exercises you can:
 
 ## The problem
 
-Drop a competent new engineer into a project with no README, no test
-instructions, and no record of what's done, and they will eventually write
-code, after spending most of their time reconstructing what the project
-even is. An agent in the same repository is worse off: it cannot corner a
-colleague at lunch. It sees exactly the files you put in front of it and
-the commands it can run.
-
-Now watch what teams call the fix: they write one prompt file and call it a
-harness. The observable symptom of that mistake is a familiar mix from
+An agent sees exactly the files you put in front of it and the commands it
+can run, and nothing else. Watch what teams call the fix: they write one
+prompt file and call it a harness. The observable symptom of that mistake
+is a familiar mix from
 lecture 01's triage: the agent knows the convention (the prompt said so)
 but redoes last session's work (no state), can't run the checker (no
 tools), trips on a missing dependency (no environment), and ends with
@@ -96,13 +91,10 @@ flowchart LR
     C --> S
 ```
 
-Walkthrough: the two arrows *into* the agent are what it knows before
-acting (the convention it must follow, the feature that is actually next).
-The chain *out* of the agent is how work becomes real: a tool call runs
-inside an environment and produces something checkable. The two arrows out
-of feedback close the system: results return to the agent (retry, fix) and
-to state (record what is now true). Cut any arrow and the loop degrades in
-a way you can name, which is precisely what the demo does on command.
+The two arrows out of feedback are what close the system: results return to
+the agent (retry, fix) and to state (record what is now true). Cut any arrow
+and the loop degrades in a way you can name, which is precisely what the demo
+does on command.
 
 ## Demo
 

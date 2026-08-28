@@ -7,8 +7,8 @@ is valid in its own format (JSON parses and validates against its schema,
 shell scripts pass shellcheck, checklists are complete).
 
 This library is the **single source of truth** for these artifacts across the
-whole module: the projects instantiate them, and the `harness-creator` skill
-emits them. There are no second copies to drift out of sync.
+whole module: the projects instantiate them, and nothing else defines
+them. There are no second copies to drift out of sync.
 
 ## The minimal pack
 
@@ -38,10 +38,10 @@ failure mode it exists for):
 | [`templates/evaluator-rubric.md`](./templates/evaluator-rubric.md) | The agent approves its own questionable work; you need a checker role |
 
 Signals that you have outgrown this pack entirely (many domains, several
-agents, long-running work) point to the advanced pack (fuller repository
-skeleton with routing docs and plan lifecycle), which arrives with the second
-half of the module alongside the reference notes (startup flow, failure-mode
-map, audit checklist).
+agents, work that runs for weeks) are the point at which a repository
+skeleton with routing documents and a plan lifecycle earns its keep. This
+pack does not ship one: the templates here are the minimum that every
+project in this module actually instantiates.
 
 ## Rules that keep the pack working
 

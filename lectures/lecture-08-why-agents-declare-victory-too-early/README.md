@@ -42,11 +42,8 @@ After this lecture and its exercises you can:
 ## The problem
 
 You ask for csv export in a small reporting tool. The session writes the
-exporter, adds a unit test, wires the config read, runs the linter and
-the unit suite, sees green twice, and reports: done. You try it. The
-config file has no export directory, so the writer fails on its first
-call; the schema says version 3 but the migration log stops at 2; and
-the end-to-end run that would have surfaced both was never started.
+exporter, wires the config read, runs the linter and the unit suite, sees
+green twice, and reports: done. You try it and nothing arrives.
 Everything the session actually executed passed. Everything it did not
 execute was where the work was unfinished.
 
@@ -63,15 +60,6 @@ evaluator from the generator and had the evaluator exercise the
 application instead of reading the code.
 
 > Source: [Anthropic: Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
-
-Two earlier units touch this failure from other sides.
-[Lecture 01](../lecture-01-why-capable-agents-still-fail/) triaged a
-transcript after the fact and attributed the unbacked claim to the
-feedback subsystem.
-[Project 05](../../projects/project-05-self-verification-and-role-separation/)
-grades who checks: nobody, a checker, a planner plus a checker. This
-lecture sits between them, at the moment the claim is made, and asks
-what mechanism turns it from a statement into a verdict.
 
 ## Concepts
 
@@ -129,7 +117,7 @@ sequenceDiagram
     G-->>S: verdict: premature (exit 1)
 ```
 
-Walkthrough: the session and the gate use the same checks and the same
+The session and the gate use the same checks and the same
 engine; the only difference is who decides which checks run. The session
 decides by budget and stops when the money runs out; the gate has no
 budget and runs the claimed list. The three diverged rows are exactly the

@@ -263,5 +263,5 @@ same move lecture 05's init doctor makes, pointed at the workspace.
 - [Lecture 04: Why one giant instruction file fails](../../lectures/lecture-04-why-one-giant-instruction-file-fails/):
   AGENTS.md here is that lecture's router, and the doctor checks its
   routes resolve.
-- [Lecture 11: Why long-running tasks lose continuity](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/):
+- [Lecture 11: Why every session must leave a clean state](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/):
   the session handoff uses its canonical format, so it stays parseable.

@@ -61,8 +61,7 @@ slowness traced to an underspecified environment, not to model capability.
   symptom in a run transcript.
 - **Harness-induced failure**: the model had sufficient capability, but the
   execution system had a structural defect. The design heuristic of this
-  whole module: when things fail, check the harness first; swapping models
-  is the most expensive fix and usually the wrong one.
+  whole module: when things fail, check the harness first.
 - **Verification gap**: the distance between an agent's confidence ("done")
   and verified correctness. It is the most common failure mode, and it is
   measurable (exercise 02 makes you measure it).
@@ -100,10 +99,8 @@ sequenceDiagram
 ```
 
 Reading the timeline: the agent asking a *human* for a fact the *repository*
-should answer is an instructions defect, whatever the agent's capability. A
-shell refusing a command is a tools defect; a missing dependency is an
-environment defect. Re-doing mapped-but-unrecorded work is a state defect.
-And a completion claim with no passing verification before it is a feedback
+should answer is an instructions defect, whatever the agent's capability, and
+a completion claim with no passing verification before it is a feedback
 defect, regardless of whether the code happens to work. The demo's
 [SPEC.md](./code/SPEC.md) turns each note into an exact rule.
 

@@ -85,14 +85,13 @@ stateDiagram-v2
     HandedOff --> [*]
 ```
 
-Walkthrough: `Initializing` is the phase this lecture separates out; its
+`Initializing` is the phase this lecture separates out; its
 only exits are a passing doctor or a named blocker, so a session cannot
 drift into `Working` with an unpinned interpreter or an unrecorded state
 file. The `Blocked` loop is cheap precisely because the doctor's report
-names what to fix. `Working` and `HandedOff` are lecture 05-07 territory;
-the state machine shows why they depend on this phase: every later stage
-assumes the invariants `Ready` certifies. The demo's
-[SPEC.md](./code/SPEC.md) pins the four checks behind that `Ready` edge.
+names what to fix, and every later stage assumes the invariants `Ready`
+certifies. The demo's [SPEC.md](./code/SPEC.md) pins the four checks
+behind that `Ready` edge.
 
 ## Demo
 
@@ -305,8 +304,7 @@ single-file dual-ecosystem exception, labeled as such in its header.
   banner. The doctor checks for it because the failure mode it prevents
   is invisible by definition.
 - **Record decisions made during initialization** (test framework,
-  layout, dependency choices) in the progress log's decision lines;
-  lecture 05's simulator showed what re-deciding costs.
+  layout, dependency choices) in the progress log's decision lines.
 - Track note: everything the doctor inspects is language-neutral, and the
   environment check is deliberately dual-ecosystem: it validates
   whichever manifest pairs exist, which is also how this repository's own

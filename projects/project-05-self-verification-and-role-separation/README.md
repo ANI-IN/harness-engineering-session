@@ -77,6 +77,7 @@ project-05-self-verification-and-role-separation/
                        (the half-done delete's leavings)
   fixtures/scoreruns/  five score-run fixtures, each violating exactly
                        one rubric item (seeded defects)
+  fixtures/imports/    a document to import
   fixtures/workspaces/ workspace-ready and workspace-stale (carried)
   expected/            pinned outputs incl. all three workrun transcripts
                        and the ladder

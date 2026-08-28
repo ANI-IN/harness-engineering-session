@@ -35,8 +35,7 @@ After this lecture and its exercises you can:
 ## The problem
 
 Your team knows the API versioning rule. It lives in a Confluence page,
-half a Slack thread, and two senior engineers. A human colleague asks
-around and finds it; the agent cannot ask. The observable symptom is
+half a Slack thread, and two senior engineers. The observable symptom is
 lecture 01's `asked-for-repo-fact` failure at scale: sessions that open
 with questions, guesses that violate constraints "everyone knows", and the
 next session guessing again, because nothing was written where the agent
@@ -107,9 +106,7 @@ flowchart LR
     Q5 --> A5 --> R
 ```
 
-Walkthrough: the left column is what a session needs to know before its
-first edit; the right column is where each answer must live and the exact
-line that carries it. Every edge is an extraction rule in the demo's
+Every edge is an extraction rule in the demo's
 [SPEC.md](./code/SPEC.md); a missing artifact or line breaks its edge, the
 question reports unanswered, and the run exits non-zero, because a repo
 that cannot answer these questions is not ready to host a session. The
@@ -217,8 +214,7 @@ line, a progress log). Against `repo-mapped` the same command reports
 - **State discipline, as heuristics**: commit verified wholes rather than
   fragments (atomic), keep an executable definition of "consistent" and
   run it before recording state, give concurrent agents separate state
-  files, and treat only git-tracked files as durable. Session memory is
-  not storage; what is written down is what happened.
+  files, and treat only git-tracked files as durable.
 - Track note: nothing in this lecture's artifacts mentions Python or
   TypeScript. The fixtures serve both implementations unmodified, and the
   same five questions govern this very repository's root

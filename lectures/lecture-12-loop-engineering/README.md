@@ -75,12 +75,6 @@ requirement on the other side of that line:
 >
 > Source: [Anthropic: Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)
 
-Ground truth is available here. The workspace can be checked against all
-three criteria at any moment, and the demo's checker does exactly that in
-the same round where the maker declares victory, disagreeing with it in
-writing. The loop stopped anyway, because that is not the wire its
-stopping condition was attached to.
-
 ## Concepts
 
 - **A loop is a goal, a verification step, a stopping condition, and
@@ -145,7 +139,7 @@ flowchart LR
     Clock -->|"no"| Stop
 ```
 
-Walkthrough: `goal.json` and `loop-state.json` are the two files a round
+`goal.json` and `loop-state.json` are the two files a round
 reads, and the state is also written by the round, which is the arrow back
 into it. The maker's turn and the checker's turn both run in every round
 regardless of `--stop-on`, so the dashed wire is the whole experiment:
@@ -382,9 +376,8 @@ reported that it had.
 
 ### Supporting evidence: what the two runs of the same loop cost
 
-The rounds and ticks below are a count, so they come after the
-behavioural runs and are evidence about them rather than the
-demonstration. They are read from the two pinned reports by `make verify`:
+The rounds and ticks below are evidence about the behavioural runs rather
+than the demonstration, read from the two pinned reports by `make verify`:
 
 <!-- generated-block: uv run python -c "import json; E='lectures/lecture-12-loop-engineering/code/expected/'; m=json.load(open(E+'stop-on-maker.json')); c=json.load(open(E+'stop-on-checker.json')); n=len(c['rounds'][0]['checker']['checked']); f=lambda r: str(len(r['rounds'])) + ' round(s), ' + str(r['stop']['clock']) + ' of ' + str(r['budget_ticks']) + ' ticks spent, ' + str(len(r['unmet'])) + ' of ' + str(n) + ' criteria unmet at exit'; print('stop-on=maker:   ' + f(m)); print('stop-on=checker: ' + f(c)); print('round 1 maker turn and checker verdict identical across the two runs: ' + ('yes' if m['rounds'][0]['maker'] == c['rounds'][0]['maker'] and m['rounds'][0]['checker'] == c['rounds'][0]['checker'] else 'no')); print('rounds of the checker run whose maker reported done: ' + str(sum(1 for d in c['rounds'] if d['maker']['reports_done'])) + ' of ' + str(len(c['rounds'])))" -->
 ```text

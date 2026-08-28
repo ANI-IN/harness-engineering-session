@@ -57,8 +57,8 @@ then declares the key twice and the verify node says so. Every wiring in
 the demo reaches that same failed check. What they do next is the whole
 lecture.
 
-The vocabulary for those connections is old. Anthropic's survey of agent
-patterns draws the same distinction the demo's node kinds carry:
+Anthropic's survey of agent patterns draws the same distinction the
+demo's node kinds carry:
 
 > "Workflows are systems where LLMs and tools are orchestrated through
 > predefined code paths. Agents, on the other hand, are systems where LLMs
@@ -73,12 +73,9 @@ happens after each one returns.
 
 ## Concepts
 
-- **The four parts, and only these four.** A node is a unit of work with
-  a name. An edge is a handoff. Shared state is the one structure every
-  node reads and writes. A routing rule reads one key of that state and
-  returns the next node. The demo's executor is those four ideas and
-  nothing else, in the standard library of both tracks, so nothing in this
-  lecture depends on a framework.
+- **The four parts, and only these four.** The demo's executor is nodes,
+  edges, shared state, and a routing rule and nothing else, in the standard
+  library of both tracks, so nothing in this lecture depends on a framework.
 - **The graph is data, so it is reviewable.** The demo's graphs are
   committed JSON files, and the three of them differ only in the edges out
   of one node. A wiring you can diff is a wiring someone can argue with
@@ -108,8 +105,6 @@ happens after each one returns.
   and any routing value with no edge. It catches the missing rollback edge
   and exits 1. It scores `graph-misrouted` as complete, because a router
   keyed on the wrong field is complete: every declared value has an edge.
-  This is why the counts come after the behavioral runs, under a heading
-  that says what they are.
 - **This unit's nodes are language-neutral.** Each node is a deterministic
   function over the shared state, the stand-in for a model call or a shell
   command ([deterministic fake agent](../../docs/glossary.md#core-model)),
@@ -136,7 +131,7 @@ flowchart TD
     V -.->|"graph-misrouted:<br/>router keyed on applied_ok,<br/>which is true either way"| Y(["exit 1: committed-broken"])
 ```
 
-Walkthrough: the solid edges are `graph-declared`. The walk starts at
+The solid edges are `graph-declared`. The walk starts at
 `plan`, and every node's writes land in the shared state before the router
 runs. The router is the diamond: it reads one key of that state and
 returns a node name. Both dotted branches are the same four nodes with one
@@ -553,9 +548,8 @@ did.
 
 ### Supporting evidence: counting the graph's parts
 
-A count of nodes and edges is a fact about a graph's shape, so it comes
-after the behavioral runs. It is worth having: `structure` turns an
-undeclared routing path into a failing gate before anything runs.
+`structure` turns an undeclared routing path into a failing gate before
+anything runs.
 
 #### Python
 

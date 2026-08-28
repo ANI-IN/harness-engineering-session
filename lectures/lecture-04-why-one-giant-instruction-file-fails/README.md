@@ -50,10 +50,6 @@ substantially better than information in the middle.
 
 > Source: [Lost in the Middle: How Language Models Use Long Contexts (Liu et al., 2023)](https://arxiv.org/abs/2307.03172)
 
-The rest of this lecture's claims are demonstrated by the demo on
-committed fixtures, not asserted: the same rules, filed two ways, walked
-by the same budgeted reader, with the outcome in the exit code.
-
 ## Concepts
 
 - **Map, not manual**: the entry file is a router: what the system is, the
@@ -91,11 +87,10 @@ flowchart LR
     E -. not loaded .-> D4["docs/db.md"]
 ```
 
-Walkthrough: the router's cost for this task is the short entry plus two
-matching topic files; the deploy and db documents exist, stay maintained,
-and cost nothing here. The monolith's cost for the same task is the whole
-file, every time, for every task, which is also what pushes its hard
-constraints into the middle zone where they get lost. The demo's
+The router's cost for this task is the short entry plus two matching topic
+files. The monolith's cost for the same task is the whole file, every
+time, for every task, which is also what pushes its hard constraints into
+the middle zone where they get lost. The demo's
 [SPEC.md](./code/SPEC.md) pins the loading rule, the SNR formula, and the
 zone/burial rules the diagram summarizes.
 

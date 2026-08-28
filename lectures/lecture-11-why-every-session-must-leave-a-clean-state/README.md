@@ -45,13 +45,10 @@ opens the pdf feature and drafts its module, and writes a scratch file
 while probing a page size. Then it ends. Everything it did was real and
 the one check it ran was green.
 
-The next session opens that repository. The progress log says nothing was
-verified. The feature list says two features are in progress at once. A
-half written pdf module sits next to a scratch probe with no note saying
-which is deliberate. Nothing in the workspace distinguishes finished work
-from abandoned work, so the next session picks the first thing the record
-points at, which is the feature that was already done, and implements it
-again.
+The next session opens that repository. Nothing in the workspace
+distinguishes finished work from abandoned work, so it picks the first
+thing the record points at, which is the feature that was already done,
+and implements it again.
 
 Anthropic's write-up on long-running agents names the requirement
 directly, and defines it in terms of what the code has to be fit for:
@@ -96,10 +93,9 @@ exactly why it needs to be a gate rather than a habit.
   step that acts rather than reconciles turns a retry into a second
   defect. Exercise 02 builds the reconciling version.
 - **"Clean up later" is a design heuristic that does not survive contact
-  with a session boundary.** The next session has its own goal, does not
-  know which leavings were deliberate, and has no budget for archaeology.
-  This module treats that as a heuristic, not a measurement: the demo
-  shows one instance of the failure rather than a rate.
+  with a session boundary.** This module treats that as a heuristic, not a
+  measurement: the demo shows one instance of the failure rather than a
+  rate.
 - **This unit's checks are language-neutral**: each check is an
   executable probe over workspace files, the deterministic stand-in for a
   shell command ([deterministic fake agent](../../docs/glossary.md#core-model)),
@@ -122,7 +118,7 @@ flowchart LR
     P -->|"inherited the clean ending"| Good["Finishes pdf-export;<br/>every check passes;<br/>exit 0"]
 ```
 
-Walkthrough: the left half is one session, and its first five steps are
+The left half is one session, and its first five steps are
 byte-identical on both branches. The fork is the exit discipline alone.
 The right half is one protocol, not two: the same reads in the same order,
 the same choice rule, the same implementation edit for whichever feature
@@ -399,15 +395,13 @@ identical through step 5; the transcripts first differ at step 6
 ```
 <!-- /generated-block -->
 
-Five steps of work, recorded identically, in both runs. Everything the
-second session does differently begins at step 6, and step 6 is the exit
-discipline.
+Everything the second session does differently begins at step 6, and step
+6 is the exit discipline.
 
 ### Supporting evidence: the checklist over the dirty ending
 
-A count of what an ending got wrong is not the demonstration, and it comes
-after the behavioral runs for that reason. It is still useful, because it
-turns the ending into a gate with an exit code.
+The checklist is not the demonstration; it is what turns the ending into a
+gate with an exit code.
 
 #### Python
 

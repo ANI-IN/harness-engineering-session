@@ -278,8 +278,6 @@ state alone. This is lecture 11's claim as a measured fact.
   ones: the handoff and clean-state checklist here are the artifacts that
   lecture's exit protocol writes.
 
-- [Lecture 11: Why long-running tasks lose continuity](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/):
-  the continuity proof is that lecture's session simulator, made real.
 - [Lecture 05: Why initialization needs its own phase](../../lectures/lecture-05-why-initialization-needs-its-own-phase/):
   `init.sh` builds the index and gates the session on the doctor, exactly
   that lecture's discipline.

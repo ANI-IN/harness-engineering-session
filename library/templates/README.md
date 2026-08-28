@@ -1,6 +1,6 @@
 # Templates
 
-The nine harness artifacts plus the JSON Schema that validates the feature
+The eight harness artifacts plus the JSON Schema that validates the feature
 list, each a valid, filled-in exemplar. Copy the file, replace the example
 content with your project's, keep the structure.
 
@@ -16,13 +16,14 @@ content with your project's, keep the structure.
 | [`clean-state-checklist.md`](./clean-state-checklist.md) | Session exit gate | Sessions that end "green" but leave debris |
 | [`evaluator-rubric.md`](./evaluator-rubric.md) | Checker's scorecard over a maker's work | Self-approval bias |
 
-Motivating lectures (linked as they exist in this release): AGENTS.md is
+Motivating lectures: AGENTS.md is
 motivated by [Lecture 02](../../lectures/lecture-02-what-a-harness-actually-is/) and [Lecture 04](../../lectures/lecture-04-why-one-giant-instruction-file-fails/); CLAUDE.md by [Lecture 04](../../lectures/lecture-04-why-one-giant-instruction-file-fails/);
 init.sh by [Lecture 05](../../lectures/lecture-05-why-initialization-needs-its-own-phase/); claude-progress.md and session-handoff.md
 by [Lecture 11](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/). The remaining templates (feature list
-and schema, clean-state checklist, evaluator rubric, quality document)
-are motivated by lectures 08, 10, and 11, which arrive with the full
-curriculum.
+and schema, clean-state checklist, evaluator rubric) are motivated by
+[Lecture 07](../../lectures/lecture-07-why-feature-lists-are-harness-primitives/),
+[Lecture 08](../../lectures/lecture-08-why-agents-declare-victory-too-early/),
+and [Lecture 11](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/).
 
 Notes:
 

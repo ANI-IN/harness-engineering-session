@@ -4,6 +4,10 @@ RESEARCH.md
 PROPOSAL.md
 build_state.json
 BUILD_PROGRESS.md
+# The session handoff is local state by nature: it names unpushed commits,
+# carries the working briefs, and is stale the moment a session ends. The
+# shipped artifact is library/templates/session-handoff.md.
+session-handoff.md
 
 # --- dependencies ---
 node_modules/

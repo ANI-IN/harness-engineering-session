@@ -17,7 +17,7 @@ Pins: Python 3.12 (`.python-version`, installed by uv), Node 20 LTS
 
 ## Before you open a pull request
 
-Run the full gate locally; CI runs exactly the same targets:
+Run the full gate locally; CI runs these plus `make setup`, `make doctor`, `make lint-shared-helpers`, and `make check-fresh`:
 
 ```sh
 make verify && make conformance && make lint && \

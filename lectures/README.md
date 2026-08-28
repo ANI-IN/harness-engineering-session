@@ -15,8 +15,9 @@ Every `lecture-NN-<slug>/` directory contains:
   takeaways, exercises, further exploration.
 - **`code/`**: the demo, a shared `SPEC.md` + fixtures + expected outputs,
   implemented in `python/` and `typescript/`, checked by `verify.sh`.
-- **`exercises/`**: 2 exercises for most lectures, 1 where the lecture's
-  mechanism is a single build (13 and 14). Each gives you starter code
+- **`exercises/`**: 2 for most lectures, 3 for lecture 11 (which absorbed
+  the continuity material), and 1 each for lectures 12 and 13, whose
+  mechanism is a single build. Each gives you starter code
   that runs but fails verification, and you modify it until
   `./verify.sh --stack=<your track>` exits 0. Committed solutions let you
   check your work.

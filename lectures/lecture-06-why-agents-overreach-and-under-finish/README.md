@@ -43,14 +43,11 @@ After this lecture and its exercises you can:
 
 ## The problem
 
-You ask for the search endpoint. The agent wires the route, notices the
-routes file has no delete handler and starts one, notices two handlers
-return different error shapes and reworks both, adds a rate limiter
-while it is in the router, moves the tests while it is in the tests.
-Two hours later five features are touched, none passes end to end, and
-the search endpoint's own tests were never run. Anthropic's write-up on
-long-running agents reports both halves from their own harness: the
-coding agent "tended to try to do too much at once", ran out of context
+You ask for the search endpoint. Two hours later five features are
+touched, none passes end to end, and the search endpoint's own tests were
+never run. Anthropic's write-up on long-running agents reports both
+halves from their own harness: the coding agent "tended to try to do too
+much at once", ran out of context
 mid-implementation "leaving the next session to start with a feature
 half-implemented and undocumented", and the fix that worked was to ask
 it "to work on only one feature at a time", an incremental approach they
@@ -58,10 +55,6 @@ found "critical to addressing the agent's tendency to do too much at
 once."
 
 > Source: [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
-
-This lecture makes that observation reproducible on committed fixtures:
-the same scripted worker, the same stream of impulses, one line of
-difference in the workspace, and the outcome in the exit code.
 
 ## Concepts
 
@@ -109,7 +102,7 @@ flowchart LR
     P --> Q["parked queue:<br/>scope for the next session"]
 ```
 
-Walkthrough: the script never changes; the gate's middle branch exists
+The script never changes; the gate's middle branch exists
 only when `AGENTS.md` draws the boundary. Without it every tangent takes
 the `act` branch, and the assigned feature's verify impulse, last in the
 script by construction (you verify after you implement), is the first

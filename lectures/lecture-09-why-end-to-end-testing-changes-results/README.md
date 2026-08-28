@@ -52,20 +52,11 @@ paths that start with `/`. Both components are correct. Their unit cases
 disagree with each other, and nothing in the definition of done ever put
 them in the same room.
 
-Lecture 08's gate would confirm this claim. It re-executes every check the
-workspace declares, and every declared check passes, so the gate reports
-`earned` and exits 0. Re-execution fixes claims about checks that were
-skipped; it cannot fix a check list that never contained the assembled
-run. The failure has moved from "the session did not run the check" to
-"the check does not exist", and only the second one is the harness
-author's problem.
-
-The defect class has a name and a well-documented shape. OpenAI's harness
-engineering write-up reports that architectural constraints on
-agent-written codebases have to be established as prerequisites and
-enforced mechanically, because agents copy whatever patterns the
-repository already contains, and that failure messages should carry the
-fix rather than only the complaint.
+OpenAI's harness engineering write-up reports that architectural
+constraints on agent-written codebases have to be established as
+prerequisites and enforced mechanically, because agents copy whatever
+patterns the repository already contains, and that failure messages
+should carry the fix rather than only the complaint.
 
 > Source: [OpenAI: Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)
 
@@ -134,7 +125,7 @@ flowchart LR
     end
 ```
 
-Walkthrough: the left column is three runs that never meet. Each one is
+The left column is three runs that never meet. Each one is
 fed a value some fixture author chose, and each one agrees with the
 fixture it was given. The right column is one run, and the value that
 reaches `file-writer` is not the one its fixture supplies; it is the one
