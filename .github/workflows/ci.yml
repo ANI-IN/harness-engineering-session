@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Lets a branch be verified before it becomes main, and lets anyone re-run
+  # the full gate on demand without an empty commit.
+  workflow_dispatch:
 
 jobs:
   verify:
