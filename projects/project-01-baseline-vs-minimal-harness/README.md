@@ -218,14 +218,15 @@ its shape and every behavior in it are contracts in [SPEC.md](./SPEC.md).
 ## Testing and validation
 
 ```sh
-./verify.sh                  # conformance (16 checks) + both test suites
-./verify.sh --stack=python   # conformance (python) + pytest only
-./verify.sh --stack=typescript
+P=projects/project-01-baseline-vs-minimal-harness
+$P/verify.sh                  # conformance (16 checks) + both test suites
+$P/verify.sh --stack=python   # conformance (python) + pytest only
+$P/verify.sh --stack=typescript
 ```
 
 Conformance runs eight cases against both tracks and diffs three ways
 (python vs expected, typescript vs expected, python vs typescript),
-including the full experiment. The test suites (17 pytest, 17 vitest)
+including the full experiment. The test suites (18 pytest, 18 vitest)
 cover the retrieval rules, init idempotency, the reset and isolation
 controls, and the committed-evidence contract: the evidence in
 [`harness/feature_list.json`](./harness/feature_list.json) must equal

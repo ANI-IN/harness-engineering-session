@@ -1,10 +1,11 @@
 """completion-gate exercise, Python starter.
 
 The claim audit, the WIP check, the verdict precedence, and the CLI all
-work. The evidence rule does not: the naive draft accepts any recorded
-evidence entry as proof, so a typecheck filed as evidence, or a recorded
-failing run, backs a `passing` claim. Fix gate() per SPEC.md. Run
-../../verify.sh --stack=python until it exits 0.
+work, and the evidence rule already rejects a missing entry, a different
+command, and a recorded failing run. What it never asks is whether the
+feature declared a command to run at all, so a `passing` feature whose
+`verification` is the empty string reads as verified. Fix gate() per
+SPEC.md. Run ../../verify.sh --stack=python until it exits 0.
 """
 
 from __future__ import annotations

@@ -98,8 +98,7 @@ happens after each one returns.
   real.** Declaring the edge routes the failure somewhere; what comes back
   depends on the node at the far end. The demo's `undo` node replays the
   apply journal backwards, because an appended line can only be removed
-  while it is still the last line of its file. Exercise 01 is that node
-  and the order it replays in.
+  while it is still the last line of its file.
 - **Counting a graph's parts is evidence, not a verdict.** The demo's
   second surface reports nodes, edges, conditional edges, rollback edges,
   and any routing value with no edge. It catches the missing rollback edge
@@ -605,8 +604,8 @@ the runs sit above it.
 - **Replay a journal backwards.** An appended line is removable only while
   it is the last line of its file, so the later writes have to come off
   first. Walking forward reverts whatever happens to be at the tip and
-  leaves the rest, which is the exercise's seeded mistake and a genuinely
-  easy one to ship.
+  leaves the rest, which is a genuinely easy mistake to ship: the loop
+  reads correctly and the workspace ends up half restored.
 - **Name the routing key's value domain in the graph file.** The demo's
   router declares `{"key": "review", "values": ["pass", "fail"]}`, so a
   value with no edge is a detectable hole rather than a runtime surprise.

@@ -2,8 +2,8 @@
 
 ## Objective
 
-Fix three naive subsystem audits (tools, environment, state) so the auditor
-scores six fixture repositories exactly as the shared expected report says.
+Fix two naive subsystem audits (tools and feedback) so the auditor scores
+seven fixture repositories exactly as the shared expected report says.
 
 ## Why this matters
 
@@ -13,9 +13,9 @@ operational, and makes its language-neutrality concrete: every criterion
 you fix checks ordinary files (`AGENTS.md`, `verify.sh`,
 `feature_list.json`, manifests, runtime pins). Nothing you audit for is
 Python or TypeScript, and both tracks audit the same fixture trees. The
-starter's three mistakes are real-world ones: trusting descriptions over
-existence, declaring dependencies without pinning the runtime, and keeping
-scope without narrative.
+starter's two mistakes are real-world ones: trusting that instructions
+which *mention* a tool mean the tool exists, and trusting that a tag
+which *names* a verification command means a command is there to run.
 
 ## Prerequisites
 
@@ -28,19 +28,21 @@ scope without narrative.
 
 ## Provided
 
-- [`SPEC.md`](./SPEC.md): the audit criteria, plus the starter's three
+- [`SPEC.md`](./SPEC.md): the audit criteria, plus the starter's two
   naive mistakes and the trap repo that exposes each (shared).
-- [`fixtures/repos/`](./fixtures/repos/): six repositories to audit
+- [`fixtures/repos/`](./fixtures/repos/): seven repositories to audit
   (shared): `repo-complete` (5/5), `repo-no-state` (working but amnesiac),
-  `repo-prompt-only` (a prompt file is not a harness), and three traps
-  built for the starter's mistakes: `repo-talks-tools` (instructions
-  describe `verify.sh`; the file does not exist), `repo-unpinned` (a
+  `repo-prompt-only` (a prompt file is not a harness), `repo-unpinned` (a
   manifest, no runtime pin), `repo-list-only` (a feature list, no progress
-  file).
+  file), and the two traps built for the starter's mistakes:
+  `repo-talks-tools` (instructions describe `verify.sh`; the file does not
+  exist) and `repo-empty-verification` (a `- Verification:` line that
+  names nothing after the colon).
 - [`expected/audit-report.json`](./expected/audit-report.json): the grading
   authority (shared; never edit it).
-- `starter/{python,typescript}/main.py|ts`: all five audits run; tools,
-  environment, and state are naive first drafts that overcount.
+- `starter/{python,typescript}/main.py|ts`: all five audits run; the
+  environment, state and instructions audits are already correct, and
+  tools and feedback are naive first drafts.
 - `solution/{python,typescript}/`: complete implementations.
 
 ## Your task
@@ -48,31 +50,33 @@ scope without narrative.
 Work only in your track's starter file.
 
 1. Fix the tools audit: a mention of `verify.sh` in the instructions is
-   not the tool; the file itself must exist.
-2. Fix the environment audit: require the runtime pin alongside the
-   manifest (Python pair first, then Node pair), and produce the SPEC's
-   two-part evidence string.
-3. Fix the state audit: require `claude-progress.md` alongside
-   `feature_list.json`.
-4. Re-run verification until it exits 0.
+   not the tool; the file itself must exist. Evidence becomes plain
+   `verify.sh`.
+2. Fix the feedback audit: a `- Verification:` line is the tag, not the
+   fact. Read what follows the colon, require it to be non-empty, and
+   report the command you found, so the evidence names something a
+   reader can run: `Verification line in <file>: <command>`.
+3. Re-run verification until it exits 0.
 
-What makes `verify.sh` flip to 0: the corrected criteria stop the
-overcounting, which fixes the three trap repos' scores (5/5 → 4/5,
-4/5 → 3/5, 5/5 → 4/5) and the evidence strings everywhere.
+What makes `verify.sh` flip to 0: the corrected tools audit takes
+`repo-talks-tools` from 5/5 to 4/5 and stops crediting a mention in every
+other repo's evidence string; the corrected feedback audit takes
+`repo-empty-verification` from crediting feedback to naming it missing,
+and appends the command to the evidence everywhere it is real.
 
 ## Expected outcome
 
 Before your change, verification fails on the very first repo, where the
-naive environment audit's evidence names only half the criterion:
+naive feedback audit's evidence stops at the tag:
 
 ```text
-[FAIL] basic (python) -- stdout mismatch vs expected/audit-report.json: diverges at $.repos[0].subsystems.environment.evidence: 'pyproject.toml' != 'pyproject.toml + .python-version'
+[FAIL] basic (python) -- stdout mismatch vs expected/audit-report.json: diverges at $.repos[0].subsystems.feedback.evidence: 'Verification line in AGENTS.md' != 'Verification line in AGENTS.md: ./verify.sh'
 ```
 
-After your change: `repo-complete` 5/5, `repo-list-only` 4/5 (missing
-state), `repo-no-state` 4/5, `repo-prompt-only` 1/5, `repo-talks-tools`
-4/5 (missing tools), `repo-unpinned` 3/5 (missing environment and state),
-and:
+After your change: `repo-complete` 5/5, `repo-empty-verification` 4/5
+(missing feedback), `repo-list-only` 4/5 (missing state), `repo-no-state`
+4/5, `repo-prompt-only` 1/5, `repo-talks-tools` 4/5 (missing tools),
+`repo-unpinned` 3/5 (missing environment and state), and:
 
 ```text
 verify: PASS (starter)
@@ -97,11 +101,11 @@ verify: PASS (starter)
 <details>
 <summary>Hint 1: the divergence names the missing half</summary>
 
-The first failure is an evidence string: the naive audit found
-`pyproject.toml` where the SPEC's criterion is
-`pyproject.toml + .python-version`. Each naive audit is missing exactly
-one conjunct; the trap repos in `fixtures/repos/` each make one of those
-missing conjuncts change a score.
+The first failure is an evidence string: the naive audit reported
+`Verification line in AGENTS.md` where the SPEC's evidence is
+`Verification line in AGENTS.md: ./verify.sh`. Each naive audit stops one
+step short of its criterion; the two trap repos in `fixtures/repos/` each
+make one of those missing steps change a score.
 
 </details>
 
@@ -117,36 +121,46 @@ measure different subsystems.
 </details>
 
 <details>
-<summary>Hint 3: overcounting vs undercounting</summary>
+<summary>Hint 3: which way each mistake errs</summary>
 
-The naive audits never miss a healthy repo; they bless unhealthy ones.
-When your fix is right, no score goes up; three go down.
+The naive feedback audit blesses an unhealthy repo, and the naive tools
+audit does both: it credits a mention in `repo-talks-tools` that is not
+a tool, and it misses the real `verify.sh` in `repo-empty-verification`,
+whose instructions never spell the filename. When your fix is right,
+`repo-talks-tools` goes down and `repo-empty-verification` trades a
+wrongly-credited feedback for a correctly-credited tools.
 
 </details>
 
 ## Solution walkthrough
 
-The three fixes tighten each criterion from "some signal" to the SPEC's
-conjunction, and each conjunction exists because the failure mode is
-conjunctive:
+Both fixes replace a proxy with the thing itself, and both proxies are
+what a real auditor reaches for first because they are cheaper to read:
 
 - **Tools: existence, not mention.** `repo-talks-tools` is lecture 02's
   "describing feedback is not having feedback" note applied to tools. An
   auditor that greps instructions inherits every aspiration the
-  instructions contain.
-- **Environment: manifest + pin.** A manifest without a runtime pin
-  reproduces the dependency tree on the wrong interpreter, the exact
-  failure the lecture demo's environment ablation simulates.
-- **State: list + progress.** `feature_list.json` says what is done;
-  `claude-progress.md` says what happened and what's next. `repo-list-only`
-  keeps scope and still loses the narrative across sessions.
+  instructions contain, and misses every tool the instructions forgot to
+  name.
+- **Feedback: the command, not the tag.** A line can carry
+  `- Verification:` and name nothing after it, and a subsystem whose
+  command is the empty string cannot tell anyone whether the work
+  passed. This is the malformed-line case: the shape is right and the
+  content is absent. Reporting the command you found is what makes the
+  evidence checkable rather than a claim that a check exists.
 
-The starter's failure mode is deliberately *overcounting*: it produces
-wrong values with real evidence strings, not empty results, so every
-divergence points at a specific criterion rather than at "not
-implemented". Cross-track note: the Python solution uses `pathlib`
-predicates; TypeScript uses `node:fs` checks; the criteria are identical
-because the artifacts are language-neutral files.
+The environment and state audits are already correct in the starter, and
+their conjunctive criteria are worth reading anyway: a manifest without a
+runtime pin reproduces the dependency tree on the wrong interpreter, and
+`feature_list.json` without `claude-progress.md` keeps scope while losing
+the narrative across sessions. `repo-unpinned` and `repo-list-only` pin
+both, so a regression there fails the build.
+
+The starter produces wrong values with real evidence strings, not empty
+results, so every divergence points at a specific criterion rather than
+at "not implemented". Cross-track note: the Python solution uses
+`pathlib` predicates; TypeScript uses `node:fs` checks; the criteria are
+identical because the artifacts are language-neutral files.
 
 ## Acceptance runs
 

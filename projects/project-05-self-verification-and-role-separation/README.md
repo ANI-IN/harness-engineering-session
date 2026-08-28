@@ -173,9 +173,10 @@ identical in all three; only the checking differs.
 ## Testing and validation
 
 ```sh
-./verify.sh                  # conformance + starter gate + both test suites
-./verify.sh --stack=python
-./verify.sh --stack=typescript
+P=projects/project-05-self-verification-and-role-separation
+$P/verify.sh                  # conformance + starter gate + both test suites
+$P/verify.sh --stack=python
+$P/verify.sh --stack=typescript
 ```
 
 Conformance runs thirty-three cases against both tracks and diffs three

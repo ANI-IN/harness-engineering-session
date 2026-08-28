@@ -191,9 +191,10 @@ code 0 IS the resume verdict.
 ## Testing and validation
 
 ```sh
-./verify.sh                  # conformance + starter gate + both test suites
-./verify.sh --stack=python
-./verify.sh --stack=typescript
+P=projects/project-03-multi-session-continuity
+$P/verify.sh                  # conformance + starter gate + both test suites
+$P/verify.sh --stack=python
+$P/verify.sh --stack=typescript
 ```
 
 Conformance runs seventeen cases against both tracks and diffs three

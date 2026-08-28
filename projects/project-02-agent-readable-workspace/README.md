@@ -172,18 +172,21 @@ the Python run by `make verify`; the TypeScript run is held identical by
 2. Kill the process, run `kb list` again: the fresh process answers from
    the index alone; that is metadata persistence.
 3. Run the doctor against the committed harness:
-   `kb workspace-check --workspace harness` exits 0; the project's own
+   `kb workspace-check --workspace $P/harness` exits 0; the project's own
    workspace passes its own readability check (the test suites assert
-   this).
+   this). The `--workspace` path is resolved from the repository root
+   like every other command here, so it carries the `$P` prefix set in
+   Usage above.
 4. Run it against the stale fixture and read the three defects it names
    (Expected output below).
 
 ## Testing and validation
 
 ```sh
-./verify.sh                  # conformance + starter gate + both test suites
-./verify.sh --stack=python
-./verify.sh --stack=typescript
+P=projects/project-02-agent-readable-workspace
+$P/verify.sh                  # conformance + starter gate + both test suites
+$P/verify.sh --stack=python
+$P/verify.sh --stack=typescript
 ```
 
 Conformance runs twelve cases against both tracks and diffs three ways.

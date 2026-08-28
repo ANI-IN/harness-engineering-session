@@ -22,7 +22,7 @@ audited in name order.
 | tools | `verify.sh` exists | `verify.sh` |
 | environment | a manifest AND a runtime pin exist: `pyproject.toml` + `.python-version` (checked first) or `package.json` + `.nvmrc` | `<manifest> + <pin>` |
 | state | BOTH `feature_list.json` AND `claude-progress.md` exist | `feature_list.json + claude-progress.md` |
-| feedback | the instructions file contains a line whose trimmed form starts with `- Verification:` | `Verification line in <filename>` |
+| feedback | the instructions file contains a line whose trimmed form starts with `- Verification:` AND names a non-empty command after the colon | `Verification line in <filename>: <command>` |
 
 `evidence` is `null` whenever `present` is false.
 

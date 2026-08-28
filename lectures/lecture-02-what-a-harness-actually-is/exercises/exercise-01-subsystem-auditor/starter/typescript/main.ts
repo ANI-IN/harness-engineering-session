@@ -1,13 +1,13 @@
 // subsystem-auditor exercise, TypeScript starter.
 //
-// All five audits run, but three are naive first drafts with a realistic
+// All five audits run, but two are naive first drafts with a realistic
 // mistake each (see SPEC.md "Starter state"): the tools audit trusts what
-// the instructions MENTION instead of what exists, the environment audit
-// checks the manifest but not the runtime pin, and the state audit checks
-// the feature list but not the progress file. Fix auditTools,
-// auditEnvironment, and auditState to the SPEC's criteria. Run
-// ../../verify.sh --stack=typescript until it exits 0. Everything else
-// already works.
+// the instructions MENTION instead of what exists, and the feedback audit
+// treats the `- Verification:` tag as the fact without reading the command
+// that follows it. Fix auditTools and auditFeedback to the SPEC's
+// criteria. Run ../../verify.sh --stack=typescript until it exits 0.
+// Everything else already works, including the environment and state
+// audits.
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";

@@ -24,6 +24,7 @@ feature-list order:
 
 | Condition (first that applies) | `evidence_ok` | `detail` |
 | --- | --- | --- |
+| the feature's `verification` is empty or whitespace | false | `the feature declares no verification command` |
 | no `evidence` entry | false | `no evidence recorded` |
 | `evidence.command` differs from the feature's `verification` | false | `evidence names a different command (<evidence.command>, not <verification>)` |
 | `evidence.observed` does not start with `exit 0` | false | `evidence records a failing run (<evidence.observed>)` |
@@ -101,6 +102,7 @@ declares no verification command is unbacked, whatever its evidence says.
 ## Expected output
 
 - `ready` → `expected/ready.json`, exit 0.
+- `empty-verification` → `expected/empty-verification.json`, exit 1.
 - `hollow-evidence` → `expected/hollow-evidence.json`, exit 1.
 - `wip-exceeded` → `expected/wip-exceeded.json`, exit 1.
 - `missing-file` → stdout empty, exit 2.

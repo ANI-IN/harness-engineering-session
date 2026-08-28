@@ -1,12 +1,12 @@
 """subsystem-auditor exercise, Python starter.
 
-All five audits run, but three are naive first drafts with a realistic
+All five audits run, but two are naive first drafts with a realistic
 mistake each (see SPEC.md "Starter state"): the tools audit trusts what the
-instructions MENTION instead of what exists, the environment audit checks
-the manifest but not the runtime pin, and the state audit checks the
-feature list but not the progress file. Fix audit_tools, audit_environment,
-and audit_state to the SPEC's criteria. Run ../../verify.sh --stack=python
-until it exits 0. Everything else already works.
+instructions MENTION instead of what exists, and the feedback audit treats
+the `- Verification:` tag as the fact without reading the command that
+follows it. Fix audit_tools and audit_feedback to the SPEC's criteria. Run
+../../verify.sh --stack=python until it exits 0. Everything else already
+works, including the environment and state audits.
 """
 
 from __future__ import annotations

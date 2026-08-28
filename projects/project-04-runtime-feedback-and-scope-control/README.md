@@ -200,9 +200,10 @@ the broken index, which is why v4 exists.
 ## Testing and validation
 
 ```sh
-./verify.sh                  # conformance + starter gate + both test suites
-./verify.sh --stack=python
-./verify.sh --stack=typescript
+P=projects/project-04-runtime-feedback-and-scope-control
+$P/verify.sh                  # conformance + starter gate + both test suites
+$P/verify.sh --stack=python
+$P/verify.sh --stack=typescript
 ```
 
 Conformance runs twenty cases against both tracks and diffs three ways,
