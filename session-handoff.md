@@ -36,15 +36,65 @@ Nothing red. One environment caveat under Open concerns: do not run the
 gates inside a synced folder. That was the cause of a nondeterminism
 chased for most of the build, and it is not a defect in this repository.
 
-## Next best step
+## Next best step: the full review
 
-The module is complete and gated. The work that would most improve it:
+The module is complete, gated and published. The next session runs a
+review across the whole tree. Everything it needs is below; it needs no
+conversation history.
 
-1. Unify the TypeScript workspace type in lecture 13's demo, currently a
-   declared `Helper-divergence` rather than a fix.
-2. Give lecture 06 a demo whose failure comes from content rather than
-   budget arithmetic. It satisfies the behavioral-demo rule but
-   demonstrates subtraction rather than a workspace going wrong.
+### The five areas
+
+1. **Fresh-checkout walkthrough, both tracks.** Use the `check-fresh`
+   export rather than a clone, since tracked content is the stricter
+   test. Run every unit's `verify.sh` per track inside the export;
+   exercises need `--target=ci`.
+2. **Terminology sweep.** Every term against `docs/glossary.md`, which is
+   authoritative and defines each term once. Look for a term meaning two
+   things in two units, which is the worst failure mode, and for terms
+   used repeatedly that the glossary never defines.
+3. **Duplication check.** Each lecture defends one claim no other lecture
+   defends, and each demo demonstrates a distinct behavior. Look for
+   claims that overlap, demos that differ only in scenery, and exercises
+   that plant the same defect twice.
+4. **Weakest learning material.** A quality judgement, not a compliance
+   check: every unit already passes the gates, so do not report gate
+   compliance. Ask whether the demo teaches the claim or merely satisfies
+   the rule that a demo must exist, whether a learner could apply the
+   mechanism in their own repository the next day, and whether each
+   starter's mistake is one a real engineer would make.
+5. **Open concerns.** What is still unresolved, and what a contributor
+   would trip over.
+
+### How to run it
+
+- **Read-only, findings only.** A review reports; it does not edit. Fixes
+  come after, as a separate decision by the repository owner.
+- **Priority order** when time is limited: correctness defects that ship
+  wrong material first, then structural problems (duplication, a unit
+  testing another unit's topic), then terminology and documentation. A
+  wrong claim in committed material outranks an inconsistent word.
+- **Verify before passing anything through.** If a subagent produces a
+  finding, re-execute or re-read the evidence yourself before repeating
+  it. During the build a subagent reported that lecture 09 over-counted
+  seam coverage on a fixture; running it showed the number was right for
+  that fixture and the real defect was narrower. Passing the unverified
+  version through would have been wrong in public.
+
+### Already known, do not re-report as new
+
+- **Lecture 06's demo is the weakest of the behavioral set.** Its failure
+  comes from budget arithmetic (a step counter running out) rather than
+  from content going wrong in a workspace. It satisfies the
+  behavioral-demo rule. The owner has seen this and chose to leave it.
+- **The synced-folder nondeterminism is closed and is not a repository
+  defect.** See Open concerns. `make doctor` warns about it by name.
+- **Project 06 (the capstone) and the skills pillar are deliberately
+  unbuilt.** The module ships as 13 lectures, 25 exercises, 5 projects
+  and the library pack. Nothing in the tree describes more than that, and
+  that was verified. Do not report them as gaps.
+- **Lecture 13 carries two declared `Helper-divergence` entries.** One is
+  legitimate; the other, its TypeScript workspace type, is arbitrary and
+  was declined late in the build. Recorded, not forgotten.
 
 ## Open concerns
 
