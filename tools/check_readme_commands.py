@@ -74,9 +74,13 @@ def discover_fences(root: Path = REPO_ROOT) -> list[Fence]:
     fences = []
     for readme in readmes:
         text = readme.read_text(encoding="utf-8")
+        # Every command in the entry-point README is learner-facing, so every
+        # section of it is scanned. Unit READMEs scan the named sections only,
+        # because their other sections quote code rather than instruct.
+        scan_every_section = readme.parent == root
         for section in H2_SPLIT.split(text)[1:]:
             title = section.split("\n", 1)[0].strip()
-            if title not in SECTIONS:
+            if not scan_every_section and title not in SECTIONS:
                 continue
             for position, match in enumerate(FENCE_RE.finditer(section), start=1):
                 expected = int(match.group(1)) if match.group(1) else 0

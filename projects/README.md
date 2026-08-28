@@ -14,12 +14,19 @@ where a real agent plugs in.
 
 ## How a project works
 
-Every `project-NN-<slug>/` directory contains a README (overview through
-troubleshooting, in the standard order), the shared `SPEC.md` contract,
-language-neutral harness artifacts in `harness/`, shared `fixtures/` and
-`expected/`, a genuine `starter/` and a complete `solution/` in both tracks,
-and a conformance test suite. The solution runs from a fresh clone with the
-documented commands; that is verified, not assumed.
+Every `project-NN-<slug>/` directory holds:
+
+| Part | What it is |
+| --- | --- |
+| `README.md` | Overview through troubleshooting, in the standard order |
+| `SPEC.md` | The contract both tracks implement, plus the explicit delta from the previous project |
+| `harness/` | Language-neutral harness artifacts: the router `AGENTS.md`, feature list, progress log, handoff, checklists |
+| `fixtures/`, `expected/` | Shared inputs and the grading authority for both tracks |
+| `starter/`, `solution/` | A genuine starting point and a complete implementation, each in both tracks |
+| `verify.sh`, tests | Conformance, a starter-must-fail gate, and per-track test suites |
+
+The solution runs from a fresh clone with the documented commands. That is
+verified by a gate, not assumed.
 
 ## The projects
 

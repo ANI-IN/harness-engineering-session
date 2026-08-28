@@ -32,72 +32,63 @@ Deliberately short. A handoff nobody reads is a handoff that failed.
 
 ## Broken or unverified
 
-Nothing red. Two things to know before trusting a green run, both under
-Open concerns: `make status` is not reliably green on a static tree, and
-the README-command gate was timing-dependent until recently.
+Nothing red. One environment caveat under Open concerns: do not run the
+gates inside a synced folder. That was the cause of a nondeterminism
+chased for most of the build, and it is not a defect in this repository.
 
 ## Next best step
 
 The module is complete and gated. The work that would most improve it:
 
-1. Find the cause of the `kb-data` nondeterminism (first open concern). It
-   is the only known way this repository fails on a tree nobody touched.
-2. Unify the TypeScript workspace type in lecture 13's demo, currently a
+1. Unify the TypeScript workspace type in lecture 13's demo, currently a
    declared `Helper-divergence` rather than a fix.
-3. Give lecture 06 a demo whose failure comes from content rather than
+2. Give lecture 06 a demo whose failure comes from content rather than
    budget arithmetic. It satisfies the behavioral-demo rule but
    demonstrates subtraction rather than a workspace going wrong.
 
 ## Open concerns
 
-**`make status` is not reliably green on a static tree.** This is the one a
-contributor most needs to know. A full run intermittently leaves an empty,
-gitignored `projects/<project>/kb-data/` behind, and it can also fail
-outright on a tree nobody has touched.
+**Closed: the `make status` nondeterminism was iCloud, not this
+repository.** For most of the build a full gate run intermittently left an
+empty `projects/<project>/kb-data/` behind, and twice failed outright on an
+unchanged, committed, green tree. No single gate reproduced it, and
+serializing the installer fence moved the rate from about 35% to about 89%
+without curing it, which was the clue: changing timing changed the symptom,
+so the cause was not any gate's logic.
 
-Measured across a fixed protocol, each run starting from a tree with no
-`kb-data/` anywhere:
+The name that settled it was `kb-data 2`. Three checks, none of which point
+at this repository:
 
-| | runs | left an empty `kb-data/` | failed the gate |
-| --- | --- | --- | --- |
-| before serializing the installer | 20 | 7 (35%) | 2 (10%) |
-| after serializing the installer | 9 | 8 (89%) | 0 |
+1. `cp -R src dst` with an existing `dst` produces `dst/src`, never a
+   numbered sibling. Verified directly. So no fence produced that name.
+2. A numbered duplicate of git's own index, `.git/index 2`, was sitting in
+   the repository. Nothing here writes `.git/index`, and git never creates
+   numbered siblings.
+3. The working copy lives under `~/Desktop`, and
+   `~/Library/Mobile Documents/com~apple~CloudDocs/Desktop` exists with
+   CloudDocs actively syncing.
 
-Read that carefully, because the obvious reading is wrong. Serializing the
-installer fence did not leave the scratch unchanged: **the rate rose from
-about 35% to about 89%, and the distribution narrowed**, from spread across
-projects 01 to 04 down to project 03 in seven of the eight cases. Changing
-the timing changed the symptom sharply, which is evidence that the cause is
-timing-dependent and that project 03 is where to instrument first.
+Numbered duplicates are iCloud's conflict-copy convention. iCloud was
+racing the working tree: recreating directory shells the gates had just
+removed, and mutating files (including `.git/index`) mid-run, which is why
+`make status` could fail on a tree nobody had touched.
 
-The gate failures are the more serious half. Two of twenty runs failed
-`make status` on an unchanged, committed, green tree. That rate is
-unmeasured after the change (0 of 9 is too few to mean anything), so **do
-not read a single green run as proof**. Run it twice before concluding a
-change is clean.
+The competing hypothesis was tested head-on rather than by elimination. A
+project's own `rm -rf $P/kb-data && cp -R ... $P/kb-data` fence was run
+against a concurrent `rm -rf` of the same path, forty rounds, in a
+directory outside any synced folder. It can leave a plain `kb-data`
+behind, which is ordinary ordering, and it produced **no numbered
+duplicate at all**. Fences touching the same `kb-data` are also already
+serialized, because fences within one README run in order in one worker
+and different READMEs own different paths. So the fence race is not the
+cause of what was observed.
 
-Ruled out, each clean in isolation, so do not repeat this bisect:
-`make doctor`, `make verify-dedup`, `make conformance`, `make lint`,
-`make lint-links`, `make lint-mermaid`, `tools/check_readme_commands.py`
-alone, project 02's `verify.sh`, its pytest suite, its vitest suite, and
-`tools/gen_readme_blocks.py`. Only a complete `make status` reproduces it.
-The installer race, once the most promising lead, is ruled out by the
-measurement above: it explained a CI failure and the false reds, not this.
-
-`lint-structure` no longer reports the empty directory, so the symptom is
-quiet. That was right for determinism and wrong for visibility, which is
-why this entry exists.
-
-**The newest lead, and the most concrete one.** A later run produced the
-scratch under a different name: `kb-data 2`, in four projects at once. That
-name is what a copy produces when its destination already exists, so at
-least one fence copied a corpus into a `kb-data/` that a sibling had not
-finished removing. That points squarely at the interaction between a
-project's own `rm -rf $P/kb-data && cp -R ...` fences and the gate's
-`finally` cleanup of the same path, rather than at the toolchain. Start
-there: `run_readme_fences` in `tools/check_readme_commands.py`, and project
-04's `Demo flow` fences. `.gitignore` now covers `kb-data*` so the collided
-form cannot read as curriculum content while the cause is unknown.
+**Nothing in this repository needs fixing for it.** Do not run the gates
+inside iCloud Drive, Dropbox, OneDrive or any synced folder; use a local
+path such as `~/src`. The two defensive changes made while the cause was
+unknown are kept because they are right on their own merits: the orphan
+check ignores gitignored scratch, since scratch is not curriculum, and
+`.gitignore` covers `kb-data*` so a conflict copy cannot read as content.
 
 **Every green the README-command gate produced before the installer was
 serialized was partly a report about the machine's core count.** The gate

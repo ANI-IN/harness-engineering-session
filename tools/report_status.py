@@ -18,6 +18,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tools import run_verify  # noqa: E402
 from tools.conformance import runner  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import check_readme_commands  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GATES = (
     "doctor", "verify-dedup", "conformance",
@@ -25,7 +28,31 @@ GATES = (
 )
 
 
+def counts_only() -> int:
+    """Just the discovered counts, no gates. The root README embeds this as a
+    generated block, so the headline numbers are regenerated from the tree
+    rather than typed, and cannot drift. Runs no subprocess, so it is cheap
+    enough to sit in every `make verify`."""
+    from tools.lint import check_structure
+    found = check_structure.counts(REPO_ROOT)
+    rows = (
+        ("lectures", found["lectures"]),
+        ("exercises", found["exercises"]),
+        ("projects", found["projects"]),
+        ("conformance units", len(runner.discover_units(REPO_ROOT))),
+        ("verify scripts", len(run_verify.discover_scripts(REPO_ROOT))),
+        ("executed README commands", len(check_readme_commands.discover_fences())),
+    )
+    width = max(len(label) for label, _ in rows)
+    for label, value in rows:
+        print(f"{label:<{width}}  {value:>4}")
+    return 0
+
+
 def main() -> int:
+    if "--counts-only" in sys.argv[1:]:
+        return counts_only()
+
     failures = 0
     print("gate            exit")
     for gate in GATES:

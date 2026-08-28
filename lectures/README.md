@@ -6,24 +6,21 @@ and long on mechanism: every concept you read, you will run.
 
 ## How a lecture works
 
-Every `lecture-NN-<slug>/` directory contains:
+Every `lecture-NN-<slug>/` directory holds three things:
 
-- **`README.md`**: the lecture itself, always in the same order: learning
-  objectives, prerequisites, the problem (a concrete failure you can
-  observe), concepts, architecture (with a diagram), the demo with real
-  commands and real output in both tracks, implementation notes, key
-  takeaways, exercises, further exploration.
-- **`code/`**: the demo, a shared `SPEC.md` + fixtures + expected outputs,
-  implemented in `python/` and `typescript/`, checked by `verify.sh`.
-- **`exercises/`**: 2 for most lectures, 3 for lecture 11 (which absorbed
-  the continuity material), and 1 each for lectures 12 and 13, whose
-  mechanism is a single build. Each gives you starter code
-  that runs but fails verification, and you modify it until
-  `./verify.sh --stack=<your track>` exits 0. Committed solutions let you
-  check your work.
+| Part | What it is |
+| --- | --- |
+| `README.md` | The lecture. Ten sections, always in the same order: learning objectives, prerequisites, the problem, concepts, architecture with a diagram, the demo with real commands and output in both tracks, implementation notes, key takeaways, exercises, further exploration |
+| `code/` | The demo: one `SPEC.md`, shared fixtures and expected outputs, implemented in `python/` and `typescript/`, checked by `verify.sh` |
+| `exercises/` | Starter code that runs but fails verification, and a committed solution. You edit the starter until `./verify.sh --stack=<your track>` exits 0 |
 
-Work in order; each lecture assumes the ones before it. Expect roughly 60-90
-minutes per lecture including exercises.
+Exercise counts are not uniform: two for most lectures, three for lecture 11
+(which absorbed the continuity material), and one each for lectures 12 and
+13, whose mechanism is a single build.
+
+Work in order; each lecture assumes the ones before it. Roughly 60 to 90
+minutes per lecture including its exercises, or see the
+[session plan](../docs/session-plan.md) for the four-hour path.
 
 ## Curriculum
 
