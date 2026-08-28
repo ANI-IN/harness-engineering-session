@@ -36,7 +36,7 @@ honest.
 
 ## Contract evolution (pre-1.0)
 
-The `kb` surface is **pre-1.0 by declaration**: the course evolves it
+The `kb` surface is **pre-1.0 by declaration**: the module evolves it
 deliberately from project to project, because deciding what may break and
 saying so is itself part of the harness discipline being taught. The
 rules: within one project, every output shape, exit code, and pinned

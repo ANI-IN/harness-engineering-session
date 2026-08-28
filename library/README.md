@@ -1,13 +1,13 @@
 # Library
 
-The copy-ready pack: the harness artifacts this course teaches, in the form
+The copy-ready pack: the harness artifacts this module teaches, in the form
 you drop into your own repository. Everything here is language-neutral: the
 same files serve a Python, TypeScript, or any other codebase, and every file
 is valid in its own format (JSON parses and validates against its schema,
 shell scripts pass shellcheck, checklists are complete).
 
 This library is the **single source of truth** for these artifacts across the
-whole course: the projects instantiate them, and the `harness-creator` skill
+whole module: the projects instantiate them, and the `harness-creator` skill
 emits them. There are no second copies to drift out of sync.
 
 ## The minimal pack
@@ -40,7 +40,7 @@ failure mode it exists for):
 Signals that you have outgrown this pack entirely (many domains, several
 agents, long-running work) point to the advanced pack (fuller repository
 skeleton with routing docs and plan lifecycle), which arrives with the second
-half of the course alongside the reference notes (startup flow, failure-mode
+half of the module alongside the reference notes (startup flow, failure-mode
 map, audit checklist).
 
 ## Rules that keep the pack working

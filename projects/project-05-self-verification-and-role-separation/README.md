@@ -231,7 +231,7 @@ running):
 Reading it: the recorded evidence says `exit 0: (assumed)`; the rubric
 re-executed the recorded command in a sandbox and the output did not
 reproduce. Four items pass, one fails, score 4 of 5, exit 1. Evidence
-that cannot be re-executed is not evidence, which has been this course's
+that cannot be re-executed is not evidence, which has been this module's
 rule since project 01; here it becomes a checker's verdict.
 
 ## Troubleshooting

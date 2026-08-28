@@ -22,7 +22,7 @@ workspace, which is how the report shows what a second run does.
 - `session.json`:
   `{"session", "date", "verified": [feature id], "next_step": "<id>: <sentence>"}`,
   what the session did and what it wants recorded.
-- `feature_list.json` in the course's schema.
+- `feature_list.json` in the module's schema.
 - `claude-progress.md`, whose session entries are `## Session NNN` headings.
 - optionally `scratch/`, the session's debris.
 - optionally `session-handoff.md`.

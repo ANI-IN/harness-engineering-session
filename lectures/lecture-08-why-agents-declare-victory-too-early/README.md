@@ -450,7 +450,7 @@ one are the same object. Only re-execution tells them apart.
 
 - **Own the definition of done outside the session.** The demo's
   `checks.json` belongs to the workspace, and the gate runs whatever it
-  lists. The same discipline in an entry file is short; this course's
+  lists. The same discipline in an entry file is short; this module's
   own [AGENTS.md](../../AGENTS.md) carries it as a checklist that names
   commands, and a project-level version reads like:
 

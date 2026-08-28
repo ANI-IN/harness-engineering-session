@@ -12,7 +12,7 @@ doctor, and a server that refuses writes with 405.
 
 The reference course's project 04 seeds its chunking bug in the
 starter's source, announced by a `// BUG:` comment, and checks its layer
-rules by grepping source text. This course keeps the defect but moves it
+rules by grepping source text. This module keeps the defect but moves it
 where seeded defects live: `fixtures/kb-data-corrupt` is the workspace
 state that buggy chunker leaves behind (an empty chunk whose recorded
 sha still matches, which is exactly why the sha-gated `kb index` cannot
@@ -246,7 +246,7 @@ the Python run by `make verify`:
 
 Reading it: the log entry and `kb status` name the same document, so the
 session repairs instead of rediscovering. The sequence number where a
-timestamp would be is this course's determinism rule made visible; a
+timestamp would be is this module's determinism rule made visible; a
 real deployment adds clocks at exactly that seam.
 
 ## Troubleshooting

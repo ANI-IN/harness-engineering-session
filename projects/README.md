@@ -1,6 +1,6 @@
 # Projects
 
-Projects are where the course's mechanisms stop being demos and become a
+Projects are where the module's mechanisms stop being demos and become a
 system. Each project composes what two lectures taught into something that
 runs, is tested, and is verified the same way in both language tracks.
 
@@ -36,4 +36,4 @@ documented commands; that is verified, not assumed.
 | 04 | [Runtime feedback and scope control](./project-04-runtime-feedback-and-scope-control/) | Structured logs, corrupt-state recovery, the behavioral architecture guard, and the WIP=1 doctor | 02, 04 |
 | 05 | [Self-verification and role separation](./project-05-self-verification-and-role-separation/) | One work item, three role configurations, and a rubric of executable predicates whose scores must climb | 01, 02 |
 
-This index lists every project the course currently contains.
+This index lists every project the module currently contains.

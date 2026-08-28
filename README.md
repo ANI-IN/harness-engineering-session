@@ -1,6 +1,6 @@
 # Learn Harness Engineering
 
-A project-based course on **harness engineering**: the discipline of building
+A project-based module on **harness engineering**: the discipline of building
 the execution system around an AI coding agent (instructions, tools,
 environment, state, and feedback) so that a capable model becomes a reliable
 worker. You will read short, mechanism-focused lectures, build each mechanism
@@ -10,20 +10,20 @@ Everything in this repository runs **offline**, in **two complete language
 tracks**, Python and TypeScript, against one shared specification. You pick
 a track; you never need the other one to learn.
 
-## Why this course exists
+## Why this module exists
 
 Strong models still fail at multi-step engineering work, not because they
 lack capability, but because they work inside weak systems: no durable state
 between sessions, no executable definition of "done", instructions buried in
 one giant file, no feedback the agent can actually read. Harness engineering
 fixes the system instead of waiting for a bigger model. The primary sources
-this course builds on:
+this module builds on:
 
 - [OpenAI: Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)
 - [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [Anthropic: Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
 
-## How the course is organized
+## How the module is organized
 
 Six parts, one learning flow:
 
@@ -31,7 +31,7 @@ Six parts, one learning flow:
 2. **Exercises**: per lecture, modify starter code until `verify.sh` exits 0.
 3. **Solutions**: committed, idiomatic, passing implementations of every exercise, in both tracks.
 4. **Projects**: compose the mechanisms of two lectures into a working system.
-5. **Skills**: the course's workflows packaged for coding agents (ships with the full curriculum).
+5. **Skills**: the module's workflows packaged for coding agents (ships with the full curriculum).
 6. **Library**: the copy-ready harness templates, single-sourced for the whole repo.
 
 The flow for each topic: **read the lecture, do its exercises, build the
@@ -40,7 +40,7 @@ draws how everything connects.
 
 ## Curriculum
 
-The tables below list everything the course currently contains; every row
+The tables below list everything the module currently contains; every row
 links to a unit that runs today.
 
 | Lecture | Teaches | Builds toward |
@@ -103,7 +103,7 @@ standard every folder follows.
 
 ## Verification and the parity contract
 
-This course practices what it teaches: every claim of "working" is backed by
+This module practices what it teaches: every claim of "working" is backed by
 an executable check.
 
 ```sh

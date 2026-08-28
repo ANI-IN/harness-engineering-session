@@ -1,6 +1,6 @@
 # Conformance
 
-Enforces the course's core promise: the Python and TypeScript implementations
+Enforces the module's core promise: the Python and TypeScript implementations
 of every unit are behaviorally identical.
 
 ## How it works

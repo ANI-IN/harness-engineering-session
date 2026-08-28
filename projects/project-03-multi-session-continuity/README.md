@@ -16,7 +16,7 @@ carried the work, not anyone's memory. That process boundary is a
 contract pinned in [SPEC.md](./SPEC.md), not an implementation detail.
 
 Two departures from the reference course's project 03, both recorded in
-this course's research notes: the reference's fullest-harness project
+this module's research notes: the reference's fullest-harness project
 still marks seven of eleven features "Carried over from P2" and drops
 CLAUDE.md from the artifact set it had two projects earlier. Here every
 feature is re-verified against version 3 with a command and its captured

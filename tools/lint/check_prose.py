@@ -28,6 +28,16 @@ SKIP_FILES = {"RESEARCH.md", "PROPOSAL.md", "BUILD_PROGRESS.md"}
 EXEMPT_DIRS = {"fixtures", "expected"}
 
 BANNED = {"—": "em-dash (U+2014)", "–": "en-dash (U+2013)"}
+# This repository is one module, not a course. A course is a sequence of
+# modules, and calling this a course misstates its scope to an audience
+# deciding how much time it needs. The only correct use of the word is a
+# reference to the external reference course this module was modeled on,
+# which is why the exception is a phrase rather than a file list.
+COURSE_EXCEPTIONS = ("reference course",)
+# The glossary entry that defines the distinction has to use both words.
+COURSE_DEFINITION_FILE = "docs/glossary.md"
+COURSE_DEFINITION_MARKER = "**Module**:"
+
 ROADMAP_PHRASES = (
     "next release", "coming soon", "will be added", "in a future", "not yet built",
 )
@@ -53,6 +63,7 @@ def check_file(path: Path, root: Path) -> list[str]:
     errors = []
     in_fence = False
     fence_is_mermaid = False
+    in_module_definition = False
     for number, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
         fence = FENCE_RE.match(line)
         if fence:
@@ -75,7 +86,21 @@ def check_file(path: Path, root: Path) -> list[str]:
             column = candidate.find(char)
             if column != -1:
                 errors.append(f"{rel}:{number}:{column + 1}: {name} in prose")
+        if str(rel) == COURSE_DEFINITION_FILE:
+            if candidate.startswith(COURSE_DEFINITION_MARKER):
+                in_module_definition = True
+            elif not candidate.strip():
+                in_module_definition = False
         lowered = candidate.lower()
+        scrubbed = lowered
+        for allowed in COURSE_EXCEPTIONS:
+            scrubbed = scrubbed.replace(allowed, "")
+        column = scrubbed.find("course")
+        if column != -1 and not in_module_definition:
+            errors.append(
+                f"{rel}:{number}:{column + 1}: this is a module, not a course; "
+                f"a course is a sequence of modules"
+            )
         for phrase in ROADMAP_PHRASES:
             column = lowered.find(phrase)
             if column != -1:

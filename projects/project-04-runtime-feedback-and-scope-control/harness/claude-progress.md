@@ -4,7 +4,7 @@
 
 - Started from project 03's solution app (the starter state).
 - Implemented structured logging (sequence-numbered events, no wall
-  clock, per the course determinism rule) and the `kb logs` surface.
+  clock, per the module determinism rule) and the `kb logs` surface.
 - Decision: read surfaces never write the log; `ask` does, because
   retrieval quality and refusals are the runtime feedback this project
   exists to expose.

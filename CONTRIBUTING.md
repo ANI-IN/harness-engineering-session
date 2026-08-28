@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for improving the course. This repository holds itself to the standard
+Thanks for improving the module. This repository holds itself to the standard
 it teaches: every change is verified by executable checks, both language
 tracks stay at parity, and the conventions are machine-enforced.
 
@@ -54,7 +54,7 @@ make lint-links && make lint-mermaid && make lint-structure
 - **Adding an exercise or unit**: follow the directory shape in
   conventions.md exactly; `lint-structure` rejects incomplete units.
 - **Changing templates** (`library/templates/`): these are single-sourced for
-  the entire course; `make verify` validates them (JSON against schema,
+  the entire module; `make verify` validates them (JSON against schema,
   init.sh via shellcheck).
 
 ## Commit style

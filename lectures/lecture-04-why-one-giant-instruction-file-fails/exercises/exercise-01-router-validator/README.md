@@ -13,7 +13,7 @@ is about *keeping* it. Split instruction trees rot in specific ways
 (routes go dead, hard constraints leak into topic docs, rules get
 duplicated under new tags), and each of those ways defeats the shape's
 purpose silently. The validator turns the shape into executable rules, the
-same move the course makes with every convention it cares about.
+same move the module makes with every convention it cares about.
 
 ## Prerequisites
 

@@ -246,7 +246,7 @@ the related-project sentence, and the behavioral shape of the demo.
 ```text
 # Lecture subagent brief (template; the lecture assignment is in your prompt)
 
-You are building ONE lecture unit for the harness-engineering course at
+You are building ONE lecture unit for the harness-engineering module at
 <repo root>. Work ONLY inside lectures/<your-lecture-dir>/. Everything
 else is read-only.
 

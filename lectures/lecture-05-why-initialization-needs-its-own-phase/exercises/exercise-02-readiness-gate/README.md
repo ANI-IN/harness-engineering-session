@@ -88,7 +88,7 @@ then advice, then ready. The starter collapsed the first two arms.
 <details>
 <summary>Hint 2: why exit 3 and not 2</summary>
 
-Exit 2 is this course's usage-error code everywhere. A verdict must never
+Exit 2 is this module's usage-error code everywhere. A verdict must never
 be confusable with "you called me wrong", so the advice tier takes the
 next free code.
 
@@ -105,7 +105,7 @@ A small function carrying a real operations lesson:
 - **Exit codes are the machine-readable half of a verdict.** The starter's
   report *text* was nearly right; its exit code was wrong, and the exit
   code is the part every caller actually consumes. This is the same
-  claim-vs-evidence discipline the course applies everywhere, pointed at a
+  claim-vs-evidence discipline the module applies everywhere, pointed at a
   gate's own output.
 
 Cross-track note: identical rule, identical exit codes; the runner

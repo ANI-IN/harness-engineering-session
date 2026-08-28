@@ -61,7 +61,7 @@ slowness traced to an underspecified environment, not to model capability.
   symptom in a run transcript.
 - **Harness-induced failure**: the model had sufficient capability, but the
   execution system had a structural defect. The design heuristic of this
-  whole course: when things fail, check the harness first; swapping models
+  whole module: when things fail, check the harness first; swapping models
   is the most expensive fix and usually the wrong one.
 - **Verification gap**: the distance between an agent's confidence ("done")
   and verified correctness. It is the most common failure mode, and it is
@@ -222,7 +222,7 @@ Applying this in a real repository:
   in the spec, or two analysts (or two implementations) will disagree.
 - **Fix the top of the histogram.** After a week of triage, the summary
   table tells you which subsystem is your bottleneck. Fix that one; re-run
-  the same tasks; watch the histogram move. That loop is the course.
+  the same tasks; watch the histogram move. That loop is the module.
 - Track note: the two implementations are idiomatic, not mirrored line by
   line; parity is enforced on observable output by
   [the conformance contract](../../docs/conventions.md#the-parity-contract).
@@ -261,4 +261,4 @@ experiment.
   the capability-vs-execution gap concrete
 - [Claude Code documentation](https://docs.claude.com/en/docs/claude-code/overview)
   and [Codex documentation](https://developers.openai.com/codex/), the two
-  harnesses this course most often references
+  harnesses this module most often references

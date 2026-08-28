@@ -12,7 +12,7 @@ narrated.
 The application under the experiment is **kb**, a local knowledge base
 delivered as a CLI plus a small loopback HTTP server, in both tracks.
 This deviates deliberately from the reference course's Electron desktop
-app, for two reasons this course's research recorded:
+app, for two reasons this module's research recorded:
 
 1. A GUI feature ("a window opens", "a left sidebar renders") cannot be
    asserted headless or expressed in a second language track; a CLI and

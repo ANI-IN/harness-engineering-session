@@ -95,5 +95,5 @@ Nothing in `fixtures/workspace/` is Python or TypeScript: markdown and JSON
 only. The two implementations differ idiomatically but read identical bytes
 and are held to identical output by the conformance runner. The repository's
 own `feature_list.json` schema validates the workspace's feature list in
-`make verify`, so the fixture is a real instance of the course's canonical
+`make verify`, so the fixture is a real instance of the module's canonical
 artifact, not a lookalike.

@@ -1,7 +1,7 @@
 # SPEC: project-05 self-verification-and-role-separation
 
 kb v5: the same knowledge-base tool, with deletion done honestly and the
-course's maker/checker experiment. The product delta is `kb delete` with
+module's maker/checker experiment. The product delta is `kb delete` with
 index reconciliation and orphan detection; the study delta is the
 apparatus: `workrun` replays one scripted work item under three role
 configurations, `score` grades a run against a five-item rubric of

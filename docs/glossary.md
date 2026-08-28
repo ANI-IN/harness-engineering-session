@@ -6,12 +6,19 @@ and removed.
 
 ## Core model
 
+**Module**: this repository, and the unit of teaching it is. A module
+covers one subject to a defined depth and can be taught in one sitting; a
+course is a sequence of modules. Everything here is one module on harness
+engineering, so its own prose says "this module", never "this course". The
+only place "course" is correct is a reference to the external reference
+course this module was modeled on.
+
 **Harness**: the execution system built around a model so that its capability
 becomes reliable execution: the instructions, tools, environment, state, and
 feedback an agent works inside. A harness does not make the model smarter; it
 makes the model's work verifiable, resumable, and bounded.
 
-**The five subsystems**: the decomposition this course uses for every
+**The five subsystems**: the decomposition this module uses for every
 harness:
 
 1. **Instructions**: what the agent is told: entry files (`AGENTS.md`,
@@ -38,7 +45,7 @@ plug point where a real agent plugs in.
 **`AGENTS.md`**: the agent-facing entry file: a short router stating what the
 system is, the startup workflow, hard rules, verification commands, and the
 definition of done, linking to topic docs for depth. Kept deliberately short.
-An entry file of roughly 100 lines is this course's working heuristic; the
+An entry file of roughly 100 lines is this module's working heuristic; the
 split rule matters more than the number.
 
 **`CLAUDE.md`**: the same contract voiced for Claude Code, which loads this
@@ -100,7 +107,7 @@ tasks span sessions; continuity comes from externalized state, not memory.
 
 **Controlled-variable ablation**: evaluating a harness component by removing
 exactly one component, re-running a fixed task set, and comparing results.
-The course's method both for proving a component earns its place and for
+The module's method both for proving a component earns its place and for
 simplifying harnesses over time.
 
 **Progressive disclosure**: structuring instructions as a short entry point

@@ -121,7 +121,7 @@ details name the pair they found.
 
 ## Solution walkthrough
 
-The fix is small and the lesson is the course's central one, pointed at
+The fix is small and the lesson is the module's central one, pointed at
 the list's own gate:
 
 - **Evidence is a specific thing.** The schema's `evidence` object has a

@@ -18,7 +18,7 @@ byte-level expected report grade them, is that claim as practice: no
   `make doctor` ([choosing your track](../../../../docs/choosing-your-track.md)).
 - The lecture's [Architecture](../../README.md#architecture) section and the
   demo's rules ([../../code/SPEC.md](../../code/SPEC.md)).
-- No prior exercises; this is the first in the course.
+- No prior exercises; this is the first in the module.
 
 ## Provided
 
@@ -84,7 +84,7 @@ verify: PASS (starter)
 
 The script runs your starter against the shared fixtures and diffs the
 normalized output against `expected/` (the same conformance machinery that
-grades the whole course). `--target=solution` checks the committed solution
+grades the whole module). `--target=solution` checks the committed solution
 instead.
 
 ## Hints

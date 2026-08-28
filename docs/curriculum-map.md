@@ -1,6 +1,6 @@
 # Curriculum map
 
-How the pieces of the course connect: each lecture teaches one mechanism,
+How the pieces of the module connect: each lecture teaches one mechanism,
 its exercises make you build that mechanism, and each project composes the
 mechanisms of two lectures into a working system. The library holds the
 copy-ready templates those systems are built from.

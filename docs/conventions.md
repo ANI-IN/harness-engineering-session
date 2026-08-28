@@ -2,12 +2,30 @@
 
 Every folder in this repository follows the standard on this page. The rules
 here are not style preferences. Each one exists because the [reference
-course](https://github.com/walkinglabs/learn-harness-engineering) this
+module](https://github.com/walkinglabs/learn-harness-engineering) this
 curriculum was modeled on demonstrably rotted where the rule was missing:
 broken run commands, three incompatible template dialects, dead links, and
 starters that did not compile. Most rules are machine-enforced by
 `make lint-structure`, `make lint-links`, and `make lint-mermaid`; this page is
 the human-readable statement of what those tools check.
+
+## Who this is written for
+
+Experienced software engineers already fluent in agentic AI: LangChain,
+LangGraph, MCP, A2A, Google ADK, multi-agent systems, LangSmith. They have
+built agents. The new material is the execution system around the agent,
+not the agent.
+
+Prose therefore assumes that fluency. It does not introduce agent concepts
+or orchestration frameworks, does not define terms the audience uses daily,
+and does not spend a paragraph on what a tool call is. It defines only the
+terms this module gives specific meanings to. A passage that exists to
+bring a reader up to speed on agents belongs to a different module and is
+cut.
+
+The same audience is why "no invented numbers" is load-bearing: they
+recognize a fabricated benchmark on sight, and one of them costs the module
+its credibility for everything else it claims.
 
 ## Naming and numbering
 
@@ -18,7 +36,7 @@ the human-readable statement of what those tools check.
   `AGENTS.md`, `CLAUDE.md`, `SPEC.md`, `README.md`, `SKILL.md`.
 - Human-facing documents and scripts are kebab-case: `session-handoff.md`,
   `clean-state-checklist.md`, `verify.sh`.
-- Machine-readable state keeps its course-canonical name `feature_list.json`
+- Machine-readable state keeps its module-canonical name `feature_list.json`
   (snake_case: it is a harness artifact with a fixed name, taught as such).
 - Python sources are snake_case, TypeScript sources are kebab-case; each track
   follows its own ecosystem inside its own tree.
@@ -264,7 +282,7 @@ lectures 05-13 inherit this rule from day one.
 A lecture demo is one file a learner reads end to end and copies out, so
 demos do not import a shared module even where nine of them carry the same
 small helper. The duplication is deliberate; the drift it invites is not.
-The reference course this curriculum replaces is the cautionary case: its
+The reference course this module replaces is the cautionary case: its
 fourteen app copies diverged, one by a single character, and nine stopped
 compiling. It had begun here too, with one lecture's workspace loader
 quietly excluding a file and one track's workspace type being a `Record`

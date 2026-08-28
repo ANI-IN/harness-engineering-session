@@ -1,6 +1,6 @@
 # AGENTS.md
 
-You are working in **the Harness Engineering course repository**, a
+You are working in **the Harness Engineering module repository**, a
 dual-stack (Python + TypeScript) curriculum where every runnable unit
 implements a shared `SPEC.md` against shared fixtures and expected outputs.
 This repo is itself harnessed with the artifacts it teaches; this file is the
@@ -16,6 +16,27 @@ entry point. It is a router; depth lives in the linked docs.
 3. Read [docs/conventions.md](docs/conventions.md): the standard every
    folder follows. It is authoritative.
 4. `make status`: confirm every gate is green before changing anything.
+
+## Audience
+
+Experienced software engineers who are already fluent in agentic AI. Assume
+working familiarity with LangChain, LangGraph, MCP, A2A, Google ADK,
+multi-agent systems, and LangSmith. They have built agents; what they have
+not built is the execution system that makes an agent's work reliable.
+
+Harness engineering is the new material. Agents are not. So:
+
+- Do not introduce agent concepts, orchestration frameworks, or tool
+  calling. Reference them and move on.
+- Do not define terms this audience uses daily. Define only the terms this
+  module gives specific meanings to, and put those in
+  [docs/glossary.md](docs/glossary.md#core-model).
+- Cut any passage whose purpose is to bring a reader up to speed on agents
+  rather than on harnesses.
+- This audience detects hand-waving instantly, which is what makes the
+  no-invented-numbers rule load-bearing rather than stylistic. Every figure
+  is generated from a committed fixture, cited to a primary source, or
+  labeled a heuristic.
 
 ## Working rules
 

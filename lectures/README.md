@@ -42,5 +42,5 @@ minutes per lecture including exercises.
 | 12 | [Loop engineering](./lecture-12-loop-engineering/) | A loop is only as good as the signal its stopping condition reads | None |
 | 13 | [Graph engineering](./lecture-13-graph-engineering/) | Routing and rollback are structure you declare, not control flow you hope for | None |
 
-This index lists every lecture the course currently contains; the
+This index lists every lecture the module currently contains; the
 [curriculum map](../docs/curriculum-map.md) shows how they connect.

@@ -110,7 +110,7 @@ refuses to do:
   to say so.
 - **The signature is evidence, not a summary.** Carrying the first issue
   string forward keeps each row traceable to the run that produced it, the
-  same evidence discipline the course applies to feature lists.
+  same evidence discipline the module applies to feature lists.
 
 Cross-track note: Python's `issues[0] if issues else None` and TypeScript's
 `ablated.issues[0] ?? null` are each language's idiom for the same rule,

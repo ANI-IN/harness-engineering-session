@@ -1,6 +1,6 @@
 # Choosing your track
 
-This course is fully dual-stack: every lecture demo, every exercise, and every
+This module is fully dual-stack: every lecture demo, every exercise, and every
 project exists in **Python** and in **TypeScript**, implementing the same
 shared contract (`SPEC.md`) against the same fixtures and expected outputs.
 Pick the language you work in; you will never need to read the other track to
@@ -9,7 +9,7 @@ understand a concept.
 ## What is shared, what is per-track
 
 Harness artifacts are language-neutral by design; that is itself one of the
-first lessons of the course. Written once, used by both tracks:
+first lessons of the module. Written once, used by both tracks:
 
 - all prose: lectures, exercise briefs, project docs, diagrams;
 - all harness templates: `AGENTS.md`, `CLAUDE.md`, `feature_list.json` (and
@@ -37,7 +37,7 @@ make doctor TRACK=python      # verify exactly what your track requires
 
 One asymmetry is stated plainly rather than hidden: **Python 3.12 and
 [uv](https://docs.astral.sh/uv/) are required for every track**, because
-the course's verification machinery (the conformance runner, the verify
+the module's verification machinery (the conformance runner, the verify
 loop, every lint) is Python tooling by declared exception (see
 [conventions](./conventions.md)); uv reaches it with zero project
 installs. The TypeScript track additionally requires **Node.js 20 LTS**

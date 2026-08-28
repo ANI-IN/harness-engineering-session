@@ -12,7 +12,7 @@ format), and `kb workspace-check`, a doctor that grades the workspace's
 readability mechanically.
 
 Two deliberate departures from the reference course's project 02, both
-recorded in this course's research notes: the reference **dropped**
+recorded in this module's research notes: the reference **dropped**
 CLAUDE.md, init.sh, and the progress log from project 01's harness set at
 this stage, and marked four of seven features as passing with the
 evidence string "Carried over from P1". Here the artifact set accretes

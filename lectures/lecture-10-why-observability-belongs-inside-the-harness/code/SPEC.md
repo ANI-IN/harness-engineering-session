@@ -74,7 +74,7 @@ Exit 0.
 ```
 
 `seq` is the count of events already written plus one. **There are no
-timestamps**: sequence numbers order the log, which is what the course's
+timestamps**: sequence numbers order the log, which is what the module's
 no-wall-clock rule leaves and what a resume actually needs. Events:
 
 | Event | `detail` |

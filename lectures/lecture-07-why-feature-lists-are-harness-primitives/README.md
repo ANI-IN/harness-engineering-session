@@ -95,7 +95,7 @@ repository the system of record for everything the agent needs to know.
   that can only fall through the gate is the difference between progress
   and the feeling of progress.
 - **Primitive, not document.** A document can be skimmed or ignored; a
-  primitive is what other components execute against. In this course the
+  primitive is what other components execute against. In this module the
   demo's `plan` derives the next feature from the list, exercise 01's
   gate decides transitions against it, and project 04's workspace doctor
   reads the same file for its evidence and WIP=1 checks.
@@ -352,7 +352,7 @@ comparable can be read from the memo.
 
 ## Implementation notes
 
-- **One dialect.** Every `feature_list.json` in this course, fixtures
+- **One dialect.** Every `feature_list.json` in this module, fixtures
   included, validates against
   [`feature_list.schema.json`](../../library/templates/feature_list.schema.json),
   and a repository test enforces it. The schema carries the evidence law

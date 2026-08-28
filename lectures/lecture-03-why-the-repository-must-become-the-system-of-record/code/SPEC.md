@@ -62,7 +62,7 @@ serialize as `0.6`; a fully mapped repo yields the number 0).
 
 ## Language-neutrality (this lecture's obligation)
 
-Everything the reader consults is markdown: the same files that the course
+Everything the reader consults is markdown: the same files that the module
 library ships as templates. Neither implementation needs to know what
 language the audited project is written in, and the two implementations
 extract identical answers from identical bytes, enforced by conformance.

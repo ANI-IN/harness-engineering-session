@@ -17,7 +17,7 @@ After this lecture and its exercises you can:
   `init.sh`).
 - Build a readiness gate whose verdict is machine-consumable, with
   blockers and advice tiered through exit codes.
-- Explain the single-file `init.sh` exception to this course's dual-track
+- Explain the single-file `init.sh` exception to this module's dual-track
   rules and why it exists.
 
 ## Prerequisites
@@ -62,7 +62,7 @@ first run", separate from the coding agent that does feature work.
 - **The startup gate**: run the doctor at session start (from `init.sh`
   or by hand); blockers stop the session before it wastes budget, advice
   stays visible without stopping it (exercise 02's tier rule).
-- **`init.sh` is the declared single-file exception** to this course's
+- **`init.sh` is the declared single-file exception** to this module's
   two-track presentation (see
   [conventions](../../docs/conventions.md#command-blocks)): initialization
   is one language-neutral artifact, so one script shows both ecosystems'

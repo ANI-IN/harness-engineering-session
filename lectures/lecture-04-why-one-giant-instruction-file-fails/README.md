@@ -59,7 +59,7 @@ by the same budgeted reader, with the outcome in the exit code.
 - **Map, not manual**: the entry file is a router: what the system is, the
   hard constraints, and where the topic documents are. Depth loads on
   demand ([progressive disclosure](../../docs/glossary.md#working-discipline)).
-  The course's working heuristic for entry-file size is roughly 100 lines
+  The module's working heuristic for entry-file size is roughly 100 lines
   (the split rule matters more than the number).
 - **Instruction signal-to-noise (SNR)**: for one task, relevant
   instruction lines over loaded lines. The demo computes it under an
@@ -72,7 +72,7 @@ by the same budgeted reader, with the outcome in the exit code.
   deleting feels risky, so trees need the same discipline as code: audits,
   deletion, and executable shape checks (exercise 01's validator).
 - **This unit's artifacts are language-neutral**, like every instruction
-  file in this course: the same fixture trees drive both tracks, and the
+  file in this module: the same fixture trees drive both tracks, and the
   format under measurement is the format this repository's own
   [`AGENTS.md`](../../AGENTS.md) practices, short entry, linked depth.
 

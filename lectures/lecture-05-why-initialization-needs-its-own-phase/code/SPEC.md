@@ -63,7 +63,7 @@ details name the exact missing piece.
 
 ## Fixtures and seeded symptoms
 
-`repos/repo-ready` passes all four; its `init.sh` is the course's
+`repos/repo-ready` passes all four; its `init.sh` is the module's
 **declared single-file exception**: one language-neutral script showing
 both ecosystems' install paths side by side (see docs/conventions.md,
 command-block exceptions), which is also why the fixture pins both

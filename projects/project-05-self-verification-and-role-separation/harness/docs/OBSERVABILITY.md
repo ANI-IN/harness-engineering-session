@@ -8,7 +8,7 @@ guard, or corruption recovery.
 Mutating commands (and `ask`) append structured events to
 `log/events.jsonl` under the data directory; `kb logs --data-dir kb-data
 --level WARN` is the first move when behavior surprises you. Entries
-carry a sequence number instead of a timestamp: this course's
+carry a sequence number instead of a timestamp: this module's
 determinism rule; a real deployment adds timestamps at that seam.
 
 ## The failure this project teaches

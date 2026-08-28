@@ -12,6 +12,6 @@ an item without a command behind it does not belong here.
 | 4 | scope-fidelity | a plan declared the scope, and every edit is inside it or was flagged and reverted |
 | 5 | clean-state | `kb workspace-check` exits 0 on the final workspace |
 
-Score is the count of passed items. The course's pinned ladder is 0
+Score is the count of passed items. The module's pinned ladder is 0
 (single-role), 4 (gen-eval, scope-fidelity missing), 5 (plan-gen-eval):
 counted results, not judgments.

@@ -42,7 +42,7 @@ with questions, guesses that violate constraints "everyone knows", and the
 next session guessing again, because nothing was written where the agent
 looks.
 
-OpenAI's harness-engineering account states the principle this course
+OpenAI's harness-engineering account states the principle this module
 builds on: the repository is the system of record, with the context an
 agent needs delivered through structured files in the repo itself.
 Anthropic's guidance on long-running agents makes the state half of the
@@ -64,7 +64,7 @@ same point: progress must persist in files the next session can read.
   unanswered question is a blank spot the agent will fill by guessing.
 - **Knowledge visibility gap**: the fraction of the team's
   decision-relevant knowledge that lives outside the repository. Exercise
-  02 makes you compute it; the design heuristic this course uses is to
+  02 makes you compute it; the design heuristic this module uses is to
   keep it at or below 10%, externalizing critical decisions first.
 - **Proximity and structure beat volume.** A tagged line
   (`- Verification: ./verify.sh`) is extractable and executable; a page of
@@ -233,7 +233,7 @@ line, a progress log). Against `repo-mapped` the same command reports
 - Structure is what makes knowledge extractable: tagged lines and
   designated files, not prose that mentions the right words.
 - Measure the visibility gap and externalize critical decisions first;
-  keeping the gap at or below 10% is this course's working heuristic.
+  keeping the gap at or below 10% is this module's working heuristic.
 
 ## Exercises
 

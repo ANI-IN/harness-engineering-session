@@ -66,7 +66,7 @@ and the prompt file was never going to carry them.
 - **Controlled-variable ablation**
   ([glossary](../../docs/glossary.md#working-discipline)): remove exactly
   one subsystem, re-run the same task, compare against the baseline. This
-  course's method for proving a component earns its place, and this
+  module's method for proving a component earns its place, and this
   lecture's demo in miniature.
 - Real harnesses wear these shapes: Claude Code loads `CLAUDE.md` from your
   repository as its project instructions
@@ -216,7 +216,7 @@ nobody. Full per-configuration reports are pinned in
   teach the method; in a real repository you ablate to justify components:
   remove one, run your fixed task set, compare. A component whose removal
   changes nothing is overhead until proven otherwise, a heuristic this
-  course applies to its own harness.
+  module applies to its own harness.
 - **Ecosystem note.** Environment pinning differs by track in mechanism,
   not in role: `pyproject.toml` + `.python-version` + `uv.lock` on the
   Python side, `package.json` + `.nvmrc` + `pnpm-lock.yaml` on the

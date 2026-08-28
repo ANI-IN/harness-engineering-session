@@ -53,9 +53,9 @@ limit)
 - Events append to `log/events.jsonl` under the data directory, one JSON
   object per line, compact separators:
   `{"seq", "level", "command", "event", "detail"}`.
-- **Determinism by course rule**: `seq` is one plus the number of
+- **Determinism by module rule**: `seq` is one plus the number of
   existing lines; there are no timestamps. A real deployment would add
-  them at this seam; the course's no-wall-clock rule keeps every log
+  them at this seam; the module's no-wall-clock rule keeps every log
   byte-reproducible.
 - Levels: `DEBUG < INFO < WARN < ERROR`. Pinned events: `init/done`
   (created, seeded counts), `import/done` (imported ids, skipped
@@ -72,7 +72,7 @@ limit)
 
 The reference course seeds a chunker bug (documents over 1000 characters
 produce empty chunks) in its starter's source, announced by a comment.
-This course keeps the defect but moves it where seeded defects live:
+This module keeps the defect but moves it where seeded defects live:
 `fixtures/kb-data-corrupt` is a workspace state such a buggy chunker
 leaves behind. Its `chunks.json` gives `architecture-notes` an empty
 first chunk (`chars` 0, `words` 0, `text` "") while the recorded sha256

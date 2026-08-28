@@ -33,4 +33,4 @@ Notes:
   `AGENTS.md`) to read these files by exact name. Rename them only if you also
   rename them in your instructions.
 - Each file's header states its purpose, when to use it, when not to, and the
-  course lecture that motivates it.
+  module lecture that motivates it.

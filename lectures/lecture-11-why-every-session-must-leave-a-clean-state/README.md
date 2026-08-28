@@ -98,7 +98,7 @@ exactly why it needs to be a gate rather than a habit.
 - **"Clean up later" is a design heuristic that does not survive contact
   with a session boundary.** The next session has its own goal, does not
   know which leavings were deliberate, and has no budget for archaeology.
-  This course treats that as a heuristic, not a measurement: the demo
+  This module treats that as a heuristic, not a measurement: the demo
   shows one instance of the failure rather than a rate.
 - **This unit's checks are language-neutral**: each check is an
   executable probe over workspace files, the deterministic stand-in for a

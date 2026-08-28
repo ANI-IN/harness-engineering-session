@@ -5,13 +5,13 @@
 This project is a learning space. Everyone participating (asking questions,
 filing issues, reviewing changes, contributing content) is entitled to a
 harassment-free experience, regardless of experience level, background, or
-identity. Beginner questions are welcome by design; this is a course.
+identity. Beginner questions are welcome by design; this is a module.
 
 ## Expected behavior
 
 - Be respectful and constructive in issues, reviews, and discussions.
 - Critique work, not people; back technical claims with evidence, the same
-  standard the course teaches.
+  standard the module teaches.
 - Assume good faith, especially with learners working through the material.
 - Respect maintainers' time: include reproduction steps and command output
   with reports.
