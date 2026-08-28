@@ -418,7 +418,7 @@ stopped); (g) files you created (list).
   nothing caps it yet beyond the parallel runner.
 - **Private-repo link exceptions.**
   [tools/lint/link_exceptions.json](tools/lint/link_exceptions.json)
-  excuses two `github.com/ANI-IN/harness` URLs that 404 while the
+  excuses two `github.com/ANI-IN/harness-engineering-session` URLs that 404 while the
   repository is private (with a `repo_public` removal trigger that fails
   the build once it is public and the entries remain) and an
   `openai.com` 403 that only excuses a 403 persisting across retries.

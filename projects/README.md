@@ -21,19 +21,20 @@ language-neutral harness artifacts in `harness/`, shared `fixtures/` and
 and a conformance test suite. The solution runs from a fresh clone with the
 documented commands; that is verified, not assumed.
 
-## First-pass curriculum (projects 01-03)
+## The projects
 
-| # | Project | You build | Composes lectures |
-| --- | --- | --- | --- |
-| 01 | [Baseline vs minimal harness](./project-01-baseline-vs-minimal-harness/) | A controlled experiment: the same build task executed prompt-only vs rules-first, with measured results | 01, 02 |
-| 02 | [Agent-readable workspace](./project-02-agent-readable-workspace/) | A repository structured so an agent can navigate it and pick up where the last session left off | 03, 04 |
-| 03 | [Multi-session continuity](./project-03-multi-session-continuity/) | State files and an init script that keep work moving across session restarts | 05, 06 |
+Each project's starter is the previous project's solution, so they run in
+order and the application accretes rather than restarts.
 
-## Second pass (in progress)
+| # | Project | You build | Composes lectures | In the session |
+| --- | --- | --- | --- | --- |
+| 01 | [Baseline vs minimal harness](./project-01-baseline-vs-minimal-harness/) | A controlled experiment: the same build task executed prompt-only vs rules-first, with measured results | 01, 02 | 20 min live |
+| 02 | [Agent-readable workspace](./project-02-agent-readable-workspace/) | A repository structured so an agent can navigate it and pick up where the last session left off | 03, 04 | self-study |
+| 03 | [Multi-session continuity](./project-03-multi-session-continuity/) | State files and an init script that keep work moving across session restarts | 05, 11 | self-study |
+| 04 | [Runtime feedback and scope control](./project-04-runtime-feedback-and-scope-control/) | Structured logs, corrupt-state recovery, the behavioral architecture guard, and the WIP=1 doctor | 06, 07 | self-study |
+| 05 | [Self-verification and role separation](./project-05-self-verification-and-role-separation/) | One work item, three role configurations, and a rubric of executable predicates whose scores must climb | 08, 09 | 15 min demo |
 
-| # | Project | You build | Composes lectures |
-| --- | --- | --- | --- |
-| 04 | [Runtime feedback and scope control](./project-04-runtime-feedback-and-scope-control/) | Structured logs, corrupt-state recovery, the behavioral architecture guard, and the WIP=1 doctor | 02, 04 |
-| 05 | [Self-verification and role separation](./project-05-self-verification-and-role-separation/) | One work item, three role configurations, and a rubric of executable predicates whose scores must climb | 01, 02 |
+The four-hour session opens projects 01 and 05 only; see the
+[session plan](../docs/session-plan.md). The rest are self-study, in order.
 
 This index lists every project the module currently contains.

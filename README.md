@@ -76,8 +76,8 @@ way (they power the verification machinery; see
 [choosing your track](docs/choosing-your-track.md)).
 
 ```sh
-git clone https://github.com/ANI-IN/harness
-cd harness
+git clone https://github.com/ANI-IN/harness-engineering-session
+cd harness-engineering-session
 make setup TRACK=python   # or TRACK=typescript, or plain `make setup` for both
 make doctor TRACK=python  # confirm exactly what your track requires
 make verify     # run everything - should be green on a fresh clone
@@ -135,7 +135,7 @@ push (Python 3.12 × Node 20).
 - [CONTRIBUTING.md](CONTRIBUTING.md): how changes are made and verified here.
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md): expected behavior in this project's spaces.
 - [SECURITY.md](SECURITY.md): reporting security issues.
-- Questions and bug reports: [GitHub issues](https://github.com/ANI-IN/harness/issues).
+- Questions and bug reports: [GitHub issues](https://github.com/ANI-IN/harness-engineering-session/issues).
 
 ## Acknowledgments and license
 

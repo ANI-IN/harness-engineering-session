@@ -17,7 +17,7 @@ If you find anything that could harm a learner's machine (a script that
 writes outside its unit directory, a command with destructive side effects, a
 dependency with a known vulnerability, or anything that exfiltrates data),
 please report it via
-[GitHub Security Advisories](https://github.com/ANI-IN/harness/security/advisories/new)
+[GitHub Security Advisories](https://github.com/ANI-IN/harness-engineering-session/security/advisories/new)
 (preferred, private) or a GitHub issue if the problem is not sensitive.
 
 Include the file path, the command that triggers the behavior, and what you

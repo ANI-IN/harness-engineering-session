@@ -66,6 +66,6 @@ make lint-links && make lint-mermaid && make lint-structure
 
 ## Reporting problems
 
-Open a [GitHub issue](https://github.com/ANI-IN/harness/issues) with the
+Open a [GitHub issue](https://github.com/ANI-IN/harness-engineering-session/issues) with the
 command you ran, full output, and your `make doctor` report. A `verify.sh`
 that fails on a fresh clone is always a bug here, never user error.
