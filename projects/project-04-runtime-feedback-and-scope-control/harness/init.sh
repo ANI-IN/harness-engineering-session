@@ -3,7 +3,7 @@
 # build the chunk index, smoke-check the app, and gate the session on
 # workspace readability.
 #
-# One file serves both tracks (the course's declared single-file exception
+# One file serves both tracks (the module's declared single-file exception
 # for init scripts): set KB to your track's interpreter command.
 #   Python track (default):  KB="uv run python src/main.py"
 #   TypeScript track:        KB="pnpm exec tsx src/main.ts"

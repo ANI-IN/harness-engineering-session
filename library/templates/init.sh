@@ -3,7 +3,7 @@
 # Use when: any repo an agent starts sessions in; run it first, every session.
 # Don't use when: the environment is guaranteed pre-built (CI images that
 #   already ran setup) — then run only the verify step.
-# Motivated by: Lecture 06 (Why initialization needs its own phase).
+# Motivated by: Lecture 05 (Why initialization needs its own phase).
 #
 # This template shows BOTH ecosystems' install steps side by side — init.sh is
 # a shared, language-neutral artifact; delete the branch you don't have.

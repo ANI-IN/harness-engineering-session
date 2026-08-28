@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/ANI-IN/harness-engineering-session/library/templates/feature_list.schema.json",
   "title": "feature_list.json",
-  "description": "Machine-readable scope and state for agent work. One entry per feature; passing requires evidence. Motivated by the course's feature-list and evidence-based-completion lessons.",
+  "description": "Machine-readable scope and state for agent work. One entry per feature; passing requires evidence. Motivated by the module's feature-list and evidence-based-completion lessons.",
   "type": "object",
   "required": ["project", "updated", "features"],
   "additionalProperties": false,

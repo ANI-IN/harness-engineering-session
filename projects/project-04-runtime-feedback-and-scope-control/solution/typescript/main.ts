@@ -6,7 +6,7 @@
 // with `index --rebuild` as the recovery, `kb guard`, the behavioral
 // architecture guard (read-only server, storage containment, rebuildable
 // derived state), a WIP=1 check in the workspace doctor, and a server
-// that refuses non-GET methods. Logging is deterministic by course rule:
+// that refuses non-GET methods. Logging is deterministic by module rule:
 // entries carry a per-file sequence number, never a wall clock (a real
 // deployment would add timestamps at the seam).
 

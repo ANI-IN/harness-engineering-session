@@ -3,8 +3,8 @@
   Use when: every session end, before the final message.
   Don't use when: never skip it; a session that can't pass the gate records
   what failed in the handoff instead of pretending.
-  Motivated by: Lecture 05 (Why agents declare victory too early) and
-  Lecture 05 (Why every session must leave a clean state).
+  Motivated by: Lecture 08 (Why agents declare victory too early) and
+  Lecture 11 (Why every session must leave a clean state).
 -->
 
 # Clean state checklist

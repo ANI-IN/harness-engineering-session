@@ -34,10 +34,15 @@ help: ## List available targets
 # and for repo-level gates. See docs/choosing-your-track.md.
 TRACK ?= both
 
+# `--frozen-lockfile` has no fallback on purpose. Its whole job is to fail
+# when pnpm-lock.yaml no longer matches package.json, and `|| pnpm install`
+# converted that failure into a silent lockfile rewrite, in CI included,
+# since CI runs this target. To change dependencies, run `pnpm install`
+# yourself and commit the lockfile it produces.
 setup: ## Install the toolchain(s) for TRACK=python|typescript|both (default both)
 	uv sync
 ifneq ($(TRACK),python)
-	$(PNPM) install --frozen-lockfile || $(PNPM) install
+	$(PNPM) install --frozen-lockfile
 endif
 	@echo "setup: OK (TRACK=$(TRACK))"
 

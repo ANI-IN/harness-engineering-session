@@ -148,15 +148,20 @@ familiar: LangChain, LangGraph, MCP, A2A, Google ADK, multi-agent systems,
 LangSmith. Nothing here introduces agents, orchestration, or tool calling,
 and nothing defines a term you use daily.
 
-The sources this module builds on, and the only places its external claims
-come from:
+The three sources the module's own framing is built on:
 
 - [OpenAI: Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)
 - [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [Anthropic: Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
 
-Every figure in this module is generated from a committed fixture, cited to
-one of those, or labeled a heuristic. A lint rule enforces it.
+Individual lectures cite further primary sources where they make a
+specific claim, each with a `Source:` line at the point of use.
+
+Every figure in this module is generated from a committed fixture, cited
+to a primary source, or labeled a heuristic. Two mechanisms carry that:
+generated output blocks, re-executed and diffed by `make verify`, and
+each exercise's recorded starter divergence, re-asserted on every run. A
+figure typed into prose outside those is held by review, not by a gate.
 
 ## The four-hour session
 
@@ -166,8 +171,8 @@ full plan, including what is deliberately cut, is in
 
 | Block | Minutes | Units | Mode |
 | --- | --- | --- | --- |
-| Why the harness, not the model | 15 | Lectures 01, 02 | Live |
-| The repository as the system of record | 20 | Lectures 03, 04 | Live |
+| Why the harness, not the model | 15 | Lecture 01 (read), 02 | Live |
+| The repository as the system of record | 20 | Lecture 03 (read), 04 | Live |
 | Starting from a known state | 10 | Lecture 05 | Demo |
 | Scope the workspace enforces | 30 | Lectures 06, 07 | Live |
 | Verification: the claim and the check | 40 | Lectures 08, 09 | Live |
@@ -177,6 +182,10 @@ full plan, including what is deliberately cut, is in
 | The controlled experiment | 20 | Project 01 | Live |
 | Who checks the work | 15 | Project 05 | Demo |
 | Questions and buffer | 35 | | |
+
+The Minutes column is the budget for the whole block. Four blocks cover
+two lectures each, so the two share the block's minutes rather than each
+getting them; the lecture table below marks those.
 
 Not covered in the room: all 25 exercises, projects 02 through 04, and
 lectures 01 and 03 as reading.
@@ -237,7 +246,7 @@ exercises                   25
 projects                     5
 conformance units           44
 verify scripts              44
-executed README commands   102
+executed README commands   105
 ```
 <!-- /generated-block -->
 
@@ -250,14 +259,14 @@ Each lecture defends one claim and proves it with a demo you run.
 | 03 | [Why the repository must become the system of record](lectures/lecture-03-why-the-repository-must-become-the-system-of-record/) | What is not in the repository does not exist for the agent | read |
 | 04 | [Why one giant instruction file fails](lectures/lecture-04-why-one-giant-instruction-file-fails/) | Instructions must be a map, not a manual | 20 min live |
 | 05 | [Why initialization needs its own phase](lectures/lecture-05-why-initialization-needs-its-own-phase/) | Sessions that start by improvising end by guessing | 10 min demo |
-| 06 | [Why agents overreach and under-finish](lectures/lecture-06-why-agents-overreach-and-under-finish/) | Overreach and under-finish are one budget seen from two sides | 30 min live |
-| 07 | [Why feature lists are harness primitives](lectures/lecture-07-why-feature-lists-are-harness-primitives/) | A feature list is a data structure the harness executes against | 30 min live |
-| 08 | [Why agents declare victory too early](lectures/lecture-08-why-agents-declare-victory-too-early/) | A completion claim stands until something re-executes the checks | 40 min live |
-| 09 | [Why end-to-end testing changes results](lectures/lecture-09-why-end-to-end-testing-changes-results/) | Unit checks can all pass while the assembled path fails at a seam | 40 min live |
+| 06 | [Why agents overreach and under-finish](lectures/lecture-06-why-agents-overreach-and-under-finish/) | Overreach and under-finish are one budget seen from two sides | 30 min live, shared with 07 |
+| 07 | [Why feature lists are harness primitives](lectures/lecture-07-why-feature-lists-are-harness-primitives/) | A feature list is a data structure the harness executes against | 30 min live, shared with 06 |
+| 08 | [Why agents declare victory too early](lectures/lecture-08-why-agents-declare-victory-too-early/) | A completion claim stands until something re-executes the checks | 40 min live, shared with 09 |
+| 09 | [Why end-to-end testing changes results](lectures/lecture-09-why-end-to-end-testing-changes-results/) | Unit checks can all pass while the assembled path fails at a seam | 40 min live, shared with 08 |
 | 10 | [Why observability belongs inside the harness](lectures/lecture-10-why-observability-belongs-inside-the-harness/) | A session can only resume work whose history something recorded | 20 min live |
 | 11 | [Why every session must leave a clean state](lectures/lecture-11-why-every-session-must-leave-a-clean-state/) | What a session leaves behind decides what the next one can do | 20 min live |
-| 12 | [Loop engineering](lectures/lecture-12-loop-engineering/) | A loop is only as good as the signal its stopping condition reads | 15 min demo |
-| 13 | [Graph engineering](lectures/lecture-13-graph-engineering/) | Routing and rollback are declared structure, not hoped-for control flow | 15 min demo |
+| 12 | [Loop engineering](lectures/lecture-12-loop-engineering/) | A loop is only as good as the signal its stopping condition reads | 15 min demo, shared with 13 |
+| 13 | [Graph engineering](lectures/lecture-13-graph-engineering/) | Routing and rollback are declared structure, not hoped-for control flow | 15 min demo, shared with 12 |
 
 ## Exercises
 
@@ -289,10 +298,24 @@ application accretes across five versions rather than restarting.
 One lecture and one exercise, end to end. Every command and every output
 below is executed by the build, so what you read is what you get.
 
-Run the demo. Lecture 02 runs one loop through the five subsystems:
+Both tracks are shown throughout. Pick one and read only its stanzas; the
+conformance suite is what holds the two identical, so either is complete.
+
+### Run the demo
+
+Lecture 02 runs one loop through the five subsystems:
+
+#### Python
 
 ```sh
 uv run python lectures/lecture-02-what-a-harness-actually-is/code/python/main.py \
+  lectures/lecture-02-what-a-harness-actually-is/code/fixtures/workspace
+```
+
+#### TypeScript
+
+```sh
+pnpm exec tsx lectures/lecture-02-what-a-harness-actually-is/code/typescript/main.ts \
   lectures/lecture-02-what-a-harness-actually-is/code/fixtures/workspace
 ```
 
@@ -309,8 +332,10 @@ issue     : convention violation: wrote 08/27/2026 where ISO 8601 UTC is require
 ```
 <!-- /generated-block -->
 
-Now the exercise. Its starter runs and fails for one reason. This is the
-four-run acceptance transcript the build performs on every change:
+### The exercise
+
+Its starter runs and fails for one reason. This is the four-run acceptance
+transcript the build performs on every change, both tracks:
 
 <!-- generated-block: uv run python tools/run_acceptance.py lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-01-subsystem-auditor -->
 ```text
@@ -326,16 +351,37 @@ The starter treats the `- Verification:` tag as the fact and never reads what
 follows it, so a line naming no command reads as verified. You edit
 `starter/<your track>/`, and this is what you run until it exits 0:
 
+#### Python
+
 <!-- fence-exit: 1 -->
 ```sh
 bash lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-01-subsystem-auditor/verify.sh --stack=python
 ```
 
-It exits 1 above because the committed starter is unfinished, which is the
-point of a starter. Compare against the solution whenever you want:
+#### TypeScript
+
+<!-- fence-exit: 1 -->
+```sh
+bash lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-01-subsystem-auditor/verify.sh --stack=typescript
+```
+
+Both exit 1 above because the committed starter is unfinished, which is the
+point of a starter.
+
+### Compare with the solution
+
+Whenever you want, in either track:
+
+#### Python
 
 ```sh
 bash lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-01-subsystem-auditor/verify.sh --stack=python --target=solution
+```
+
+#### TypeScript
+
+```sh
+bash lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-01-subsystem-auditor/verify.sh --stack=typescript --target=solution
 ```
 
 ## Just want the templates
@@ -415,8 +461,8 @@ quiet pass. A broken glob cannot look like success.
 
 Every commit that lands a unit raises the relevant floor in the same commit,
 and the gates must be green against the raised floor before it lands. The
-current counts sit exactly on their floors, which is the block at the top of
-this file.
+current counts sit exactly on their floors, which is the generated block
+under [Lectures](#lectures).
 
 ## Documentation index
 
@@ -477,9 +523,11 @@ out inside itself, and the repo-wide gate, which would re-enter the gate
 running it.
 
 **No invented numbers.** Every figure is generated from a committed fixture,
-cited to a primary source, or labeled a heuristic, and a lint rule enforces
-it. This audience recognises a fabricated benchmark on sight, and one would
-cost the module its credibility for everything else it claims.
+cited to a primary source, or labeled a heuristic. Generated blocks and
+recorded starter divergences are gated; a figure typed into prose outside
+them is held by review. This audience recognises a fabricated benchmark on
+sight, and one would cost the module its credibility for everything else it
+claims.
 
 **Demos are behavioral.** A lecture demo shows the claimed failure actually
 happening, with the outcome in an exit code. A metric may support a demo; it

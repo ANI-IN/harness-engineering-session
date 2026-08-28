@@ -40,7 +40,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # file that makes a directory a workspace for that lecture), so it is not
 # tracked here; a helper only belongs in this registry when every copy is
 # meant to be the same code.
-PYTHON_HELPERS = ("load_workspace", "read_key", "run_check", "lines_of")
+#
+# A registered name must have at least two copies, or it performs no
+# comparison and the registry count overstates what the gate holds. That is
+# checked below rather than trusted: `read_key` and `lines_of` were carried
+# here with one copy each until the count was made to mean something.
+PYTHON_HELPERS = ("load_workspace", "run_check")
 TS_DECLARATIONS = ("type Files",)
 
 DIVERGENCE = re.compile(r"^Helper-divergence:\s*(\S+)\s*\((.+)\)\s*$", re.MULTILINE)
@@ -78,9 +83,13 @@ def declared_divergences(spec: Path) -> dict[str, str]:
     }
 
 
-def check_tree(root: Path) -> list[str]:
+def check_tree(root: Path) -> tuple[list[str], dict[str, int], int]:
+    """Errors, copies-per-registered-name, and comparisons actually made."""
     errors: list[str] = []
     units = sorted(root.glob("lectures/lecture-*/code"))
+    registered = [*PYTHON_HELPERS, *(n.replace("type ", "") for n in TS_DECLARATIONS)]
+    copies: dict[str, int] = {name: 0 for name in registered}
+    comparisons = 0
     # name -> (first unit that defined it, its text)
     seen: dict[str, tuple[str, str]] = {}
     for unit in units:
@@ -98,10 +107,12 @@ def check_tree(root: Path) -> list[str]:
                 if text is None:
                     continue
                 key = name if name in PYTHON_HELPERS else name.replace("type ", "")
+                copies[key] += 1
                 if key not in seen:
                     seen[key] = (rel, text)
                     continue
                 origin, expected = seen[key]
+                comparisons += 1
                 if text == expected or key in allowed:
                     continue
                 errors.append(
@@ -109,13 +120,23 @@ def check_tree(root: Path) -> list[str]:
                     f"copy in {origin}; make them identical or declare "
                     f"`Helper-divergence: {key} (<reason>)` in {rel}/SPEC.md"
                 )
-    return errors
+    for name, count in sorted(copies.items()):
+        if count < 2:
+            errors.append(
+                f"registry: `{name}` has {count} copy(ies) across lecture demos, so "
+                f"it is compared against nothing; remove it from the registry or "
+                f"register a name that several demos actually share"
+            )
+    return errors, copies, comparisons
 
 
 def main() -> int:
-    errors = check_tree(REPO_ROOT)
-    tracked = len(PYTHON_HELPERS) + len(TS_DECLARATIONS)
-    print(f"lint-shared-helpers: {tracked} shared helper(s) tracked across lecture demos")
+    errors, copies, comparisons = check_tree(REPO_ROOT)
+    print(
+        f"lint-shared-helpers: {len(copies)} registered helper(s), "
+        f"{sum(copies.values())} copy(ies), {comparisons} byte-identity "
+        f"comparison(s) across lecture demos"
+    )
     for error in errors:
         print(f"  FAIL {error}")
     if errors:

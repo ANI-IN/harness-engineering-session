@@ -24,6 +24,6 @@ if [ "${HARNESS_SKIP_UNIT_CONFORMANCE:-0}" = "1" ]; then
   exit 0
 fi
 
-echo "verify(lecture-13 loop-runner demo): stack=${STACK}"
+echo "verify(lecture-12 loop-runner demo): stack=${STACK}"
 uv run --project "$REPO_ROOT" python "$REPO_ROOT/tools/conformance/runner.py" \
   --unit "$(pwd)" --stack "$STACK"

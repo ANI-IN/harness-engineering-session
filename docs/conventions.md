@@ -280,7 +280,7 @@ lectures 05-13 inherit this rule from day one.
 ## Shared helpers across lecture demos
 
 A lecture demo is one file a learner reads end to end and copies out, so
-demos do not import a shared module even where nine of them carry the same
+demos do not import a shared module even where three of them carry the same
 small helper. The duplication is deliberate; the drift it invites is not.
 The reference course this module replaces is the cautionary case: its
 fourteen app copies diverged, one by a single character, and nine stopped
@@ -302,6 +302,12 @@ a helper that is parameterized per unit (each lecture's
 `resolve_workspace` names the file that makes a directory a workspace for
 that lecture) stays out of it, and a name that covers two different
 contracts is a naming bug to fix rather than a divergence to declare.
+
+The gate reports the number of comparisons it actually made, not the size
+of its registry, and it fails on a registered name with fewer than two
+copies. Both exist because the registry had drifted to five names of
+which two were compared against nothing, so the printed count overstated
+what was held.
 
 ## Fixture copies across projects
 
