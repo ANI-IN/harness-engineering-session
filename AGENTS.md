@@ -56,7 +56,7 @@ Harness engineering is the new material. Agents are not. So:
 ## Verification commands
 
 - Everything: `make status` (every gate, with counts against the floors).
-- Everything, longhand: `make verify && make conformance && make lint && make lint-links && make lint-mermaid && make lint-structure && make lint-shared-helpers && make check-fresh`
+- Everything, longhand: `make verify && make conformance && make lint && make lint-links && make lint-mermaid && make lint-structure && make lint-shared-helpers && make lint-authorship && make check-fresh`
 - One unit: `./<unit>/verify.sh --stack=python|typescript|both`
 - Before committing a lecture, additionally: `make lint-links-external`.
 

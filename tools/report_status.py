@@ -24,7 +24,8 @@ import check_readme_commands  # noqa: E402
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GATES = (
     "doctor", "verify-dedup", "conformance",
-    "lint", "lint-links", "lint-mermaid", "lint-structure", "lint-shared-helpers", "check-fresh",
+    "lint", "lint-links", "lint-mermaid", "lint-structure", "lint-shared-helpers",
+    "lint-authorship", "check-fresh",
 )
 
 
@@ -67,8 +68,13 @@ def main() -> int:
 
     print(
         "note: verify-dedup runs the verify gate with unit conformance covered"
-        " once, by the conformance gate above; coverage equality is proven by"
-        " tools/test_dedup_coverage.py (docs/conventions.md, dedup mode)."
+        " once, by the conformance gate above. tools/test_dedup_coverage.py"
+        " checks the structural preconditions for that (every skip-guarded"
+        " script is a discovered conformance unit; no exercise carries the"
+        " guard; the projects' suites are collected by the root runs). It does"
+        " not diff the two paths' executed cases, so coverage equality is"
+        " established by inspection, not proven (docs/conventions.md, dedup"
+        " mode)."
     )
     floors = json.loads((REPO_ROOT / "tools" / "expected_counts.json").read_text())
     counts = {

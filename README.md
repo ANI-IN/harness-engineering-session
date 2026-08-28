@@ -564,6 +564,7 @@ rules this module now enforces. See
 | `make lint-mermaid` | Every diagram parses |
 | `make lint-structure` | Unit completeness and README section order |
 | `make lint-shared-helpers` | Duplicated lecture helpers stay identical or declare why not |
+| `make lint-authorship` | No co-author trailers or tool attributions in commit bodies |
 | `make quick U=<unit>` | Inner loop for one unit. Not the commit gate |
 | `make resume` | Print the session handoff, HEAD, and tree state |
 
@@ -590,6 +591,9 @@ exists:
   than in someone's clone.
 - **lint-structure**: unit completeness, README section order, and the
   genuine-partial standard for starters.
+- **lint-authorship**: commit bodies carry no co-author trailer and no tool
+  attribution, per CONTRIBUTING.md. It reads the full body, not the author
+  and committer fields, because a trailer does not live in those.
 - **lint-shared-helpers**: duplicated demo helpers stay identical or declare
   their divergence.
 - **lint-links** and **lint-mermaid**: every relative link, anchor and

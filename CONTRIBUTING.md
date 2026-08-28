@@ -17,7 +17,8 @@ Pins: Python 3.12 (`.python-version`, installed by uv), Node 20 LTS
 
 ## Before you open a pull request
 
-Run the full gate locally; CI runs these plus `make setup`, `make doctor`, `make lint-shared-helpers`, and `make check-fresh`:
+Run the full gate locally; CI runs these plus `make setup`, `make doctor`, `make lint-shared-helpers`,
+`make lint-authorship`, and `make check-fresh`:
 
 ```sh
 make verify && make conformance && make lint && \
@@ -62,7 +63,10 @@ make lint-links && make lint-mermaid && make lint-structure
 - One completed, verified unit of work per commit.
 - Message: imperative summary naming the unit and, for curriculum code, the
   tracks verified, e.g. `lecture-03: add repo-reader demo (py+ts verified)`.
-- No co-author trailers or tool attributions.
+- No co-author trailers or tool attributions. `make lint-authorship`
+  enforces this over `main..HEAD` and runs inside `make status` and CI. It
+  reads each commit's full body: a trailer is not visible in the author or
+  committer fields, which is how three of them once shipped.
 
 ## Reporting problems
 

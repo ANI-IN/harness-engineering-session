@@ -183,11 +183,18 @@ projects' solution runs plus their own test-suite sub-runs) honor
 `HARNESS_SKIP_UNIT_CONFORMANCE` and skip what the status run's
 conformance gate and root test suites perform themselves. Exercise
 `--target=ci` acceptance runs and the projects' starter-must-fail gates
-never skip. Coverage equality is not assumed: the runner logs every
-executed `(unit, stage, stack, case)` identifier when
-`HARNESS_COVERAGE_LOG` is set, and `tools/test_dedup_coverage.py` fails
-the build if the deduplicated path could ever cover fewer cases than the
-full one. `make quick U=<unit-dir>` (doctor plus that unit's `verify.sh`)
+never skip. Coverage equality rests on structure, not on a
+diff: `tools/test_dedup_coverage.py` checks that every skip-guarded
+script is a discovered conformance unit, that no exercise script carries
+the guard, and that the projects' test suites are collected by the root
+pytest and vitest runs. The runner can log every executed
+`(unit, stage, stack, case)` identifier when `HARNESS_COVERAGE_LOG` is
+set, but nothing runs both paths and diffs those sets, so equality is
+established by inspection rather than proven. Say so rather than
+claiming the stronger thing: this module's own rule is that a claim
+stands only as far as what re-executes it.
+
+`make quick U=<unit-dir>` (doctor plus that unit's `verify.sh`)
 is the inner loop only; the commit gate remains `make status`.
 
 ### Tracked content is the only content
