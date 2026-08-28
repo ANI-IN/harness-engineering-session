@@ -7,7 +7,7 @@ finishes. Project 02 makes the workspace itself the harness: the kb app
 gains import, a detail view, and metadata persistence, and the working
 copy gains the artifacts that let a **fresh session resume from recorded
 state alone**: a router AGENTS.md (lecture 04), a metadata index as the
-system of record (lecture 03), a canonical session handoff (lecture 05's
+system of record (lecture 03), a canonical session handoff (lecture 11's
 format), and `kb workspace-check`, a doctor that grades the workspace's
 readability mechanically.
 
@@ -230,7 +230,7 @@ running):
 Reading it: three artifacts exist and three artifacts lie: a route to a
 missing doc, a handoff without a next step, a feature passing on faith.
 Existence is not readability; the doctor checks substance, which is the
-same move lecture 06's init doctor makes, pointed at the workspace.
+same move lecture 05's init doctor makes, pointed at the workspace.
 
 ## Troubleshooting
 
@@ -263,5 +263,5 @@ same move lecture 06's init doctor makes, pointed at the workspace.
 - [Lecture 04: Why one giant instruction file fails](../../lectures/lecture-04-why-one-giant-instruction-file-fails/):
   AGENTS.md here is that lecture's router, and the doctor checks its
   routes resolve.
-- [Lecture 05: Why long-running tasks lose continuity](../../lectures/lecture-05-why-long-running-tasks-lose-continuity/):
+- [Lecture 11: Why long-running tasks lose continuity](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/):
   the session handoff uses its canonical format, so it stays parseable.

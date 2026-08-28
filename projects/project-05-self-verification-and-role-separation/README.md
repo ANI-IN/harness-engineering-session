@@ -267,16 +267,16 @@ rule since project 01; here it becomes a checker's verdict.
 - [Lecture 02: What a harness actually is](../../lectures/lecture-02-what-a-harness-actually-is/):
   role separation is the feedback subsystem grown into a second pair of
   eyes.
-- [Lecture 06: Why initialization needs its own phase](../../lectures/lecture-06-why-initialization-needs-its-own-phase/):
+- [Lecture 05: Why initialization needs its own phase](../../lectures/lecture-05-why-initialization-needs-its-own-phase/):
   the same doctor discipline, pointed at finished work instead of a
   starting repository.
-- [Lecture 09: Why agents declare victory too early](../../lectures/lecture-09-why-agents-declare-victory-too-early/):
+- [Lecture 08: Why agents declare victory too early](../../lectures/lecture-08-why-agents-declare-victory-too-early/):
   the premature claim caught by re-execution; the gen-eval checker here
   is that lecture's gate given a rubric and a second role.
-- [Lecture 10: Why end-to-end testing changes results](../../lectures/lecture-10-why-end-to-end-testing-changes-results/):
+- [Lecture 09: Why end-to-end testing changes results](../../lectures/lecture-09-why-end-to-end-testing-changes-results/):
   why this project's checker runs each feature's verification command
   against the working application rather than reading the code.
-- [Lecture 12: Why every session must leave a clean state](../../lectures/lecture-12-why-every-session-must-leave-a-clean-state/)
+- [Lecture 11: Why every session must leave a clean state](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/)
   is not paired with a project, and this is one of the two closest built
   ones: the rubric's fifth item is that lecture's exit protocol reduced
   to one executable predicate.

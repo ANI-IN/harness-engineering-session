@@ -4,7 +4,7 @@
   output; the maker never fills in its own rubric.
   Don't use when: trivial changes fully covered by automated checks; the
   rubric adds judgment where automation ends, not paperwork where it doesn't.
-  Motivated by: Lecture 09 (Why agents declare victory too early): makers are
+  Motivated by: Lecture 08 (Why agents declare victory too early): makers are
   systematically overconfident; the verdict must come from outside.
   Tuning note: out of the box, agent checkers drift lenient: they identify
   issues and then talk themselves into approving. Expect several tuning

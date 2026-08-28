@@ -19,10 +19,10 @@ content with your project's, keep the structure.
 
 Motivating lectures (linked as they exist in this release): AGENTS.md is
 motivated by [Lecture 02](../../lectures/lecture-02-what-a-harness-actually-is/) and [Lecture 04](../../lectures/lecture-04-why-one-giant-instruction-file-fails/); CLAUDE.md by [Lecture 04](../../lectures/lecture-04-why-one-giant-instruction-file-fails/);
-init.sh by [Lecture 06](../../lectures/lecture-06-why-initialization-needs-its-own-phase/); claude-progress.md and session-handoff.md
-by [Lecture 05](../../lectures/lecture-05-why-long-running-tasks-lose-continuity/). The remaining templates (feature list
+init.sh by [Lecture 05](../../lectures/lecture-05-why-initialization-needs-its-own-phase/); claude-progress.md and session-handoff.md
+by [Lecture 11](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/). The remaining templates (feature list
 and schema, clean-state checklist, evaluator rubric, quality document)
-are motivated by lectures 08, 09, and 12, which arrive with the full
+are motivated by lectures 08, 10, and 11, which arrive with the full
 curriculum.
 
 Notes:

@@ -6,7 +6,7 @@
   verdict) is the right tool there. The two answer different questions:
   rubric = "was this session's work good?", quality document = "is the
   project trending up or down?".
-  Motivated by: Lecture 12 (Why every session must leave a clean state) and
+  Motivated by: Lecture 05 (Why every session must leave a clean state) and
   the harness-simplification practice: snapshot -> remove one component ->
   re-run the benchmark tasks -> snapshot -> compare. If grades didn't drop,
   the component was overhead; remove it for good.

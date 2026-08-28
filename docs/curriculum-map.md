@@ -17,16 +17,15 @@ flowchart LR
     L02["02 What a harness actually is"]
     L03["03 The repository as system of record"]
     L04["04 Why one giant instruction file fails"]
-    L05["05 Continuity across sessions"]
-    L06["06 Initialization as its own phase"]
-    L07["07 Overreach and under-finish"]
-    L08["08 Feature lists as primitives"]
-    L09["09 Declaring victory too early"]
-    L10["10 End-to-end testing changes results"]
-    L11["11 Observability inside the harness"]
-    L12["12 Leaving a clean state"]
-    L13["13 Loop engineering"]
-    L14["14 Graph engineering"]
+    L05["05 Initialization as its own phase"]
+    L06["06 Overreach and under-finish"]
+    L07["07 Feature lists as primitives"]
+    L08["08 Declaring victory too early"]
+    L09["09 End-to-end testing changes results"]
+    L10["10 Observability inside the harness"]
+    L11["11 Continuity and leaving a clean state"]
+    L12["12 Loop engineering"]
+    L13["13 Graph engineering"]
   end
 
   subgraph Projects
@@ -53,18 +52,16 @@ flowchart LR
   L10 --> L11
   L11 --> L12
   L12 --> L13
-  L13 --> L14
 
   L01 --> P01
   L02 --> P01
   L03 --> P02
   L04 --> P02
   L05 --> P03
-  L06 --> P03
+  L06 --> P04
   L07 --> P04
-  L08 --> P04
+  L08 --> P05
   L09 --> P05
-  L10 --> P05
 
   T --> P01
   T --> P02
@@ -87,13 +84,13 @@ Reading the graph:
   [project 02](../projects/project-02-agent-readable-workspace/) makes a
   workspace agent-readable (lectures 03-04),
   [project 03](../projects/project-03-multi-session-continuity/) makes work
-  survive session boundaries (lectures 05-06),
+  survive session boundaries (lecture 05),
   [project 04](../projects/project-04-runtime-feedback-and-scope-control/)
   turns scope control and the feature list's evidence law into a doctor
-  check and a guard (lectures 07-08),
+  check and a guard (lectures 06-07),
   [project 05](../projects/project-05-self-verification-and-role-separation/)
   replays the premature claim under three role configurations and a
-  rubric of executable predicates (lecture 09).
+  rubric of executable predicates (lectures 08-09).
 - The **library feeds every project**: projects instantiate the same
   templates the library ships, and lecture 02 is where those artifacts are
   defined, which is why it points at the library.

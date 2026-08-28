@@ -2,7 +2,7 @@
   Template: claude-progress.md, the cross-session progress log.
   Use when: work spans more than one agent session.
   Don't use when: genuinely single-session tasks; the git log is enough.
-  Motivated by: Lecture 05 (Why long-running tasks lose continuity).
+  Motivated by: Lecture 11 (Why every session must leave a clean state).
   Rules: the "Current verified state" block is overwritten each session;
   the session log is append-only. Agents read this file first and update it
   last; say so in AGENTS.md, or it will be ignored.

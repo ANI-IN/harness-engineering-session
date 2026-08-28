@@ -35,13 +35,13 @@ After this project you can:
 - Make a QA surface refuse honestly when its grounding is stale, instead
   of answering from whatever is lying around.
 - Prove session continuity with a real process boundary, and read a
-  continuity report the way lecture 05 reads a handoff.
+  continuity report the way lecture 11 reads a handoff.
 
 ## Prerequisites
 
-- [Lecture 05](../../lectures/lecture-05-why-long-running-tasks-lose-continuity/):
+- [Lecture 11](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/):
   the continuity artifacts this project industrializes.
-- [Lecture 06](../../lectures/lecture-06-why-initialization-needs-its-own-phase/):
+- [Lecture 05](../../lectures/lecture-05-why-initialization-needs-its-own-phase/):
   the init-and-gate discipline `init.sh` and the doctor apply here.
 - [Project 02](../project-02-agent-readable-workspace/), whose solution is
   this project's starter.
@@ -247,7 +247,7 @@ The continuity report's resume section, generated from the Python run by
 Reading it: session B's three commands ran in processes that had never
 seen session A, and its status output matched A's byte for byte
 (`status_matches_session_a`), so the resume verdict rests on recorded
-state alone. This is lecture 05's claim as a measured fact.
+state alone. This is lecture 11's claim as a measured fact.
 
 ## Troubleshooting
 
@@ -273,14 +273,14 @@ state alone. This is lecture 05's claim as a measured fact.
 
 ## Related lectures
 
-- [Lecture 12: Why every session must leave a clean state](../../lectures/lecture-12-why-every-session-must-leave-a-clean-state/)
+- [Lecture 11: Why every session must leave a clean state](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/)
   is not paired with a project, and this is one of the two closest built
   ones: the handoff and clean-state checklist here are the artifacts that
   lecture's exit protocol writes.
 
-- [Lecture 05: Why long-running tasks lose continuity](../../lectures/lecture-05-why-long-running-tasks-lose-continuity/):
+- [Lecture 11: Why long-running tasks lose continuity](../../lectures/lecture-11-why-every-session-must-leave-a-clean-state/):
   the continuity proof is that lecture's session simulator, made real.
-- [Lecture 06: Why initialization needs its own phase](../../lectures/lecture-06-why-initialization-needs-its-own-phase/):
+- [Lecture 05: Why initialization needs its own phase](../../lectures/lecture-05-why-initialization-needs-its-own-phase/):
   `init.sh` builds the index and gates the session on the doctor, exactly
   that lecture's discipline.
 - [Lecture 03: Why the repository must become the system of record](../../lectures/lecture-03-why-the-repository-must-become-the-system-of-record/):

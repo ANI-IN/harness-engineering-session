@@ -3,7 +3,7 @@
   Use when: sessions end mid-task, or a different agent/person picks up next.
   Don't use when: the task finished cleanly; claude-progress.md already
   carries the record; a handoff of "nothing in flight" is noise.
-  Motivated by: Lecture 05 (Why long-running tasks lose continuity).
+  Motivated by: Lecture 11 (Why every session must leave a clean state).
   Kept deliberately short: a handoff nobody reads is a handoff that failed.
 -->
 

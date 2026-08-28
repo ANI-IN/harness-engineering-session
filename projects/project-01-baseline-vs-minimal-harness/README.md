@@ -319,5 +319,5 @@ the entire thesis of lectures 01 and 02 in one JSON object.
 - [Lecture 02: What a harness actually is](../../lectures/lecture-02-what-a-harness-actually-is/):
   the strong run's harness files are that lecture's subsystems, minimal
   edition.
-- [Lecture 06: Why initialization needs its own phase](../../lectures/lecture-06-why-initialization-needs-its-own-phase/):
+- [Lecture 05: Why initialization needs its own phase](../../lectures/lecture-05-why-initialization-needs-its-own-phase/):
   the weak run's failed smoke check is a preview of its argument.

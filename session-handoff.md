@@ -203,8 +203,8 @@ The user added these during the build. They are binding.
 Each prompt names the directory, the reference path, the exercise count,
 the related-project sentence, and the behavioral shape of the demo.
 
-- **Lecture 10** `lectures/lecture-10-why-end-to-end-testing-changes-results/`,
-  reference `_reference/docs/en/lectures/lecture-10-why-end-to-end-testing-changes-results/`.
+- **Lecture 10** `lectures/lecture-09-why-end-to-end-testing-changes-results/`,
+  reference `_reference/docs/en/lectures/lecture-09-why-end-to-end-testing-changes-results/`.
   Two exercises. Related project: Project 05 (its checker executes every
   feature's verification command against the running app instead of
   reading the code). Build on lecture 09 without repeating it: 09 is the
@@ -213,8 +213,8 @@ the related-project sentence, and the behavioral shape of the demo.
   Demo: a scripted session whose unit-level checks all pass ends
   differently (exit code and report) depending on whether the definition
   of done includes an end-to-end run against the assembled system.
-- **Lecture 11** `lectures/lecture-11-why-observability-belongs-inside-the-harness/`,
-  reference `_reference/docs/en/lectures/lecture-11-why-observability-belongs-inside-the-harness/`.
+- **Lecture 11** `lectures/lecture-10-why-observability-belongs-inside-the-harness/`,
+  reference `_reference/docs/en/lectures/lecture-10-why-observability-belongs-inside-the-harness/`.
   Two exercises. Related-project sentence worded "The closest built
   project is Project 04" (structured event log `log/events.jsonl` with
   sequence numbers, `kb logs`, a guard that executes what the
@@ -223,8 +223,8 @@ the related-project sentence, and the behavioral shape of the demo.
   and without a harness-written structured event log, and a second
   session that must diagnose or resume the first succeeds only when the
   log exists. Sequence numbers, never timestamps.
-- **Lecture 12** `lectures/lecture-12-why-every-session-must-leave-a-clean-state/`,
-  reference `_reference/docs/en/lectures/lecture-12-why-every-session-must-leave-a-clean-state/`.
+- **Lecture 12** `lectures/lecture-11-why-every-session-must-leave-a-clean-state/`,
+  reference `_reference/docs/en/lectures/lecture-11-why-every-session-must-leave-a-clean-state/`.
   Two exercises. Related-project sentence worded "The closest built
   projects are Project 03 (session handoff and clean-state checklist) and
   Project 05 (rubric item five, clean-state, is `kb workspace-check`
@@ -232,12 +232,12 @@ the related-project sentence, and the behavioral shape of the demo.
   end. Demo: a session ends dirty (partial work, stale progress note, a
   feature left in-progress without a handoff) versus clean, and the
   following session's observable outcome differs.
-- **Lecture 13** `lectures/lecture-13-loop-engineering/`, reference
-  `_reference/docs/en/lectures/lecture-13-loop-engineering/`. One
+- **Lecture 13** `lectures/lecture-12-loop-engineering/`, reference
+  `_reference/docs/en/lectures/lecture-12-loop-engineering/`. One
   exercise. No related-project sentence. Scope exactly as in the section
   above.
-- **Lecture 14** `lectures/lecture-14-graph-engineering/`, reference
-  `_reference/docs/en/lectures/lecture-14-graph-engineering/`. One
+- **Lecture 14** `lectures/lecture-13-graph-engineering/`, reference
+  `_reference/docs/en/lectures/lecture-13-graph-engineering/`. One
   exercise. No related-project sentence. Scope exactly as in the section
   above.
 
@@ -266,7 +266,7 @@ else is read-only.
    prose fresh; never copy sentences; cut any figure or claim you cannot
    source or regenerate from committed fixtures.
 4. Model units, as exemplars of the finished shape:
-   lectures/lecture-09-why-agents-declare-victory-too-early/ (README +
+   lectures/lecture-08-why-agents-declare-victory-too-early/ (README +
    code/, the behavioral demo pattern), lecture 06 (the replay demo),
    lecture 04 (multi-run demo headings: per-run H3 with #### Python /
    #### TypeScript), and lecture 06's exercises/exercise-01-init-doctor/

@@ -93,7 +93,7 @@ def test_installer_fences_are_classified_as_shared_state():
 
 def test_ordinary_fences_are_not_shared_state():
     for script in (
-        "L=lectures/lecture-13-loop-engineering\npnpm exec tsx $L/code/typescript/main.ts $L/x",
+        "L=lectures/lecture-12-loop-engineering\npnpm exec tsx $L/code/typescript/main.ts $L/x",
         "uv run python projects/project-01-x/solution/python/main.py list",
         "P=projects/project-04-x\nrm -rf $P/kb-data && cp -R $P/fixtures/kb-corrupt $P/kb-data",
     ):

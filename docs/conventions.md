@@ -257,7 +257,7 @@ demo but cannot be one; computing a number about the problem
 (a ratio, a count, a score) is evidence, not demonstration, and it goes
 after the behavioral run under a heading that says so. Lecture 04's
 budgeted reader replacing its metric-first demo is the reference example;
-lectures 07-14 inherit this rule from day one.
+lectures 05-13 inherit this rule from day one.
 
 ## Fixture copies across projects
 
@@ -353,7 +353,7 @@ No em-dashes (U+2014) and no en-dashes (U+2013) anywhere in markdown prose.
 Use a comma, a colon, a normal hyphen (hyphen-minus, ASCII 45), or restructure
 the sentence; a hyphen doing an em-dash's job usually reads worse than a
 comma or a full stop, so prefer rewriting. Number ranges use a plain hyphen
-(lectures 01-06).
+(lectures 01-05).
 
 This applies to every shipped .md file: READMEs, SPEC.md files, lecture
 bodies, docs/, library templates, and the text of mermaid node labels. It

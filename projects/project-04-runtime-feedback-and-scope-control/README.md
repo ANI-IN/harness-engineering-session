@@ -41,7 +41,7 @@ After this project you can:
 - [Lecture 04](../../lectures/lecture-04-why-one-giant-instruction-file-fails/):
   rules the agent must actually meet; here they become executable checks.
 - [Project 03](../project-03-multi-session-continuity/), whose solution is
-  this project's starter. (The reference maps this project to its lectures 07
+  this project's starter. (The reference maps this project to its lecture 05
   and 08 on task boundaries and feature lists.)
 - `make setup` completed at the repository root; your track green in
   `make doctor` ([choosing your track](../../docs/choosing-your-track.md)).
@@ -281,16 +281,16 @@ real deployment adds clocks at exactly that seam.
 - [Lecture 04: Why one giant instruction file fails](../../lectures/lecture-04-why-one-giant-instruction-file-fails/):
   rules that matter must be met mechanically; the guard executes what
   ARCHITECTURE.md claims.
-- [Lecture 06: Why initialization needs its own phase](../../lectures/lecture-06-why-initialization-needs-its-own-phase/):
+- [Lecture 05: Why initialization needs its own phase](../../lectures/lecture-05-why-initialization-needs-its-own-phase/):
   `init.sh` now gates on the guard too; the doctor family grows a
   fourth check.
-- [Lecture 07: Why agents overreach and under-finish](../../lectures/lecture-07-why-agents-overreach-and-under-finish/):
+- [Lecture 06: Why agents overreach and under-finish](../../lectures/lecture-06-why-agents-overreach-and-under-finish/):
   the WIP=1 line the lecture's scripted worker obeys is the rule this
   project's fourth doctor check enforces.
-- [Lecture 08: Why feature lists are harness primitives](../../lectures/lecture-08-why-feature-lists-are-harness-primitives/):
+- [Lecture 07: Why feature lists are harness primitives](../../lectures/lecture-07-why-feature-lists-are-harness-primitives/):
   the pass gate that lecture builds is the evidence law this project's
   fifteen-feature list lives under.
-- [Lecture 11: Why observability belongs inside the harness](../../lectures/lecture-11-why-observability-belongs-inside-the-harness/)
+- [Lecture 10: Why observability belongs inside the harness](../../lectures/lecture-10-why-observability-belongs-inside-the-harness/)
   is not paired with a project, and this is the closest built one: its
   argument for a harness-written event log is what `log/events.jsonl`
   and `kb logs` are here.

@@ -105,7 +105,7 @@ in the exit code (0 ready, 1 not):
 
 ### Canonical handoff format (pinned)
 
-The format taught by lecture 05's handoff-roundtrip exercise: one
+The format taught by lecture 11's handoff-roundtrip exercise: one
 `# <title>` line, then `## <section>` headings whose items are `- <item>`
 lines; parsing collects every section in document order and never drops
 unknown sections. This project's committed

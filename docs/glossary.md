@@ -140,7 +140,7 @@ solution passes. Both exist in both tracks, always.
 
 **Doctor**: a readiness tool that checks substance, not existence, and
 delivers its verdict through its exit code. Instances at three scales:
-`make doctor` (toolchain pins), lecture 06's init-check (repository
+`make doctor` (toolchain pins), lecture 05's init-check (repository
 readiness), and `kb workspace-check` (workspace readability). "The
 doctor" in a unit's prose means that unit's instance.
 
