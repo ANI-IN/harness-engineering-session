@@ -38,7 +38,7 @@ Deliberately short. A handoff nobody reads is a handoff that failed.
 ## Broken or unverified
 
 Nothing red: every gate exits 0 and every count sits on its floor. Not the
-same as nothing known, though. The review found and verified 24 items that
+same as nothing known, though. The review found and verified 24 items, 1 since fixed and 23 still open, that
 were deliberately left, listed under the backlog below with severity and
 cost. Read that section before concluding the tree is finished.
 
@@ -125,14 +125,12 @@ each item's evidence. Nothing here is a guess.
 worth taking first, and the first item is the one that would embarrass
 the module fastest in front of an audience that greps.
 
-- **1.** **`make status` prints a proof claim that nothing establishes.**
-   `tools/report_status.py:68-72` and `docs/conventions.md:186-189` both
-   say coverage equality "is proven by `tools/test_dedup_coverage.py`".
-   Every reference to `HARNESS_COVERAGE_LOG` in the tree is the
-   definition, the write, one single-unit single-stack test, and that doc
-   line. Nothing runs both verification paths and diffs their identifier
-   sets. Coverage is equal today by inspection, not by proof. Cost: one
-   line to delete the unsupported clause, or one tool to make it true.
+- **1.** **FIXED (commit `598cf6b`).** `make status` printed "coverage
+   equality is proven by `tools/test_dedup_coverage.py`" when nothing
+   established it. The note and `docs/conventions.md` now say what is
+   actually checked (three structural preconditions) and state plainly that
+   equality is established by inspection, not proven. Left in this list as
+   a record; nothing to do.
 - **2.** **The projects' only starter-must-fail assertion cannot detect its own
    removal or its disabling.** `tools/test_dedup_coverage.py:67-77`, three
    independent breaks: a project that loses its gate is `continue`d past;

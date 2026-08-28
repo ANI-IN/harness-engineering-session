@@ -378,3 +378,98 @@ def test_empty_tracked_dir_is_still_an_orphan(tmp_path):
     errors: list[str] = []
     check_structure.check_orphans(errors, tmp_path)
     assert any("fixtures/empty" in error for error in errors)
+
+
+def _hint_exercise(tmp_path, hint: str, starter: str, solution: str):
+    """An exercise whose only difference between stages is the given bodies."""
+    ex = tmp_path / "lectures/lecture-02-x/exercises/exercise-01-y"
+    for stage, body in (("starter", starter), ("solution", solution)):
+        (ex / stage / "python").mkdir(parents=True)
+        (ex / stage / "python" / "main.py").write_text(body, encoding="utf-8")
+    (ex / "verify.sh").write_text(f'#!/usr/bin/env bash\nTASK_HINT="{hint}"\n', encoding="utf-8")
+    return ex
+
+
+# Two audits are naive, two are already correct. This is the shape that
+# shipped a hint naming the wrong pair.
+STARTER_AUDITS = (
+    "def audit_tools(r):\n    return 'mentioned'\n\n"
+    "def audit_feedback(r):\n    return 'tag'\n\n"
+    "def audit_state(r):\n    return 'list + progress'\n\n"
+    "def audit_environment(r):\n    return 'manifest + pin'\n"
+)
+SOLUTION_AUDITS = (
+    "def audit_tools(r):\n    return 'exists'\n\n"
+    "def audit_feedback(r):\n    return 'tag + command'\n\n"
+    "def audit_state(r):\n    return 'list + progress'\n\n"
+    "def audit_environment(r):\n    return 'manifest + pin'\n"
+)
+
+
+def test_a_hint_naming_an_unchanged_sibling_is_rejected(tmp_path):
+    """The defect that shipped: the hint named the environment and state
+    audits, which the starter already had, and no gate read it."""
+    ex = _hint_exercise(
+        tmp_path, "implement the tools, environment, and state audits",
+        STARTER_AUDITS, SOLUTION_AUDITS,
+    )
+    errors: list[str] = []
+    check_structure.check_task_hints(ex, "ex", errors)
+    assert len(errors) == 2, errors
+    assert any("audit_environment" in e for e in errors)
+    assert any("audit_state" in e for e in errors)
+
+
+def test_a_hint_naming_only_the_changed_siblings_passes(tmp_path):
+    ex = _hint_exercise(
+        tmp_path, "fix the naive tools and feedback audits",
+        STARTER_AUDITS, SOLUTION_AUDITS,
+    )
+    errors: list[str] = []
+    check_structure.check_task_hints(ex, "ex", errors)
+    assert errors == []
+
+
+def test_domain_words_colliding_with_helper_names_do_not_trip_it(tmp_path):
+    """`record_attempt` is an unchanged helper and the hint says "records ...
+    attempt", but the two are not siblings of the changed function, so this
+    must pass. A gate that fires here would be ignored within a week."""
+    starter = (
+        "def record_attempt(s):\n    return s\n\n"
+        "def attempted_criteria(s):\n    return s[:-1]\n"
+    )
+    solution = (
+        "def record_attempt(s):\n    return s\n\n"
+        "def attempted_criteria(s):\n    return s\n"
+    )
+    ex = _hint_exercise(
+        tmp_path, "read every attempt the carried loop state records, not one fewer",
+        starter, solution,
+    )
+    errors: list[str] = []
+    check_structure.check_task_hints(ex, "ex", errors)
+    assert errors == []
+
+
+def test_an_empty_hint_is_rejected(tmp_path):
+    ex = _hint_exercise(tmp_path, "", STARTER_AUDITS, SOLUTION_AUDITS)
+    errors: list[str] = []
+    check_structure.check_task_hints(ex, "ex", errors)
+    assert len(errors) == 1
+    assert "missing or empty" in errors[0]
+
+
+def test_free_prose_that_misdescribes_the_task_is_not_caught(tmp_path):
+    """The known limit, pinned so it is a decision rather than a surprise.
+    This hint describes checks the starter already implements, but names no
+    unchanged sibling, so the rule cannot see it."""
+    starter = "def gate(f):\n    return 'a'\n"
+    solution = "def gate(f):\n    return 'b'\n"
+    ex = _hint_exercise(
+        tmp_path,
+        "fix the evidence rule (own verification command, passing run)",
+        starter, solution,
+    )
+    errors: list[str] = []
+    check_structure.check_task_hints(ex, "ex", errors)
+    assert errors == [], "documented limit: prose without a sibling name passes"

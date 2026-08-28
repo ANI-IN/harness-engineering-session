@@ -305,6 +305,97 @@ def check_starter_divergence(exercise: Path, rel: str, errors: list[str]) -> Non
         )
 
 
+TASK_HINT_RE = re.compile(r'^TASK_HINT="([^"]*)"', re.MULTILINE)
+
+
+def _top_level_defs(path: Path) -> dict[str, str]:
+    """name -> body, for top-level Python defs and TypeScript functions."""
+    if not path.is_file():
+        return {}
+    lines = path.read_text(encoding="utf-8").split("\n")
+    found: dict[str, str] = {}
+    for index, line in enumerate(lines):
+        match = re.match(
+            r"(?:def |(?:export )?function )([A-Za-z_][A-Za-z0-9_]*)", line
+        )
+        if not match:
+            continue
+        body = [line]
+        for following in lines[index + 1:]:
+            if following and not following[0].isspace() and not following.startswith("}"):
+                break
+            body.append(following)
+        found[match.group(1)] = "\n".join(body)
+    return found
+
+
+def _hint_tokens(hint: str) -> set[str]:
+    """Words in the hint, lightly stemmed, so prose ("the state audits") and
+    identifiers (`audit_state`) reduce to the same tokens."""
+    words = re.findall(r"[A-Za-z]+", re.sub(r"([a-z])([A-Z])", r"\1 \2", hint))
+    return {w.lower().rstrip("s") for w in words if len(w) > 2}
+
+
+def _name_tokens(name: str) -> list[str]:
+    """`audit_tools` and `auditTools` both become ["audit", "tool"]."""
+    spaced = re.sub(r"([a-z])([A-Z])", r"\1 \2", name)
+    return [w.lower().rstrip("s") for w in re.split(r"[_\W]+", spaced) if w]
+
+
+def check_task_hints(exercise: Path, rel: str, errors: list[str]) -> None:
+    """A starter's failure message must name work the learner actually has to do.
+
+    Nothing read TASK_HINT until this check existed, and two of the
+    twenty-five named work the starter had already finished. The hint prints
+    on every failing run, so it is the sentence a learner reads most: one
+    that names the wrong task sends them to edit code that is already right.
+
+    The rule is scoped to sibling checks, which is where the mistake is both
+    likely and detectable. When an exercise has a family of same-prefixed
+    functions (`audit_tools`, `audit_state`, ...) and the solution changes
+    only some of them, a hint may not name an *unchanged* sibling by its
+    distinguishing words. `audit_state` and "the state audits" both reduce to
+    the token `state`, so prose and identifiers are caught alike.
+
+    Deliberately not attempted: deciding whether free prose describes a diff.
+    A hint that misdescribes the task without naming an unchanged sibling
+    passes here, and that limit is real, not an oversight.
+    """
+    script = exercise / "verify.sh"
+    if not script.is_file():
+        return
+    match = TASK_HINT_RE.search(script.read_text(encoding="utf-8"))
+    if not match or not match.group(1).strip():
+        errors.append(f"{rel}/verify.sh: TASK_HINT is missing or empty")
+        return
+    tokens = _hint_tokens(match.group(1))
+    for stack, entry in (("python", "python/main.py"), ("typescript", "typescript/main.ts")):
+        starter = _top_level_defs(exercise / "starter" / entry)
+        solution = _top_level_defs(exercise / "solution" / entry)
+        shared = {n: b for n, b in starter.items() if n in solution}
+        changed = {n for n, b in shared.items() if solution[n] != b}
+        if not changed:
+            continue
+        for name in sorted(shared):
+            if name in changed:
+                continue
+            parts = _name_tokens(name)
+            if not parts:
+                continue
+            prefix = parts[0]
+            # Only sibling-of-a-changed-check names are in scope.
+            if not any(_name_tokens(c)[:1] == [prefix] for c in changed):
+                continue
+            distinguishing = {p for p in parts[1:] if len(p) > 2}
+            if distinguishing and distinguishing <= tokens:
+                errors.append(
+                    f"{rel}/verify.sh: TASK_HINT points at `{name}`, which the "
+                    f"{stack} starter already implements identically to the "
+                    f"solution, while its siblings {sorted(changed)} are the "
+                    f"work; the hint prints on every failing run"
+                )
+
+
 def check_exercises(errors: list[str], root: Path) -> None:
     base = root / "lectures"
     if not base.is_dir():
@@ -318,6 +409,7 @@ def check_exercises(errors: list[str], root: Path) -> None:
             if not (exercise / required_file).is_file():
                 errors.append(f"{rel}: missing {required_file}")
         check_starter_divergence(exercise, rel, errors)
+        check_task_hints(exercise, rel, errors)
         for stage in ("starter", "solution"):
             for stack in ("python", "typescript"):
                 if not (exercise / stage / stack).is_dir():

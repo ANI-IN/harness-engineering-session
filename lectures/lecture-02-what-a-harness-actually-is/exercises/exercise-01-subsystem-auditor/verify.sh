@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 REPO_ROOT="$(cd ../../../.. && pwd)"
 RUNNER="$REPO_ROOT/tools/conformance/runner.py"
 NAME="exercise-01-subsystem-auditor"
-TASK_HINT="implement the tools, environment, and state audits"
+TASK_HINT="fix the naive tools and feedback audits (audit_tools, audit_feedback)"
 
 STACK="both"
 TARGET="starter"

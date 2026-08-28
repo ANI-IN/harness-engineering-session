@@ -104,7 +104,7 @@ export function paragraphsOf(text: string): string[] {
 // Metadata extraction, the v3 upgrade to import and seeding.
 export function extractMetadata(text: string): DocumentMetadata {
   return {
-    chars: text.length,
+    chars: [...text].length,
     words: text.split(/\s+/).filter((word) => word.length > 0).length,
     paragraphs: paragraphsOf(text).length,
   };
@@ -171,7 +171,7 @@ export function chunkText(text: string): Chunk[] {
   const chunks: string[] = [];
   let buffer = "";
   for (const paragraph of paragraphsOf(text)) {
-    if (buffer && buffer.length + 2 + paragraph.length > CHUNK_SIZE) {
+    if (buffer && [...buffer].length + 2 + [...paragraph].length > CHUNK_SIZE) {
       chunks.push(buffer);
       buffer = paragraph;
     } else {
@@ -183,7 +183,7 @@ export function chunkText(text: string): Chunk[] {
   }
   return chunks.map((chunk, position) => ({
     index: position,
-    chars: chunk.length,
+    chars: [...chunk].length,
     words: chunk.split(/\s+/).filter((word) => word.length > 0).length,
     text: chunk,
   }));

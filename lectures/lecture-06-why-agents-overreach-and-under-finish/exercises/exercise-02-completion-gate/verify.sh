@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 REPO_ROOT="$(cd ../../../.. && pwd)"
 RUNNER="$REPO_ROOT/tools/conformance/runner.py"
 NAME="exercise-02-completion-gate"
-TASK_HINT="fix the evidence rule (own verification command, passing run) behind every passing claim"
+TASK_HINT="refuse a passing claim whose feature declares no verification command"
 
 STACK="both"
 TARGET="starter"
