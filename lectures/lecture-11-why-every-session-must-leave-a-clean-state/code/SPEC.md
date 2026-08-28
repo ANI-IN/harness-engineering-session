@@ -16,7 +16,7 @@ main first  <workspace-dir> --exit=clean|dirty   # the first session and its che
 The workspace is read from disk once and edited in memory. Nothing under
 `<workspace-dir>` is written, so the committed fixture is unchanged by any
 number of runs and every command in the lecture README is idempotent. The
-in-memory map is the seam where a live harness would edit real files
+in-memory map is the plug point where a live harness would edit real files
 ([deterministic fake agent](../../../docs/glossary.md#core-model)).
 
 ## The workspace contract

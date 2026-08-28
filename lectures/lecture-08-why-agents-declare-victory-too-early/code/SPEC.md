@@ -26,7 +26,7 @@ the checks probe.
 `layer` is `static`, `tests`, or `system` (descriptive here; exercise 02
 makes it load-bearing). `cost` is the step price of executing the check.
 `kind` selects one of four executable probes, the deterministic stand-in
-for running a real command (the seam where a shell would sit in a live
+for running a real command (the plug point where a shell would sit in a live
 harness):
 
 | kind | fields | passes when | detail strings (pass / fail) |

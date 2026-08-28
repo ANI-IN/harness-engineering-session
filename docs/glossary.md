@@ -31,7 +31,7 @@ curriculum's runnable units, model calls are replaced by the
 **Deterministic fake agent**: a scripted stand-in for a model that replays
 recorded decisions or applies fixed rules, so demos and projects are
 reproducible, offline, and CI-safe. Every unit that uses one documents the
-seam where a real agent plugs in.
+plug point where a real agent plugs in.
 
 ## Harness artifacts
 
@@ -69,10 +69,6 @@ startup path works.
 
 **`evaluator-rubric.md`**: the scorecard a checker fills in about a maker's
 work, with per-category questions and an accept/revise/block verdict.
-
-**`quality-document.md`**: the long-horizon health snapshot of a codebase
-(grades per domain and layer, change history), as opposed to the rubric's
-per-session verdict.
 
 ## Working discipline
 
@@ -150,6 +146,24 @@ harness artifacts (router `AGENTS.md`, state files, docs). The committed
 `kb workspace-check` grades a workspace's readability. Workspace is the
 canonical term everywhere, including the harness artifact headers.
 
+**Seam**: the boundary between two adjacent components in an assembled
+path, where one component's output becomes the next one's input. A unit
+check exercises one component and therefore crosses no seam, which is the
+whole of its blind spot.
+
+**Plug point**: the place in a runnable unit where a real model, shell, or
+filesystem would sit and a deterministic stand-in sits instead, so the unit
+runs offline. Every unit that uses a deterministic fake agent names its plug
+point.
+
+**Check layer**: an ordered group of checks that runs as one stage, where a
+run stops at the first failing layer and reports the rest as not reached.
+Lectures 08 and 09 both use it: static, then tests, then system. Distinct
+from a component's **tier**.
+
+**Tier**: a component's architectural position (ui, service, io), which says
+where it sits in an application, not when it is checked.
+
 **Seeded defect**: a bug placed in a fixture on purpose, whose exact symptom
 and catching stage are declared in SPEC.md so both tracks fail identically.
 
@@ -165,3 +179,35 @@ independent checker verdict; only a checker pass advances or stops the loop.
 **Graph**: the generalization of loops for multi-role work: nodes (agents or
 deterministic steps), edges (including conditional routing and rollback
 edges), shared state, and routing rules made explicit.
+
+**Stopping condition**: the rule that decides whether a loop runs another
+round, and the signal it reads. A condition wired to the maker's own report
+stops when the maker says so; wired to the checker's verdict it stops when
+the work is verified. The signal, not the rule, is what decides the outcome.
+
+**Loop state**: the file a loop carries from round to round recording what
+has been attempted and what it produced. It is what makes a loop different
+from N independent retries: without it every round starts from the same
+place and repeats the same work.
+
+**Node**: one step in a graph, an agent or a deterministic function, that
+reads a declared view of the shared state and returns the state it produced.
+A node sees only the keys its declaration grants it, so it cannot depend on
+another node's work by accident.
+
+**Edge**: a declared transition from one node to the next. An unconditional
+edge always fires; a conditional edge fires when the router's key holds a
+particular value.
+
+**Shared state**: the single structure passed along a graph's edges, which
+every node reads a declared view of and writes back. It is the graph's only
+channel: nodes do not call each other.
+
+**Router**: the function that reads one declared key of the shared state and
+returns which edge to take next. Keying a router on a field written by the
+node it is judging is the defect a graph's structure cannot see, because the
+graph is complete and every count is satisfied.
+
+**Rollback edge**: the edge taken when a check fails, leading to a node that
+undoes what the run wrote rather than continuing forward. Without one a
+failed run stops mid-flight and leaves the work half applied.

@@ -46,7 +46,7 @@ After this lecture and its exercises you can:
   [choosing your track](../../docs/choosing-your-track.md)).
 - The glossary's loop vocabulary, `Loop` and `Maker-checker loop`, and its
   [maker/checker split](../../docs/glossary.md#working-discipline) entry
-  ([glossary](../../docs/glossary.md)).
+  ([glossary](../../docs/glossary.md#loop-and-graph-vocabulary)).
 
 ## The problem
 
@@ -84,7 +84,7 @@ stopping condition was attached to.
 ## Concepts
 
 - **A loop is a goal, a verification step, a stopping condition, and
-  externalized loop state** ([glossary](../../docs/glossary.md)). The demo
+  externalized loop state** ([glossary](../../docs/glossary.md#loop-and-graph-vocabulary)). The demo
   is that list made runnable: `goal.json`, the checker's turn,
   `--stop-on`, and `loop-state.json`. Nothing else in it is a loop
   primitive, and nothing on that list can be dropped.

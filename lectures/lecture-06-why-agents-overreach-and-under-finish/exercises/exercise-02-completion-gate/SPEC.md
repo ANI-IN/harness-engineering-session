@@ -10,7 +10,7 @@ claim without evidence. The WIP limit is 1
 ## CLI surface
 
 ```text
-main <feature-list.json>
+main <feature_list.json>
 ```
 
 The input has the library schema's shape: `features[]` with `id`,

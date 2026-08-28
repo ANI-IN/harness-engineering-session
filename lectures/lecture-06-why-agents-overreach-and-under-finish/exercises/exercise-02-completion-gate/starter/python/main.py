@@ -57,7 +57,7 @@ def gate(features: list[dict]) -> tuple[dict, int]:
 
 def main(argv: list[str]) -> int:
     if len(argv) != 2:
-        print("usage: main.py <feature-list.json>", file=sys.stderr)
+        print("usage: main.py <feature_list.json>", file=sys.stderr)
         return 2
     try:
         data = json.loads(Path(argv[1]).read_text(encoding="utf-8"))

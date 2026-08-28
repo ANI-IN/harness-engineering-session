@@ -1,10 +1,10 @@
 {
   "task": "add csv export to the desktop report tool",
-  "levels": ["unit", "e2e"],
+  "layers": ["unit", "e2e"],
   "components": [
     {
       "id": "selection-ui",
-      "layer": "ui",
+      "tier": "ui",
       "ops": [
         {"op": "set", "field": "report", "value": "quarterly"}
       ],
@@ -15,7 +15,7 @@
     },
     {
       "id": "path-builder",
-      "layer": "service",
+      "tier": "service",
       "ops": [
         {"op": "format", "field": "path", "template": "exports/{report}.csv"}
       ],
@@ -26,7 +26,7 @@
     },
     {
       "id": "file-writer",
-      "layer": "io",
+      "tier": "io",
       "ops": [
         {"op": "require-prefix", "field": "path", "prefix": "/"},
         {"op": "copy", "from": "path", "to": "written"}

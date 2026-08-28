@@ -19,7 +19,7 @@ leaves the machine.
 ## Determinism
 
 Retrieval and answer composition are pure functions of the document set
-and the question. The composer is the seam where a language model would
+and the question. The composer is the plug point where a language model would
 sit; replacing it must not change the citation contract (document, title,
 line, excerpt, score).
 

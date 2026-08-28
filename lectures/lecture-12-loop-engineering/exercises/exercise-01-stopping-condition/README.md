@@ -32,7 +32,7 @@ two criteria short, and by then the loop has already stopped.
   stopping condition ([../../code/SPEC.md](../../code/SPEC.md)).
 - The glossary's
   [maker/checker split](../../../../docs/glossary.md#working-discipline)
-  and its loop vocabulary ([glossary](../../../../docs/glossary.md)).
+  and its loop vocabulary ([glossary](../../../../docs/glossary.md#loop-and-graph-vocabulary)).
 
 ## Provided
 

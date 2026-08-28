@@ -1,9 +1,9 @@
 # SPEC: exercise-01 assembled-run
 
 The lecture demo ([../../code/SPEC.md](../../code/SPEC.md)) runs whichever
-levels a definition of done admits. This exercise builds the level the
+layers a definition of done admits. This exercise builds the layer the
 definition admits when it says `e2e`: the run that assembles the
-components and pushes one record through them. Both levels run every time
+components and pushes one record through them. Both layers run every time
 here, so the report puts the unit verdict and the end-to-end verdict side
 by side over the same application.
 
@@ -25,15 +25,15 @@ detail strings, and the last-writer rule are the demo's, unchanged.
   "workspace": "...",
   "unit": { "checks": [ { "id", "subject", "result", "detail" } ], "result": "pass" | "fail" },
   "e2e": { "checks": [ { "id", "subject", "result", "detail", "trace" } ], "result": "pass" | "fail" },
-  "verdict": { "failing_level": "unit" | "e2e" | null, "result": "done" | "blocked" }
+  "verdict": { "failing_layer": "unit" | "e2e" | null, "result": "done" | "blocked" }
 }
 ```
 
-The `unit` level runs one check per component, in declared order, each
-component alone on its own `unit_case.input`. The `e2e` level runs one
-check per declared pipeline, in declared order. A level's `result` is
-`pass` when all of its checks passed. `failing_level` names the first
-failing level, `unit` before `e2e`, and is `null` when neither failed.
+The `unit` layer runs one check per component, in declared order, each
+component alone on its own `unit_case.input`. The `e2e` layer runs one
+check per declared pipeline, in declared order. A layer's `result` is
+`pass` when all of its checks passed. `failing_layer` names the first
+failing layer, `unit` before `e2e`, and is `null` when neither failed.
 
 ## The assembled run
 
@@ -49,14 +49,14 @@ points at both sides of the seam rather than only the side that complained.
 
 | Code | Meaning |
 | --- | --- |
-| 0 | `done`: both levels passed |
-| 1 | `blocked`: a level failed |
+| 0 | `done`: both layers passed |
+| 1 | `blocked`: a layer failed |
 | 2 | usage error, or `<workspace-dir>` is not a directory or lacks `app.json`; stdout empty |
 
 ## Fixtures
 
 Three workspaces, all describing the same three-component export feature
-and all with a unit level that passes completely:
+and all with a unit layer that passes completely:
 
 - `workspaces/workspace-seam-gap` (the trap): `path-builder` emits the
   relative path `exports/quarterly.csv` and `file-writer` accepts only
@@ -69,7 +69,7 @@ and all with a unit level that passes completely:
   cases pass; the assembled run stops at `path-builder`, and no component
   in the flow ever wrote `report`.
 - `workspaces/workspace-seam-closed`: the same feature with the path
-  formats agreed. Both levels pass and the run completes with
+  formats agreed. Both layers pass and the run completes with
   `written=/srv/reports/exports/quarterly.csv`.
 
 The seam-closed workspace is also the control for the starter's mistake.
@@ -84,9 +84,9 @@ seam actually disagrees.
 The starter's `run_pipeline` walks the pipeline's stages in declared order
 but hands each stage that component's own `unit_case.input` instead of the
 record the previous stage produced. Every stage therefore starts from a
-prepared input, no record ever crosses a seam, and the end-to-end level
+prepared input, no record ever crosses a seam, and the end-to-end layer
 reports whatever the last component did to its own fixture. It is an
-ordered batch of unit runs wearing the end-to-end level's name.
+ordered batch of unit runs wearing the end-to-end layer's name.
 
 Verification fails first on the `seam-gap-blocked` case, at:
 

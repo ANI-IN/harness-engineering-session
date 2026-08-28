@@ -106,6 +106,16 @@ def check_relative(files: list[Path], root: Path = REPO_ROOT) -> list[str]:
                     and anchor not in anchors_in(anchor_target)
                 ):
                     errors.append(f"{_rel(md, root)}: missing anchor {target}")
+            elif resolved.name == "glossary.md":
+                # A glossary link without an anchor asserts nothing a gate can
+                # check. Lecture 13 promised entries for graph, node, edge,
+                # shared state and rollback edge when only one existed, and
+                # this check passed it because the file resolved. An anchor
+                # names the section, and the anchor is verified above.
+                errors.append(
+                    f"{_rel(md, root)}: glossary link without an anchor ({target}); "
+                    f"link the section you mean, so the claim is checked"
+                )
     return errors
 
 

@@ -453,7 +453,7 @@ left nothing behind; no figure in this lecture was typed by hand.
   feature-list and first-parked order in both tracks, because the
   normalizer canonicalizes keys and never sorts arrays; the SPEC carries
   that ordering obligation so the tracks cannot drift on it. The session
-  script is the seam where a real model sits; the deterministic fake
+  script is the plug point where a real model sits; the deterministic fake
   agent ([glossary](../../docs/glossary.md#core-model)) replays it so the
   demo is offline and reproducible.
 

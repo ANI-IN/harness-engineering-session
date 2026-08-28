@@ -1,7 +1,7 @@
 """assembled-run exercise, Python starter.
 
-The report runs end to end and has the full shape: the unit level is
-complete and correct, the end-to-end level walks the pipeline's stages in
+The report runs end to end and has the full shape: the unit layer is
+complete and correct, the end-to-end layer walks the pipeline's stages in
 order, and the verdict is derived from both. One naive decision remains
 (see SPEC.md "Starter state"): the end-to-end runner starts each stage
 from that component's own unit case input instead of threading the record
@@ -139,18 +139,18 @@ def report(app: dict, name: str) -> dict:
                 "trace": trace,
             }
         )
-    levels = [("unit", unit_rows), ("e2e", e2e_rows)]
+    layers = [("unit", unit_rows), ("e2e", e2e_rows)]
     results = {
-        level: ("pass" if all(row["result"] == "pass" for row in rows) else "fail")
-        for level, rows in levels
+        layer: ("pass" if all(row["result"] == "pass" for row in rows) else "fail")
+        for layer, rows in layers
     }
-    failing = next((level for level, _ in levels if results[level] == "fail"), None)
+    failing = next((layer for layer, _ in layers if results[layer] == "fail"), None)
     return {
         "workspace": name,
         "unit": {"checks": unit_rows, "result": results["unit"]},
         "e2e": {"checks": e2e_rows, "result": results["e2e"]},
         "verdict": {
-            "failing_level": failing,
+            "failing_layer": failing,
             "result": "done" if failing is None else "blocked",
         },
     }

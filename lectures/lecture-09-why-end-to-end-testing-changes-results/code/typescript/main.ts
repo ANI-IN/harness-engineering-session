@@ -3,8 +3,8 @@
 // `session` replays a deterministic scripted session over an application
 // described by `app.json` (components with declared ops and a declared
 // unit case, plus the pipelines that wire them together). The session runs
-// every check level its definition-of-done file admits, stops at the first
-// failing level, and declares done or blocked. Nothing else varies: the
+// every check layer its definition-of-done file admits, stops at the first
+// failing layer, and declares done or blocked. Nothing else varies: the
 // workspace, the components, and the session are fixed, so the only input
 // that changes between two runs is which KINDS of check the definition
 // admits.
@@ -15,7 +15,7 @@
 // component reaches the next component that will not accept it, and the
 // session is blocked, exit 1. `coverage` prints the supporting counts:
 // which seams the two kinds of check exercise. SPEC.md pins the op
-// vocabulary, the level semantics, and the seeded contract mismatch.
+// vocabulary, the layer semantics, and the seeded contract mismatch.
 
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -40,7 +40,7 @@ interface Op {
 
 interface Component {
   id: string;
-  layer: string;
+  tier: string;
   ops: Op[];
   unit_case: { input: Record_; expects: Record_ };
 }
@@ -54,7 +54,7 @@ interface Pipeline {
 
 interface App {
   task: string;
-  levels: string[];
+  layers: string[];
   components: Component[];
   pipelines: Pipeline[];
 }
@@ -62,7 +62,7 @@ interface App {
 interface Definition {
   id: string;
   summary: string;
-  levels: string[];
+  layers: string[];
   e2e_runs: string[];
 }
 
@@ -164,7 +164,7 @@ function sameRecord(left: Record_, right: Record_): boolean {
   return leftKeys.every((key, index) => key === rightKeys[index] && left[key] === right[key]);
 }
 
-// One unit-level check: the component against its own declared case. The
+// One unit-layer check: the component against its own declared case. The
 // component is run in isolation, on the input its own unit case supplies.
 // No other component is involved, which is exactly why a passing unit
 // check says nothing about the assembled path.
@@ -229,11 +229,11 @@ function runPipeline(
   ];
 }
 
-// The checks one level admits. `unit` runs every component alone; `e2e`
+// The checks one layer admits. `unit` runs every component alone; `e2e`
 // runs every pipeline the definition names, which is why a definition may
-// list the level and still run nothing.
-function levelChecks(app: App, definition: Definition, level: string): CheckRow[] {
-  if (level === "unit") {
+// list the layer and still run nothing.
+function layerChecks(app: App, definition: Definition, layer: string): CheckRow[] {
+  if (layer === "unit") {
     return app.components.map((component) => {
       const [passed, detail] = unitCheck(component);
       return {
@@ -244,7 +244,7 @@ function levelChecks(app: App, definition: Definition, level: string): CheckRow[
       };
     });
   }
-  if (level === "e2e") {
+  if (layer === "e2e") {
     const byId = new Map(app.pipelines.map((pipeline) => [pipeline.id, pipeline]));
     return definition.e2e_runs.map((runId) => {
       const [passed, detail, trace] = runPipeline(app, byId.get(runId) as Pipeline);
@@ -257,51 +257,51 @@ function levelChecks(app: App, definition: Definition, level: string): CheckRow[
       };
     });
   }
-  throw new Error(`unknown level: ${level}`);
+  throw new Error(`unknown layer: ${layer}`);
 }
 
 // The scripted session (SPEC.md, "The session"). The implementation events
-// are fixed; the definition of done decides which levels run.
+// are fixed; the definition of done decides which layers run.
 export function session(app: App, definition: Definition, name: string) {
   const events = app.components.map((component, index) => ({
     step: index + 1,
-    action: `write the ${component.layer} component ${component.id}`,
+    action: `write the ${component.tier} component ${component.id}`,
     outcome: "ops declared in app.json: " + component.ops.map((op) => op.op).join(", "),
   }));
 
-  const levels = [];
-  let failingLevel: string | null = null;
-  for (const level of definition.levels) {
-    const checks = levelChecks(app, definition, level);
+  const layers = [];
+  let failingLayer: string | null = null;
+  for (const layer of definition.layers) {
+    const checks = layerChecks(app, definition, layer);
     const result = checks.every((check) => check.result === "pass") ? "pass" : "fail";
-    levels.push({ level, checks, result });
+    layers.push({ layer, checks, result });
     if (result === "fail") {
-      failingLevel = level;
+      failingLayer = layer;
       break;
     }
   }
 
-  const admitted = definition.levels;
+  const admitted = definition.layers;
   return {
     workspace: name,
     task: app.task,
     definition_of_done: {
       id: definition.id,
-      levels: admitted,
+      layers: admitted,
       e2e_runs: definition.e2e_runs,
     },
     events,
-    levels,
+    layers,
     verdict: {
-      declared: failingLevel === null ? "done" : "blocked",
-      failing_level: failingLevel,
-      levels_not_admitted: app.levels.filter((kind) => !admitted.includes(kind)),
+      declared: failingLayer === null ? "done" : "blocked",
+      failing_layer: failingLayer,
+      layers_not_admitted: app.layers.filter((kind) => !admitted.includes(kind)),
     },
   };
 }
 
 // The component boundaries a stage sequence crosses. A single stage
-// crosses none, which is the whole of the unit level's blind spot.
+// crosses none, which is the whole of the unit layer's blind spot.
 function seams(stages: string[]): string[] {
   return stages.slice(0, -1).map((left, index) => `${left} -> ${stages[index + 1]}`);
 }
@@ -315,7 +315,7 @@ function seams(stages: string[]): string[] {
  * produced reached the next stage, which includes the stage that rejected
  * it: that rejection is how the defect surfaces. A run that halts at its
  * first stage crosses nothing, and this must say so, because a lecture whose
- * whole point is that a named level running zero checks still passes cannot
+ * whole point is that a named layer running zero checks still passes cannot
  * itself report coverage it did not measure.
  */
 export function crossedSeams(app: App): string[] {

@@ -1,6 +1,6 @@
 """assembled-run exercise, Python solution.
 
-The end-to-end level runs the pipeline assembled: one record enters at the
+The end-to-end layer runs the pipeline assembled: one record enters at the
 first stage and every later stage receives what the previous stage
 produced. That threading is the whole difference between an end-to-end run
 and a batch of unit runs, and it is what lets a disagreement between two
@@ -130,18 +130,18 @@ def report(app: dict, name: str) -> dict:
                 "trace": trace,
             }
         )
-    levels = [("unit", unit_rows), ("e2e", e2e_rows)]
+    layers = [("unit", unit_rows), ("e2e", e2e_rows)]
     results = {
-        level: ("pass" if all(row["result"] == "pass" for row in rows) else "fail")
-        for level, rows in levels
+        layer: ("pass" if all(row["result"] == "pass" for row in rows) else "fail")
+        for layer, rows in layers
     }
-    failing = next((level for level, _ in levels if results[level] == "fail"), None)
+    failing = next((layer for layer, _ in layers if results[layer] == "fail"), None)
     return {
         "workspace": name,
         "unit": {"checks": unit_rows, "result": results["unit"]},
         "e2e": {"checks": e2e_rows, "result": results["e2e"]},
         "verdict": {
-            "failing_level": failing,
+            "failing_layer": failing,
             "result": "done" if failing is None else "blocked",
         },
     }

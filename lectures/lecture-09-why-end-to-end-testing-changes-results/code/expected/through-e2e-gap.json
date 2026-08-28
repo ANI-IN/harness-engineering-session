@@ -3,7 +3,7 @@
   "task": "add csv export to the desktop report tool",
   "definition_of_done": {
     "id": "through-e2e",
-    "levels": [
+    "layers": [
       "unit",
       "e2e"
     ],
@@ -28,9 +28,9 @@
       "outcome": "ops declared in app.json: require-prefix, copy"
     }
   ],
-  "levels": [
+  "layers": [
     {
-      "level": "unit",
+      "layer": "unit",
       "checks": [
         {
           "id": "unit:selection-ui",
@@ -54,7 +54,7 @@
       "result": "pass"
     },
     {
-      "level": "e2e",
+      "layer": "e2e",
       "checks": [
         {
           "id": "e2e:assembled-export-flow",
@@ -82,7 +82,7 @@
   ],
   "verdict": {
     "declared": "blocked",
-    "failing_level": "e2e",
-    "levels_not_admitted": []
+    "failing_layer": "e2e",
+    "layers_not_admitted": []
   }
 }

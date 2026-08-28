@@ -49,7 +49,7 @@
     "result": "pass"
   },
   "verdict": {
-    "failing_level": null,
+    "failing_layer": null,
     "result": "done"
   }
 }

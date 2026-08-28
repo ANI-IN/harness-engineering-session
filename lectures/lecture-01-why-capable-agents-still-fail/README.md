@@ -23,7 +23,7 @@ After this lecture and its exercises you can:
 - A working toolchain: run `make setup` and `make doctor` from the repo root
   ([choosing your track](../../docs/choosing-your-track.md) covers both
   stacks; you only need yours).
-- The [glossary](../../docs/glossary.md) definitions of
+- The [glossary](../../docs/glossary.md#core-model) definitions of
   [harness](../../docs/glossary.md#core-model) and the five subsystems.
   This is the first lecture; nothing else is assumed.
 

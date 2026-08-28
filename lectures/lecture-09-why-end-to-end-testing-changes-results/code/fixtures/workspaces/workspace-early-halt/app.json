@@ -1,13 +1,13 @@
 {
   "task": "add csv export to the desktop report tool",
-  "levels": [
+  "layers": [
     "unit",
     "e2e"
   ],
   "components": [
     {
       "id": "selection-ui",
-      "layer": "ui",
+      "tier": "ui",
       "ops": [
         {
           "op": "require-prefix",
@@ -32,7 +32,7 @@
     },
     {
       "id": "path-builder",
-      "layer": "service",
+      "tier": "service",
       "ops": [
         {
           "op": "format",
@@ -52,7 +52,7 @@
     },
     {
       "id": "file-writer",
-      "layer": "io",
+      "tier": "io",
       "ops": [
         {
           "op": "require-prefix",

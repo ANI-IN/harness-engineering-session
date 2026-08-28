@@ -31,7 +31,7 @@ interface Op {
 
 interface Component {
   id: string;
-  layer: string;
+  tier: string;
   ops: Op[];
   unit_case: { input: Record_; expects: Record_ };
 }

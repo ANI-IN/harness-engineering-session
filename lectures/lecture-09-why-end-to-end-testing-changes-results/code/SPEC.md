@@ -21,7 +21,7 @@ harness rather than to the code being judged.
 ```json
 {
   "task": "...",
-  "levels": ["unit", "e2e"],
+  "layers": ["unit", "e2e"],
   "components": [ { "id", "layer", "ops": [...], "unit_case": { "input", "expects" } } ],
   "pipelines": [ { "id", "stages": ["..."], "start": {}, "expects": { "field", "value" } } ]
 }
@@ -30,7 +30,7 @@ harness rather than to the code being judged.
 A **record** is a flat map of string fields, rendered on one line as
 `key=value` pairs in sorted key order (`(empty)` when it has no fields). A
 **component** transforms a record by applying its `ops` in order; it is the
-deterministic stand-in for a real module, and the ops are the seam where a
+deterministic stand-in for a real module, and the ops are the plug point where a
 live harness would run the module itself. A **pipeline** is the assembled
 system: stage 1 receives `start`, and every later stage receives the record
 the previous stage produced.
@@ -70,38 +70,38 @@ seam.
 ## The definition of done (`<definition-file>`)
 
 ```json
-{ "id": "...", "summary": "...", "levels": ["unit", "e2e"], "e2e_runs": ["..."] }
+{ "id": "...", "summary": "...", "layers": ["unit", "e2e"], "e2e_runs": ["..."] }
 ```
 
-`levels` lists the kinds of check that count toward done, in the order they
-run. `e2e_runs` names the pipelines the `e2e` level executes. A level whose
+`layers` lists the kinds of check that count toward done, in the order they
+run. `e2e_runs` names the pipelines the `e2e` layer executes. A layer whose
 check list is empty passes with nothing executed: listing `e2e` while
-naming no pipeline is a green level that ran no assembled code. Three
+naming no pipeline is a green layer that ran no assembled code. Three
 definitions ship: `unit-only`, `through-e2e`, and `e2e-listed-empty`, the
-last of which admits the level and names no flow.
+last of which admits the layer and names no flow.
 
 ## The session
 
 The session records one implementation event per component
 (`{"step", "action", "outcome"}`, the outcome naming the ops that component
-declares), then runs the admitted levels in order and stops at the first
-failing level. Output:
+declares), then runs the admitted layers in order and stops at the first
+failing layer. Output:
 
 ```json
 {
   "workspace": "...",
   "task": "...",
-  "definition_of_done": { "id", "levels", "e2e_runs" },
+  "definition_of_done": { "id", "layers", "e2e_runs" },
   "events": [ { "step", "action", "outcome" } ],
-  "levels": [ { "level", "checks": [ { "id", "subject", "result", "detail" } ], "result" } ],
-  "verdict": { "declared", "failing_level", "levels_not_admitted" }
+  "layers": [ { "layer", "checks": [ { "id", "subject", "result", "detail" } ], "result" } ],
+  "verdict": { "declared", "failing_layer", "layers_not_admitted" }
 }
 ```
 
-A level's `result` is `pass` when every one of its checks passed.
-`declared` is `done` when no level failed and `blocked` otherwise;
-`failing_level` names the first failing level or is `null`;
-`levels_not_admitted` lists the kinds `app.json` declares that this
+A layer's `result` is `pass` when every one of its checks passed.
+`declared` is `done` when no layer failed and `blocked` otherwise;
+`failing_layer` names the first failing layer or is `null`;
+`layers_not_admitted` lists the kinds `app.json` declares that this
 definition left out.
 
 ## The coverage surface
@@ -125,7 +125,7 @@ and the surface reports `seams: 2` against
 
 An implementation that assigns the declared adjacency list to both fields
 reports 2 and 2 there, and passes every other case in this unit. A lecture
-whose claim is that a level can be named and run nothing cannot itself
+whose claim is that a layer can be named and run nothing cannot itself
 report coverage it never measured.
 
 ## Exit codes
@@ -133,7 +133,7 @@ report coverage it never measured.
 | Code | Meaning |
 | --- | --- |
 | 0 | `session`: the session declared done under this definition. `coverage`: counts printed |
-| 1 | `session`: a level failed, so the session is blocked |
+| 1 | `session`: a layer failed, so the session is blocked |
 | 2 | usage error, `<workspace-dir>` not a directory or lacking `app.json`, or `<definition-file>` missing; stdout empty |
 
 ## Fixtures and the seeded defect
@@ -149,7 +149,7 @@ contract mismatch rather than a missing artifact:
 
 | Seeded defect | Symptom | Caught by |
 | --- | --- | --- |
-| `path-builder` emits `exports/{report}.csv`, a relative path, while `file-writer` accepts only paths starting with `/` | `the assembled run stopped at file-writer: path=exports/quarterly.csv does not start with /; path was last written by path-builder`, exit 1 | the `e2e` level only |
+| `path-builder` emits `exports/{report}.csv`, a relative path, while `file-writer` accepts only paths starting with `/` | `the assembled run stopped at file-writer: path=exports/quarterly.csv does not start with /; path was last written by path-builder`, exit 1 | the `e2e` layer only |
 
 Neither component is wrong on its own terms. `path-builder`'s unit case
 declares the relative path it produces and the check passes;
@@ -166,6 +166,6 @@ matching unit case. Its `e2e` check then completes with
 The `unit-only-declares-done` case (exit 0) and the
 `through-e2e-blocks-the-same-work` case (exit 1) pin the pair over the same
 workspace; `through-e2e-clears-the-closed-seam` (exit 0) pins the
-end-to-end level over finished work;
-`e2e-listed-but-empty-declares-done` (exit 0) pins the vacuous level, which
+end-to-end layer over finished work;
+`e2e-listed-but-empty-declares-done` (exit 0) pins the vacuous layer, which
 ships the same defect as `unit-only` while naming the right kind of check.

@@ -1,7 +1,7 @@
 // assembled-run exercise, TypeScript starter.
 //
-// The report runs end to end and has the full shape: the unit level is
-// complete and correct, the end-to-end level walks the pipeline's stages
+// The report runs end to end and has the full shape: the unit layer is
+// complete and correct, the end-to-end layer walks the pipeline's stages
 // in order, and the verdict is derived from both. One naive decision
 // remains (see SPEC.md "Starter state"): the end-to-end runner starts each
 // stage from that component's own unit case input instead of threading the
@@ -30,7 +30,7 @@ interface Op {
 
 interface Component {
   id: string;
-  layer: string;
+  tier: string;
   ops: Op[];
   unit_case: { input: Record_; expects: Record_ };
 }
@@ -218,7 +218,7 @@ export function report(app: App, name: string) {
     unit: { checks: unitRows, result: unitResult },
     e2e: { checks: e2eRows, result: e2eResult },
     verdict: {
-      failing_level: failing,
+      failing_layer: failing,
       result: failing === null ? "done" : "blocked",
     },
   };

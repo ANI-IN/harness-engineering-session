@@ -49,7 +49,7 @@
     "result": "fail"
   },
   "verdict": {
-    "failing_level": "e2e",
+    "failing_layer": "e2e",
     "result": "blocked"
   }
 }

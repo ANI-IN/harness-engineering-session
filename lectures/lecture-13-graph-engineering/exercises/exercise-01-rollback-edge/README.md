@@ -32,7 +32,7 @@ the run stops the rollback there rather than deleting through it.
 - The lecture's [Demo](../../README.md#demo), whose `undo` node performs
   exactly this replay, and the demo contract's journal and node table
   ([../../code/SPEC.md](../../code/SPEC.md)).
-- The glossary's [graph](../../../../docs/glossary.md) entry, for the
+- The glossary's [graph](../../../../docs/glossary.md#loop-and-graph-vocabulary) entry, for the
   vocabulary of nodes, edges, shared state, and rollback edges.
 
 ## Provided

@@ -16,7 +16,7 @@ main structure <graph-file>              # count the graph's parts; supporting e
 The workspace is read from disk once and edited in memory. Nothing under
 `<workspace-dir>` is written, so the committed fixtures are unchanged by
 any number of runs and every command in the lecture README is idempotent.
-The in-memory file map is the seam where a live harness would edit real
+The in-memory file map is the plug point where a live harness would edit real
 files ([deterministic fake agent](../../../docs/glossary.md#core-model)).
 
 ## The graph file

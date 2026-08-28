@@ -10,7 +10,7 @@ so a session-end gate can consume it.
 ## CLI surface
 
 ```text
-main <feature-list.json> <changes.json>
+main <feature_list.json> <changes.json>
 ```
 
 The feature list has the library schema's shape (`features[]` with `id`

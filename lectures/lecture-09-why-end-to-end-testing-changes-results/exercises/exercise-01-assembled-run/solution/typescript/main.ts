@@ -1,6 +1,6 @@
 // assembled-run exercise, TypeScript solution.
 //
-// The end-to-end level runs the pipeline assembled: one record enters at
+// The end-to-end layer runs the pipeline assembled: one record enters at
 // the first stage and every later stage receives what the previous stage
 // produced. That threading is the whole difference between an end-to-end
 // run and a batch of unit runs, and it is what lets a disagreement between
@@ -28,7 +28,7 @@ interface Op {
 
 interface Component {
   id: string;
-  layer: string;
+  tier: string;
   ops: Op[];
   unit_case: { input: Record_; expects: Record_ };
 }
@@ -211,7 +211,7 @@ export function report(app: App, name: string) {
     unit: { checks: unitRows, result: unitResult },
     e2e: { checks: e2eRows, result: e2eResult },
     verdict: {
-      failing_level: failing,
+      failing_layer: failing,
       result: failing === null ? "done" : "blocked",
     },
   };

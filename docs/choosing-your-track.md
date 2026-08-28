@@ -14,7 +14,6 @@ first lessons of the course. Written once, used by both tracks:
 - all prose: lectures, exercise briefs, project docs, diagrams;
 - all harness templates: `AGENTS.md`, `CLAUDE.md`, `feature_list.json` (and
   its schema), `init.sh`, `claude-progress.md`, `session-handoff.md`,
-  `clean-state-checklist.md`, `evaluator-rubric.md`, `quality-document.md`;
 - all test inputs (`fixtures/`) and expected outputs (`expected/`): the same
   files grade both tracks;
 - every `verify.sh`.

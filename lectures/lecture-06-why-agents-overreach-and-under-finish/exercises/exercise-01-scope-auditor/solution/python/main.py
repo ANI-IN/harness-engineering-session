@@ -52,7 +52,7 @@ def audit(feature_list: dict, changes: list[dict]) -> tuple[dict, int]:
 
 def main(argv: list[str]) -> int:
     if len(argv) != 3:
-        print("usage: main.py <feature-list.json> <changes.json>", file=sys.stderr)
+        print("usage: main.py <feature_list.json> <changes.json>", file=sys.stderr)
         return 2
     try:
         feature_list = json.loads(Path(argv[1]).read_text(encoding="utf-8"))

@@ -1,6 +1,6 @@
 {
   "id": "e2e-listed-empty",
-  "summary": "unit checks, and an end-to-end level that names no flow",
-  "levels": ["unit", "e2e"],
+  "summary": "unit checks, and an end-to-end layer that names no flow",
+  "layers": ["unit", "e2e"],
   "e2e_runs": []
 }

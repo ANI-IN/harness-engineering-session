@@ -2,7 +2,7 @@
 
 ## Objective
 
-Fix an end-to-end level that runs the right components in the right order
+Fix an end-to-end layer that runs the right components in the right order
 without ever wiring them together, so that one record is threaded through
 the pipeline and the report matches all three shared expected outputs.
 
@@ -25,7 +25,7 @@ finished export for an application that cannot export.
 - `make setup` completed; your track green in `make doctor`
   ([choosing your track](../../../../docs/choosing-your-track.md)).
 - The lecture's [Demo](../../README.md#demo) and the demo contract's op
-  vocabulary and level semantics ([../../code/SPEC.md](../../code/SPEC.md)).
+  vocabulary and layer semantics ([../../code/SPEC.md](../../code/SPEC.md)).
 - The glossary's
   [seeded defect](../../../../docs/glossary.md#verification-machinery-this-repositorys-own)
   entry: a fixture broken on purpose, with its symptom and catching stage
@@ -46,7 +46,7 @@ finished export for an application that cannot export.
   what the previous stage produces (shared).
 - [`expected/`](./expected/): the three grading reports (shared; never
   edit them).
-- `starter/{python,typescript}/main.py|ts`: the op engine, the unit level,
+- `starter/{python,typescript}/main.py|ts`: the op engine, the unit layer,
   the trace, and the verdict are complete; the end-to-end runner restarts
   at every stage.
 - `solution/{python,typescript}/`: complete implementations.
@@ -58,7 +58,7 @@ Work only in your track's starter file.
 1. In `run_pipeline` (`runPipeline` in TypeScript), give the first stage a
    copy of the pipeline's `start` record and give every later stage the
    record the previous stage produced.
-2. Leave the components' `unit_case` inputs to the unit level, where they
+2. Leave the components' `unit_case` inputs to the unit layer, where they
    belong. The assembled run reads only `start`, `stages`, and `expects`.
 3. Re-run verification until it exits 0.
 

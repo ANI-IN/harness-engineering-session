@@ -66,7 +66,7 @@ function main(argv: readonly string[]): number {
   const featureListPath = argv[2];
   const changesPath = argv[3];
   if (!featureListPath || !changesPath || argv.length !== 4) {
-    console.error("usage: main.ts <feature-list.json> <changes.json>");
+    console.error("usage: main.ts <feature_list.json> <changes.json>");
     return 2;
   }
   let featureList: { features: Feature[] };

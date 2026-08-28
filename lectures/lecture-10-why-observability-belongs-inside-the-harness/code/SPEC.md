@@ -53,7 +53,7 @@ A missing file fails with `<path> missing`; a missing key fails with
 Both sessions apply their writes to an in-memory copy of the workspace,
 loaded file by file on first touch. Nothing on disk is modified, so the
 fixtures stay pristine and the two conditions are re-runnable in any
-order. That overlay is the seam where a real harness writes to the
+order. That overlay is the plug point where a real harness writes to the
 filesystem.
 
 ## The build session (the first session, pinned)

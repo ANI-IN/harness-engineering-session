@@ -74,7 +74,7 @@ flowchart LR
 Reading the graph:
 
 - The **top row** is the lecture sequence; each lecture assumes the previous
-  ones. Every lecture directory also contains 2 exercises that verify its
+  ones. Every lecture directory also contains exercises that verify its
   learning objectives; they sit between the lecture and its project in the
   learning flow (lecture → exercises → project).
 - A **solid arrow into a project** means the project is the hands-on

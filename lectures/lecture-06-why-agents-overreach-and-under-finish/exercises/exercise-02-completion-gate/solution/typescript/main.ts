@@ -79,7 +79,7 @@ export function gate(features: Feature[]): [object, number] {
 function main(argv: readonly string[]): number {
   const path = argv[2];
   if (!path || argv.length !== 3) {
-    console.error("usage: main.ts <feature-list.json>");
+    console.error("usage: main.ts <feature_list.json>");
     return 2;
   }
   let data: { features: Feature[] };

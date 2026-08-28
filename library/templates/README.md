@@ -15,7 +15,6 @@ content with your project's, keep the structure.
 | [`session-handoff.md`](./session-handoff.md) | Compact end-of-session note | Weak handoffs; the next session repeats work |
 | [`clean-state-checklist.md`](./clean-state-checklist.md) | Session exit gate | Sessions that end "green" but leave debris |
 | [`evaluator-rubric.md`](./evaluator-rubric.md) | Checker's scorecard over a maker's work | Self-approval bias |
-| [`quality-document.md`](./quality-document.md) | Long-horizon codebase health snapshot | No signal whether weeks of agent work help or hurt |
 
 Motivating lectures (linked as they exist in this release): AGENTS.md is
 motivated by [Lecture 02](../../lectures/lecture-02-what-a-harness-actually-is/) and [Lecture 04](../../lectures/lecture-04-why-one-giant-instruction-file-fails/); CLAUDE.md by [Lecture 04](../../lectures/lecture-04-why-one-giant-instruction-file-fails/);

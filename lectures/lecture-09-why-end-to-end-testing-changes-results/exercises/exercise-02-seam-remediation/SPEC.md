@@ -67,7 +67,7 @@ producer is the component that last wrote the field, or the last stage.
 ## Fixtures
 
 Four workspaces over the same three-component export feature, each with a
-unit level that passes completely:
+unit layer that passes completely:
 
 - `workspaces/workspace-seam-gap`: `path-builder` emits a relative path and
   `file-writer` accepts only absolute ones (a `prefix` failure).

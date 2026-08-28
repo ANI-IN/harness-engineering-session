@@ -1,6 +1,6 @@
 {
   "id": "through-e2e",
   "summary": "component unit checks, then the assembled end-to-end run",
-  "levels": ["unit", "e2e"],
+  "layers": ["unit", "e2e"],
   "e2e_runs": ["assembled-export-flow"]
 }

@@ -64,7 +64,7 @@ docs/conventions.md, semantic rules).
 ```
 
 The loop state is the loop's memory
-([glossary](../../../docs/glossary.md)): what each round attempted and what
+([glossary](../../../docs/glossary.md#loop-and-graph-vocabulary)): what each round attempted and what
 the two roles reported. Each round appends
 `{"round", "criterion", "maker_reported", "checker_verdict"}`, where
 `criterion` is `null` for a round in which the maker took no step. The

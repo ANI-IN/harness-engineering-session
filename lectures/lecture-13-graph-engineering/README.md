@@ -36,8 +36,8 @@ After this lecture and its exercise you can:
   asked.
 - A working toolchain (`make setup`, `make doctor`;
   [choosing your track](../../docs/choosing-your-track.md)).
-- The [glossary](../../docs/glossary.md) entries for graph, node, edge,
-  shared state, and rollback edge.
+- The glossary's [loop and graph vocabulary](../../docs/glossary.md#loop-and-graph-vocabulary):
+  graph, node, edge, shared state, router, and rollback edge.
 
 ## The problem
 

@@ -26,7 +26,7 @@ entry point. It is a router; depth lives in the linked docs.
   implementations, never by forking `expected/` per language.
 - **Four runs per exercise**: starter fails for the intended reason and
   solution passes, in both tracks, every time an exercise changes.
-- Terminology comes from [docs/glossary.md](docs/glossary.md): one term per
+- Terminology comes from [docs/glossary.md](docs/glossary.md#core-model): one term per
   concept.
 - No invented numbers; claims are demonstrated, cited, or labeled heuristics.
 - No network after setup; no API keys; deterministic fake agents where a

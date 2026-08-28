@@ -3,8 +3,8 @@
 `session` replays a deterministic scripted session over an application
 described by `app.json` (components with declared ops and a declared unit
 case, plus the pipelines that wire them together). The session runs every
-check level its definition-of-done file admits, stops at the first failing
-level, and declares done or blocked. Nothing else varies: the workspace,
+check layer its definition-of-done file admits, stops at the first failing
+layer, and declares done or blocked. Nothing else varies: the workspace,
 the components, and the session are fixed, so the only input that changes
 between two runs is which KINDS of check the definition admits.
 
@@ -13,7 +13,7 @@ declares done, exit 0. Under `through-e2e` the same session additionally
 runs the assembled pipeline, the record built by one component reaches the
 next component that will not accept it, and the session is blocked, exit
 1. `coverage` prints the supporting counts: which seams the two kinds of
-check exercise. SPEC.md pins the op vocabulary, the level semantics, and
+check exercise. SPEC.md pins the op vocabulary, the layer semantics, and
 the seeded contract mismatch.
 """
 
@@ -83,7 +83,7 @@ def run_component(
 
 
 def unit_check(component: dict) -> tuple[bool, str]:
-    """One unit-level check: the component against its own declared case.
+    """One unit-layer check: the component against its own declared case.
 
     The component is run in isolation, on the input its own unit case
     supplies. No other component is involved, which is exactly why a
@@ -135,11 +135,11 @@ def run_pipeline(app: dict, pipeline: dict) -> tuple[bool, str, list[dict]]:
     ), trace
 
 
-def level_checks(app: dict, definition: dict, level: str) -> list[dict]:
-    """The checks one level admits. `unit` runs every component alone;
+def layer_checks(app: dict, definition: dict, layer: str) -> list[dict]:
+    """The checks one layer admits. `unit` runs every component alone;
     `e2e` runs every pipeline the definition names, which is why a
-    definition may list the level and still run nothing."""
-    if level == "unit":
+    definition may list the layer and still run nothing."""
+    if layer == "unit":
         rows = []
         for component in app["components"]:
             passed, detail = unit_check(component)
@@ -152,7 +152,7 @@ def level_checks(app: dict, definition: dict, level: str) -> list[dict]:
                 }
             )
         return rows
-    if level == "e2e":
+    if layer == "e2e":
         by_id = {pipeline["id"]: pipeline for pipeline in app["pipelines"]}
         rows = []
         for run_id in definition["e2e_runs"]:
@@ -167,54 +167,54 @@ def level_checks(app: dict, definition: dict, level: str) -> list[dict]:
                 }
             )
         return rows
-    raise ValueError(f"unknown level: {level}")
+    raise ValueError(f"unknown layer: {layer}")
 
 
 def session(app: dict, definition: dict, name: str) -> dict:
     """The scripted session (SPEC.md, "The session"). The implementation
-    events are fixed; the definition of done decides which levels run."""
+    events are fixed; the definition of done decides which layers run."""
     events = [
         {
             "step": index,
-            "action": f"write the {component['layer']} component {component['id']}",
+            "action": f"write the {component["tier"]} component {component['id']}",
             "outcome": "ops declared in app.json: "
             + ", ".join(op["op"] for op in component["ops"]),
         }
         for index, component in enumerate(app["components"], start=1)
     ]
 
-    levels = []
-    failing_level = None
-    for level in definition["levels"]:
-        checks = level_checks(app, definition, level)
+    layers = []
+    failing_layer = None
+    for layer in definition["layers"]:
+        checks = layer_checks(app, definition, layer)
         result = "pass" if all(check["result"] == "pass" for check in checks) else "fail"
-        levels.append({"level": level, "checks": checks, "result": result})
+        layers.append({"layer": layer, "checks": checks, "result": result})
         if result == "fail":
-            failing_level = level
+            failing_layer = layer
             break
 
-    admitted = definition["levels"]
+    admitted = definition["layers"]
     return {
         "workspace": name,
         "task": app["task"],
         "definition_of_done": {
             "id": definition["id"],
-            "levels": admitted,
+            "layers": admitted,
             "e2e_runs": definition["e2e_runs"],
         },
         "events": events,
-        "levels": levels,
+        "layers": layers,
         "verdict": {
-            "declared": "done" if failing_level is None else "blocked",
-            "failing_level": failing_level,
-            "levels_not_admitted": [kind for kind in app["levels"] if kind not in admitted],
+            "declared": "done" if failing_layer is None else "blocked",
+            "failing_layer": failing_layer,
+            "layers_not_admitted": [kind for kind in app["layers"] if kind not in admitted],
         },
     }
 
 
 def seams(stages: list[str]) -> list[str]:
     """The component boundaries a stage sequence crosses. A single stage
-    crosses none, which is the whole of the unit level's blind spot."""
+    crosses none, which is the whole of the unit layer's blind spot."""
     return [f"{left} -> {right}" for left, right in zip(stages, stages[1:], strict=False)]
 
 
@@ -225,7 +225,7 @@ def crossed_seams(app: dict) -> list[str]:
     stage produced reached the next stage, which includes the stage that
     rejected it: that rejection is how the defect surfaces. A run that halts
     at its first stage crosses nothing, and this must say so, because a
-    lecture whose whole point is that a named level running zero checks
+    lecture whose whole point is that a named layer running zero checks
     still passes cannot itself report coverage it did not measure.
     """
     crossed: list[str] = []

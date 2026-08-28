@@ -36,7 +36,6 @@ failure mode it exists for):
 | [`templates/session-handoff.md`](./templates/session-handoff.md) | New sessions spend their first minutes re-deriving what the last one did |
 | [`templates/clean-state-checklist.md`](./templates/clean-state-checklist.md) | Sessions end "green" but leave broken builds, stray files, or unrecorded state |
 | [`templates/evaluator-rubric.md`](./templates/evaluator-rubric.md) | The agent approves its own questionable work; you need a checker role |
-| [`templates/quality-document.md`](./templates/quality-document.md) | You can't tell whether the codebase is getting stronger or weaker across weeks |
 
 Signals that you have outgrown this pack entirely (many domains, several
 agents, long-running work) point to the advanced pack (fuller repository

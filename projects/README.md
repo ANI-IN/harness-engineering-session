@@ -9,7 +9,7 @@ tool (CLI + small local HTTP server) that imports documents, indexes them,
 and answers questions from them with citations. It uses only the standard
 library plus the test runner, stores everything in local JSON files, and
 replaces model calls with a deterministic fake agent, so every project runs
-offline, headless, and reproducibly. Each project's README documents the seam
+offline, headless, and reproducibly. Each project's README documents the plug point
 where a real agent plugs in.
 
 ## How a project works

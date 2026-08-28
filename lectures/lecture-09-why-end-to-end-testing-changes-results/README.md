@@ -13,7 +13,7 @@ unit check can reach.
 After this lecture and its exercises you can:
 
 - Show behaviorally, not by assertion, that a definition of done built
-  from component-level checks reports success on an application that
+  from component-layer checks reports success on an application that
   cannot perform its task.
 - Name the defect class end-to-end runs exist for: a contract mismatch
   between two components that are each individually correct.
@@ -93,10 +93,10 @@ exercise the running application rather than read the code.
   of check kinds that count is the harness author's decision, not the
   session's. Lecture 08 owned *that the list is re-executed*; this lecture
   is about *what the list contains*.
-- **Levels, cheapest first, stopping at the first failure**: the session
-  runs the admitted levels in order and prints nothing past a failing one.
-  A level with no checks passes with nothing executed, so a definition that
-  names `e2e` and lists no flow is a green level that ran no assembled
+- **Layers, cheapest first, stopping at the first failure**: the session
+  runs the admitted layers in order and prints nothing past a failing one.
+  A layer with no checks passes with nothing executed, so a definition that
+  names `e2e` and lists no flow is a green layer that ran no assembled
   code; the demo's third run is that definition.
 - **The assembled run threads one record**: stage 1 receives the flow's
   start record and every later stage receives what the previous stage
@@ -121,12 +121,12 @@ kinds:
 
 ```mermaid
 flowchart LR
-    subgraph UnitLevel["Unit level: three checks, three isolated runs"]
+    subgraph UnitLevel["Unit layer: three checks, three isolated runs"]
       UA["selection-ui fixture: (empty)"] --> UAr["report=quarterly: pass"]
       UB["path-builder fixture: report=quarterly"] --> UBr["path=exports/quarterly.csv: pass"]
       UC["file-writer fixture: path=/srv/.../quarterly.csv"] --> UCr["written=/srv/.../quarterly.csv: pass"]
     end
-    subgraph E2ELevel["E2E level: one record, three stages"]
+    subgraph E2ELevel["E2E layer: one record, three stages"]
       S["start: (empty)"] --> A["selection-ui"]
       A -->|"report=quarterly"| B["path-builder"]
       B -->|"path=exports/quarterly.csv"| C["file-writer"]
@@ -140,7 +140,7 @@ fixture it was given. The right column is one run, and the value that
 reaches `file-writer` is not the one its fixture supplies; it is the one
 `path-builder` actually produced. The arrow labels are the seam, and the
 seam is where the defect lives. The demo's [SPEC.md](./code/SPEC.md) pins
-the op vocabulary, the level semantics, and the seeded mismatch.
+the op vocabulary, the layer semantics, and the seeded mismatch.
 
 ## Demo
 
@@ -149,7 +149,7 @@ same three-component export feature, `workspace-seam-gap` (the contract
 mismatch) and `workspace-seam-closed` (agreed), plus three definitions of
 done the workspaces are judged against. `unit-only` admits the component
 checks; `through-e2e` admits those and the assembled flow;
-`e2e-listed-empty` admits the flow's level and names no flow. The session,
+`e2e-listed-empty` admits the flow's layer and names no flow. The session,
 the components, and the workspace never change between the first two runs;
 only the definition file does. Run them from the repo root; **the session's
 exit code is the result the definition produced**.
@@ -180,7 +180,7 @@ run is held identical by `make conformance`):
   "task": "add csv export to the desktop report tool",
   "definition_of_done": {
     "id": "unit-only",
-    "levels": [
+    "layers": [
       "unit"
     ],
     "e2e_runs": []
@@ -202,9 +202,9 @@ run is held identical by `make conformance`):
       "outcome": "ops declared in app.json: require-prefix, copy"
     }
   ],
-  "levels": [
+  "layers": [
     {
-      "level": "unit",
+      "layer": "unit",
       "checks": [
         {
           "id": "unit:selection-ui",
@@ -230,8 +230,8 @@ run is held identical by `make conformance`):
   ],
   "verdict": {
     "declared": "done",
-    "failing_level": null,
-    "levels_not_admitted": [
+    "failing_layer": null,
+    "layers_not_admitted": [
       "e2e"
     ]
   }
@@ -243,7 +243,7 @@ Interpretation: three components, three green rows, exit 0. Every detail
 string is a real comparison against a real declaration, and none of them
 is wrong. `path-builder` really does produce `path=exports/quarterly.csv`
 and that really is what its unit case declares. The only field in the
-whole report that hints at a problem is `levels_not_admitted`, which names
+whole report that hints at a problem is `layers_not_admitted`, which names
 the kind of check this definition left out. Nothing here is a lie, and
 the feature does not work.
 
@@ -272,7 +272,7 @@ pnpm exec tsx $L/code/typescript/main.ts session $L/code/fixtures/workspaces/wor
   "task": "add csv export to the desktop report tool",
   "definition_of_done": {
     "id": "through-e2e",
-    "levels": [
+    "layers": [
       "unit",
       "e2e"
     ],
@@ -297,9 +297,9 @@ pnpm exec tsx $L/code/typescript/main.ts session $L/code/fixtures/workspaces/wor
       "outcome": "ops declared in app.json: require-prefix, copy"
     }
   ],
-  "levels": [
+  "layers": [
     {
-      "level": "unit",
+      "layer": "unit",
       "checks": [
         {
           "id": "unit:selection-ui",
@@ -323,7 +323,7 @@ pnpm exec tsx $L/code/typescript/main.ts session $L/code/fixtures/workspaces/wor
       "result": "pass"
     },
     {
-      "level": "e2e",
+      "layer": "e2e",
       "checks": [
         {
           "id": "e2e:assembled-export-flow",
@@ -351,26 +351,26 @@ pnpm exec tsx $L/code/typescript/main.ts session $L/code/fixtures/workspaces/wor
   ],
   "verdict": {
     "declared": "blocked",
-    "failing_level": "e2e",
-    "levels_not_admitted": []
+    "failing_layer": "e2e",
+    "layers_not_admitted": []
   }
 }
 ```
 <!-- /generated-block -->
 
-Interpretation: the unit level is byte-for-byte the level from the first
-run, still three green rows. The `e2e` level runs the same three
+Interpretation: the unit layer is byte-for-byte the layer from the first
+run, still three green rows. The `e2e` layer runs the same three
 components in the same order over one record, and the trace shows the
 record changing hands: `selection-ui` produces `report=quarterly`,
 `path-builder` adds `path=exports/quarterly.csv`, and `file-writer`
 refuses it. The detail names both sides of the seam, the objecting stage
 and the component that wrote the offending field, so the next session
-knows where to go. `declared` is `blocked`, `failing_level` is `e2e`, and
+knows where to go. `declared` is `blocked`, `failing_layer` is `e2e`, and
 the exit code is 1. Nothing about the application changed between the two
 commands. What changed is which kinds of check the definition of done
 admits.
 
-### The same end-to-end level over an agreed seam
+### The same end-to-end layer over an agreed seam
 
 #### Python
 
@@ -386,19 +386,19 @@ L=lectures/lecture-09-why-end-to-end-testing-changes-results
 pnpm exec tsx $L/code/typescript/main.ts session $L/code/fixtures/workspaces/workspace-seam-closed $L/code/fixtures/definitions/through-e2e.json
 ```
 
-The verdict and the per-level outcomes, generated from the Python run by
+The verdict and the per-layer outcomes, generated from the Python run by
 `make verify` (the full report is pinned in
 [`code/expected/through-e2e-closed.json`](./code/expected/through-e2e-closed.json)):
 
-<!-- generated-block: uv run python lectures/lecture-09-why-end-to-end-testing-changes-results/code/python/main.py session lectures/lecture-09-why-end-to-end-testing-changes-results/code/fixtures/workspaces/workspace-seam-closed lectures/lecture-09-why-end-to-end-testing-changes-results/code/fixtures/definitions/through-e2e.json | uv run python -c "import json,sys; r=json.load(sys.stdin); print(json.dumps({'verdict': r['verdict'], 'levels': [[level['level'], level['result'], [check['id'] for check in level['checks']]] for level in r['levels']]}, indent=2))" -->
+<!-- generated-block: uv run python lectures/lecture-09-why-end-to-end-testing-changes-results/code/python/main.py session lectures/lecture-09-why-end-to-end-testing-changes-results/code/fixtures/workspaces/workspace-seam-closed lectures/lecture-09-why-end-to-end-testing-changes-results/code/fixtures/definitions/through-e2e.json | uv run python -c "import json,sys; r=json.load(sys.stdin); print(json.dumps({'verdict': r['verdict'], 'layers': [[layer['layer'], layer['result'], [check['id'] for check in layer['checks']]] for layer in r['layers']]}, indent=2))" -->
 ```json
 {
   "verdict": {
     "declared": "done",
-    "failing_level": null,
-    "levels_not_admitted": []
+    "failing_layer": null,
+    "layers_not_admitted": []
   },
-  "levels": [
+  "layers": [
     [
       "unit",
       "pass",
@@ -421,15 +421,15 @@ The verdict and the per-level outcomes, generated from the Python run by
 <!-- /generated-block -->
 
 Interpretation: `workspace-seam-closed` gives `path-builder` the template
-its neighbour accepts, and nothing else differs. The same end-to-end level
+its neighbour accepts, and nothing else differs. The same end-to-end layer
 that blocked the first workspace clears this one, which is what keeps the
-level honest: it is not a rule that always says no. Exit 0 here is the
+layer honest: it is not a rule that always says no. Exit 0 here is the
 first point in this lecture where "done" means the application performed
 its task.
 
-### The level that is named and runs nothing
+### The layer that is named and runs nothing
 
-A third definition, `e2e-listed-empty`, admits the `e2e` level and names no
+A third definition, `e2e-listed-empty`, admits the `e2e` layer and names no
 flow. It is what a checklist looks like after someone adds the right line
 and never wires it up.
 
@@ -447,22 +447,22 @@ L=lectures/lecture-09-why-end-to-end-testing-changes-results
 pnpm exec tsx $L/code/typescript/main.ts session $L/code/fixtures/workspaces/workspace-seam-gap $L/code/fixtures/definitions/e2e-listed-empty.json
 ```
 
-The definition, the per-level check counts, and the verdict, generated from
+The definition, the per-layer check counts, and the verdict, generated from
 the Python run by `make verify` (the full report is pinned in
 [`code/expected/e2e-listed-empty-gap.json`](./code/expected/e2e-listed-empty-gap.json)):
 
-<!-- generated-block: uv run python lectures/lecture-09-why-end-to-end-testing-changes-results/code/python/main.py session lectures/lecture-09-why-end-to-end-testing-changes-results/code/fixtures/workspaces/workspace-seam-gap lectures/lecture-09-why-end-to-end-testing-changes-results/code/fixtures/definitions/e2e-listed-empty.json | uv run python -c "import json,sys; r=json.load(sys.stdin); print(json.dumps({'definition_of_done': r['definition_of_done'], 'levels': [[level['level'], level['result'], len(level['checks'])] for level in r['levels']], 'verdict': r['verdict']}, indent=2))" -->
+<!-- generated-block: uv run python lectures/lecture-09-why-end-to-end-testing-changes-results/code/python/main.py session lectures/lecture-09-why-end-to-end-testing-changes-results/code/fixtures/workspaces/workspace-seam-gap lectures/lecture-09-why-end-to-end-testing-changes-results/code/fixtures/definitions/e2e-listed-empty.json | uv run python -c "import json,sys; r=json.load(sys.stdin); print(json.dumps({'definition_of_done': r['definition_of_done'], 'layers': [[layer['layer'], layer['result'], len(layer['checks'])] for layer in r['layers']], 'verdict': r['verdict']}, indent=2))" -->
 ```json
 {
   "definition_of_done": {
     "id": "e2e-listed-empty",
-    "levels": [
+    "layers": [
       "unit",
       "e2e"
     ],
     "e2e_runs": []
   },
-  "levels": [
+  "layers": [
     [
       "unit",
       "pass",
@@ -476,19 +476,19 @@ the Python run by `make verify` (the full report is pinned in
   ],
   "verdict": {
     "declared": "done",
-    "failing_level": null,
-    "levels_not_admitted": []
+    "failing_layer": null,
+    "layers_not_admitted": []
   }
 }
 ```
 <!-- /generated-block -->
 
-Interpretation: the `e2e` level passes on zero checks, `levels_not_admitted`
+Interpretation: the `e2e` layer passes on zero checks, `layers_not_admitted`
 is empty because nothing was left out, and the session declares done on the
 same broken workspace the second run blocked. Auditing the definition by the
 names it contains would call this one complete. The check count is the only
 field that separates it from the run that caught the defect, which is why a
-definition of done has to say what each level runs, not only that the level
+definition of done has to say what each layer runs, not only that the layer
 is required.
 
 ### Supporting evidence: what each kind of check touches
@@ -553,17 +553,17 @@ move the second.
 
 ## Implementation notes
 
-- **Write the definition of done as levels, and say what a level runs.**
-  The demo's definitions name both the levels that count and the flows the
-  `e2e` level executes, because a level that lists a name and runs nothing
-  passes vacuously. The project-level version of the same discipline reads
+- **Write the definition of done as layers, and say what a layer runs.**
+  The demo's definitions name both the layers that count and the flows the
+  `e2e` layer executes, because a layer that lists a name and runs nothing
+  passes vacuously. The project-layer version of the same discipline reads
   like:
 
   ```text
   ## Definition of done
-  - Level 1 static checks, level 2 component tests, level 3 the assembled run.
-  - A change touching more than one component is not done until level 3 passed.
-  - A level that ran zero checks did not pass; it did not run.
+  - Layer 1 static checks, layer 2 component tests, layer 3 the assembled run.
+  - A change touching more than one component is not done until layer 3 passed.
+  - A layer that ran zero checks did not pass; it did not run.
   ```
 
 - **Seed integration defects as contract mismatches, not missing files.**
@@ -578,7 +578,7 @@ move the second.
   deletes the check. Exercise 02 is that rule as code.
 - **The trace is the argument.** A verdict of `fail` proves the run
   failed; the per-stage trace proves the record crossed a seam and shows
-  where the value changed. When an end-to-end level cannot show its trace,
+  where the value changed. When an end-to-end layer cannot show its trace,
   it may be an ordered batch of component runs, which is exercise 01's
   starter and passes on the workspace where the fixtures happen to line
   up.
@@ -594,11 +594,11 @@ move the second.
   that report is correct.
 - Component boundary defects are invisible to component checks by
   construction, not by oversight: isolation is the design.
-- An end-to-end level is one record threaded through the assembled system.
+- An end-to-end layer is one record threaded through the assembled system.
   Running the same components in the same order on their own fixtures
   looks similar and proves nothing about the seams.
-- A level that lists a name and runs no flow is a green level that
-  executed nothing; say what each level runs, not only that it exists.
+- A layer that lists a name and runs no flow is a green layer that
+  executed nothing; say what each layer runs, not only that it exists.
 - Report the failure with the producer named, so the next session changes
   the component that emitted the bad value instead of relaxing the one
   that caught it.
@@ -607,7 +607,7 @@ move the second.
 
 | Exercise | You build | Difficulty | Time |
 | --- | --- | --- | --- |
-| [01: assembled-run](./exercises/exercise-01-assembled-run/) | The end-to-end level that threads one record through the wired components | Medium | ~30 min |
+| [01: assembled-run](./exercises/exercise-01-assembled-run/) | The end-to-end layer that threads one record through the wired components | Medium | ~30 min |
 | [02: seam-remediation](./exercises/exercise-02-seam-remediation/) | The fix instruction that names the producing side of the seam | Medium | ~25 min |
 
 Both are graded by shared expected output: `./verify.sh --stack=<yours>`
