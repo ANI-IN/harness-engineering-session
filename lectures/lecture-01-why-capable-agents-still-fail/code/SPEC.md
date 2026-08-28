@@ -30,8 +30,23 @@ attributes the run and scanning stops. Rules are checked in this order:
 | Subsystem | Rule id | Matches |
 | --- | --- | --- |
 | instructions | `asked-for-repo-fact` | any `agent_question` event (the agent had to ask a human for something the repository should have answered) |
-| tools | `command-unavailable` | `shell_error` whose detail contains `command not found` or `permission denied` |
-| environment | `dependency-or-runtime-missing` | `shell_error` whose detail contains `ModuleNotFoundError`, `Cannot find module`, or `version` |
+| tools | `command-unavailable` | `shell_error` whose detail contains the whole phrase `command not found` or `permission denied` |
+| environment | `dependency-or-runtime-missing` | `shell_error` whose detail contains the whole word `ModuleNotFoundError`, `Cannot find module`, or `version` |
+
+**Signals match whole words, not substrings.** A bare substring test reads
+`version` inside `conversion` and `subversion`, so `TypeError: unsupported
+conversion from str to int` and `your branch has diverged; subversion mirror
+is stale` both attribute to the environment, which is wrong twice over: one
+is a code defect and the other is a state problem. Both implementations use
+word-boundary matching (`\bversion\b`), and
+`fixtures/lookalike-signals.jsonl` pins the distinction in expected output:
+one genuine version error attributes to `environment`, and the two lookalikes
+stay `unattributed`. Under substring matching that fixture's expected report
+does not reproduce, which is the point of committing it.
+
+This is the mistake lectures 02 through 04 spend four exercises teaching
+against: a mention of a thing is not a structured fact about it. It shipped
+here first, which is why the fixture exists rather than only the fix.
 | state | `repeated-prior-work` | any `rework` event |
 | feedback | `claim-without-passing-verification` | a `claim` event with no earlier `verification` event with `result: "pass"` in the same run |
 

@@ -114,6 +114,20 @@ check runs one component, so its stage sequence has no adjacent pair and
 its seam list is empty by construction. This surface is supporting
 evidence about the demo, never the demo: the behavior is in `session`.
 
+**`seams_exercised_by_the_assembled_run` is measured, not declared.** It
+comes from running each pipeline and reading its trace, so a seam counts
+only when the record a stage produced actually reached the next stage. The
+stage that rejects a record counts as reached, because that rejection is how
+the defect surfaces. `fixtures/workspaces/workspace-early-halt` pins the
+distinction: its first stage rejects the request, so the run crosses nothing
+and the surface reports `seams: 2` against
+`seams_exercised_by_the_assembled_run: 0`.
+
+An implementation that assigns the declared adjacency list to both fields
+reports 2 and 2 there, and passes every other case in this unit. A lecture
+whose claim is that a level can be named and run nothing cannot itself
+report coverage it never measured.
+
 ## Exit codes
 
 | Code | Meaning |

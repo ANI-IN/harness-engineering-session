@@ -308,7 +308,31 @@ function seams(stages: string[]): string[] {
 
 // Supporting counts only: what each kind of check touches. This is
 // evidence about the demo, not the demo.
+/**
+ * The seams the assembled run actually crossed, taken from the run.
+ *
+ * Derived, never declared. A seam counts as crossed when the record a stage
+ * produced reached the next stage, which includes the stage that rejected
+ * it: that rejection is how the defect surfaces. A run that halts at its
+ * first stage crosses nothing, and this must say so, because a lecture whose
+ * whole point is that a named level running zero checks still passes cannot
+ * itself report coverage it did not measure.
+ */
+export function crossedSeams(app: App): string[] {
+  const crossed: string[] = [];
+  for (const pipeline of app.pipelines) {
+    const [, , trace] = runPipeline(app, pipeline);
+    const reached = trace.map((entry) => entry.component);
+    for (let i = 0; i + 1 < reached.length; i += 1) {
+      const seam = `${reached[i]} -> ${reached[i + 1]}`;
+      if (!crossed.includes(seam)) crossed.push(seam);
+    }
+  }
+  return crossed;
+}
+
 export function coverage(app: App, name: string) {
+  const exercised = crossedSeams(app);
   const pipelineSeams: string[] = [];
   for (const pipeline of app.pipelines) {
     for (const seam of seams(pipeline.stages)) {
@@ -324,13 +348,13 @@ export function coverage(app: App, name: string) {
     unit_checks: app.components.map((component) => `unit:${component.id}`),
     seams: pipelineSeams,
     seams_exercised_by_unit_checks: unitSeams,
-    seams_exercised_by_the_assembled_run: pipelineSeams,
+    seams_exercised_by_the_assembled_run: exercised,
     totals: {
       components: app.components.length,
       unit_checks: app.components.length,
       seams: pipelineSeams.length,
       seams_exercised_by_unit_checks: unitSeams.length,
-      seams_exercised_by_the_assembled_run: pipelineSeams.length,
+      seams_exercised_by_the_assembled_run: exercised.length,
     },
   };
 }

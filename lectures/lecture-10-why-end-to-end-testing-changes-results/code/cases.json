@@ -85,6 +85,19 @@
         "stdout": null,
         "kind": "text"
       }
+    },
+    {
+      "name": "coverage-measures-crossings-not-declarations",
+      "args": [
+        "coverage",
+        "fixtures/workspaces/workspace-early-halt"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/coverage-early-halt.json",
+        "kind": "json"
+      }
     }
   ]
 }

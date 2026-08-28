@@ -14,6 +14,23 @@ import { pathToFileURL } from "node:url";
 const SUBSYSTEMS = ["instructions", "state", "environment", "tools", "feedback"] as const;
 type Subsystem = (typeof SUBSYSTEMS)[number];
 const ISO_RE = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/;
+const US_RE = /\d{2}\/\d{2}\/\d{4}/;
+
+// The convention the workspace declares decides both how a date is rendered
+// and what the check accepts. Nothing here may hardcode one of them: if the
+// instruction file says MM/DD/YYYY, an agent that writes ISO is wrong, and
+// the check has to say so. That is what makes the instructions subsystem
+// load-bearing rather than decorative.
+interface Convention {
+  readonly label: string;
+  readonly matches: RegExp;
+  readonly validator: RegExp;
+  readonly iso: boolean;
+}
+const CONVENTIONS: readonly Convention[] = [
+  { label: "ISO 8601 UTC", matches: /ISO\s*8601/i, validator: ISO_RE, iso: true },
+  { label: "MM/DD/YYYY", matches: /MM\/DD\/YYYY|US short/i, validator: US_RE, iso: false },
+];
 
 interface Feature {
   readonly id: string;
@@ -47,14 +64,31 @@ export function guessedDate(todayIso: string): string {
   return `${month}/${day}/${year}`;
 }
 
+/** The convention this workspace requires, read from the instruction file. */
+export function declaredConvention(
+  workspace: string,
+): { convention: Convention; declared: string } | null {
+  const path = join(workspace, "AGENTS.md");
+  if (!existsSync(path) || !statSync(path).isFile()) return null;
+  const match = readFileSync(path, "utf8").match(/^- Convention: (.+)$/m);
+  if (!match || match[1] === undefined) return null;
+  const declared = match[1].trim();
+  const convention = CONVENTIONS.find((entry) => entry.matches.test(declared));
+  return convention ? { convention, declared } : null;
+}
+
 export function runLoop(workspace: string, disabled: Subsystem | null): Record<string, unknown> {
   const today = load<{ today: string }>(workspace, "clock.json").today;
   const steps: Step[] = [];
 
+  // What the workspace requires. The checker reads this whether or not the
+  // agent did, which is the whole point of a separate feedback subsystem.
+  const required = declaredConvention(workspace);
+
   // 1. instructions: the convention comes from AGENTS.md, or gets guessed.
   let convention: string;
   let rendered: string;
-  if (disabled === "instructions") {
+  if (disabled === "instructions" || required === null) {
     convention = "MM/DD/YYYY (guessed)";
     rendered = guessedDate(today);
     steps.push({
@@ -62,13 +96,11 @@ export function runLoop(workspace: string, disabled: Subsystem | null): Record<s
       note: "disabled: no AGENTS.md; guessing convention MM/DD/YYYY",
     });
   } else {
-    const agentsText = readFileSync(join(workspace, "AGENTS.md"), "utf8");
-    const match = agentsText.match(/^- Convention: (.+)$/m);
-    convention = "ISO 8601 UTC";
-    rendered = today;
+    convention = required.convention.label;
+    rendered = required.convention.iso ? today : guessedDate(today);
     steps.push({
       subsystem: "instructions", ok: true,
-      note: `read convention from AGENTS.md: ${match ? match[1] : "?"}`,
+      note: `read convention from AGENTS.md: ${required.declared}`,
     });
   }
 
@@ -128,7 +160,7 @@ export function runLoop(workspace: string, disabled: Subsystem | null): Record<s
     feedbackNote = "skipped: no artifact to check";
   } else {
     checkRan = true;
-    checkPassed = ISO_RE.test(content ?? "");
+    checkPassed = (required ? required.convention.validator : ISO_RE).test(content ?? "");
     feedbackOk = true;
     feedbackNote = checkPassed
       ? "run_check date-format: pass"
@@ -151,7 +183,8 @@ export function runLoop(workspace: string, disabled: Subsystem | null): Record<s
   } else if (checkRan && !checkPassed) {
     outcome = "failed-verification";
     issues = [
-      `convention violation: wrote ${rendered} where ISO 8601 UTC is ` +
+      `convention violation: wrote ${rendered} where ` +
+        `${required ? required.convention.label : "ISO 8601 UTC"} is ` +
         "required (caught by run_check)",
     ];
   } else if (feature !== "format-dates") {

@@ -8,12 +8,22 @@ a rules job over observable events, not a judgment call about the model.
 from __future__ import annotations
 
 import json
+import re
 import sys
 
 SUBSYSTEMS = ("instructions", "tools", "environment", "state", "feedback")
 
-TOOL_SIGNALS = ("command not found", "permission denied")
-ENVIRONMENT_SIGNALS = ("ModuleNotFoundError", "Cannot find module", "version")
+# Signals match whole words. A bare substring test reads `version` inside
+# `conversion` and `subversion`, so a TypeError and a stale VCS mirror both
+# attributed to the environment. That is the mistake lectures 02 to 04 spend
+# four exercises teaching against, and the fixture
+# `fixtures/lookalike-signals.jsonl` pins the distinction.
+TOOL_SIGNALS = (r"\bcommand not found\b", r"\bpermission denied\b")
+ENVIRONMENT_SIGNALS = (
+    r"\bModuleNotFoundError\b",
+    r"\bCannot find module\b",
+    r"\bversion\b",
+)
 
 
 def attribute_event(event: dict, prior: list[dict]) -> tuple[str, str] | None:
@@ -26,9 +36,9 @@ def attribute_event(event: dict, prior: list[dict]) -> tuple[str, str] | None:
     if kind == "agent_question":
         return "instructions", "asked-for-repo-fact"
     if kind == "shell_error":
-        if any(signal in detail for signal in TOOL_SIGNALS):
+        if any(re.search(signal, detail) for signal in TOOL_SIGNALS):
             return "tools", "command-unavailable"
-        if any(signal in detail for signal in ENVIRONMENT_SIGNALS):
+        if any(re.search(signal, detail) for signal in ENVIRONMENT_SIGNALS):
             return "environment", "dependency-or-runtime-missing"
     if kind == "rework":
         return "state", "repeated-prior-work"

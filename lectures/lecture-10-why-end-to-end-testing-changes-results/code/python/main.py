@@ -218,6 +218,27 @@ def seams(stages: list[str]) -> list[str]:
     return [f"{left} -> {right}" for left, right in zip(stages, stages[1:], strict=False)]
 
 
+def crossed_seams(app: dict) -> list[str]:
+    """The seams the assembled run actually crossed, taken from the run.
+
+    Derived, never declared. A seam counts as crossed when the record a
+    stage produced reached the next stage, which includes the stage that
+    rejected it: that rejection is how the defect surfaces. A run that halts
+    at its first stage crosses nothing, and this must say so, because a
+    lecture whose whole point is that a named level running zero checks
+    still passes cannot itself report coverage it did not measure.
+    """
+    crossed: list[str] = []
+    for pipeline in app["pipelines"]:
+        _accepted, _message, trace = run_pipeline(app, pipeline)
+        reached = [entry["component"] for entry in trace]
+        for left, right in zip(reached, reached[1:], strict=False):
+            seam = f"{left} -> {right}"
+            if seam not in crossed:
+                crossed.append(seam)
+    return crossed
+
+
 def coverage(app: dict, name: str) -> dict:
     """Supporting counts only: what each kind of check touches. This is
     evidence about the demo, not the demo."""
@@ -226,6 +247,7 @@ def coverage(app: dict, name: str) -> dict:
         for seam in seams(pipeline["stages"]):
             if seam not in pipeline_seams:
                 pipeline_seams.append(seam)
+    exercised = crossed_seams(app)
     unit_seams = sorted(
         {seam for component in app["components"] for seam in seams([component["id"]])}
     )
@@ -235,13 +257,13 @@ def coverage(app: dict, name: str) -> dict:
         "unit_checks": [f"unit:{component['id']}" for component in app["components"]],
         "seams": pipeline_seams,
         "seams_exercised_by_unit_checks": unit_seams,
-        "seams_exercised_by_the_assembled_run": pipeline_seams,
+        "seams_exercised_by_the_assembled_run": exercised,
         "totals": {
             "components": len(app["components"]),
             "unit_checks": len(app["components"]),
             "seams": len(pipeline_seams),
             "seams_exercised_by_unit_checks": len(unit_seams),
-            "seams_exercised_by_the_assembled_run": len(pipeline_seams),
+            "seams_exercised_by_the_assembled_run": len(exercised),
         },
     }
 

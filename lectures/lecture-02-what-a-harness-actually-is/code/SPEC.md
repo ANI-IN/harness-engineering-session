@@ -41,6 +41,23 @@ Five steps in fixed order: instructions, state, environment, tools, feedback.
    with no check. A check that runs and FAILS is the feedback subsystem
    working (step `ok: true`), catching someone else's defect.
 
+## The convention is read, not assumed
+
+The date convention comes from the workspace's `AGENTS.md` and decides two
+things: how the agent renders the date, and what the check accepts. Neither
+is hardcoded. `fixtures/workspace` declares ISO 8601 and
+`fixtures/workspace-us` declares `MM/DD/YYYY`; the same code produces
+`date: 2026-08-27T00:00:00Z` for the first and `date: 08/27/2026` for the
+second, and both pass their own check.
+
+That is what makes the instructions ablation mean something. An
+implementation that hardcodes ISO renders `2026-08-27T00:00:00Z` into the
+`MM/DD/YYYY` workspace and its check, hardcoded the same way, passes it: the
+subsystem the lecture ablates would be decorative, and removing it would
+prove nothing. The checker reads the declared convention whether or not the
+agent did, which is why disabling instructions still produces a caught
+violation on `fixtures/workspace`.
+
 ## Outcomes (deterministic, one per configuration)
 
 | Configuration | Outcome | The characteristic degradation |

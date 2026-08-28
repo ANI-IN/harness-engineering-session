@@ -15,12 +15,19 @@ attribute_event already works; you should not need to change it.
 from __future__ import annotations
 
 import json
+import re
 import sys
 
 SUBSYSTEMS = ("instructions", "tools", "environment", "state", "feedback")
 
-TOOL_SIGNALS = ("command not found", "permission denied")
-ENVIRONMENT_SIGNALS = ("ModuleNotFoundError", "Cannot find module", "version")
+# Signals match whole words: a bare substring test reads `version` inside
+# `conversion` and `subversion`.
+TOOL_SIGNALS = (r"\bcommand not found\b", r"\bpermission denied\b")
+ENVIRONMENT_SIGNALS = (
+    r"\bModuleNotFoundError\b",
+    r"\bCannot find module\b",
+    r"\bversion\b",
+)
 
 
 def attribute_event(event: dict, prior: list[dict]) -> tuple[str, str] | None:
@@ -28,7 +35,7 @@ def attribute_event(event: dict, prior: list[dict]) -> tuple[str, str] | None:
     detail = event["detail"]
     if kind == "agent_question":
         return "instructions", "asked-for-repo-fact"
-    if kind == "shell_error" and any(signal in detail for signal in TOOL_SIGNALS):
+    if kind == "shell_error" and any(re.search(signal, detail) for signal in TOOL_SIGNALS):
         return "tools", "command-unavailable"
     # Exercise: rule "dependency-or-runtime-missing" (environment).
     #   A shell_error whose detail contains one of ENVIRONMENT_SIGNALS.

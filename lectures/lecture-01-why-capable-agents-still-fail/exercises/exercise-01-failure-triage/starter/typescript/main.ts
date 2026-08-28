@@ -22,8 +22,14 @@ interface RunEvent {
 }
 
 const SUBSYSTEMS = ["instructions", "tools", "environment", "state", "feedback"] as const;
-const TOOL_SIGNALS = ["command not found", "permission denied"];
-export const ENVIRONMENT_SIGNALS = ["ModuleNotFoundError", "Cannot find module", "version"];
+// Signals match whole words: a bare substring test reads `version` inside
+// `conversion` and `subversion`.
+const TOOL_SIGNALS = [/\bcommand not found\b/, /\bpermission denied\b/];
+export const ENVIRONMENT_SIGNALS = [
+  /\bModuleNotFoundError\b/,
+  /\bCannot find module\b/,
+  /\bversion\b/,
+];
 
 export function attributeEvent(
   event: RunEvent,
@@ -32,7 +38,7 @@ export function attributeEvent(
   if (event.type === "agent_question") {
     return { subsystem: "instructions", rule: "asked-for-repo-fact" };
   }
-  if (event.type === "shell_error" && TOOL_SIGNALS.some((s) => event.detail.includes(s))) {
+  if (event.type === "shell_error" && TOOL_SIGNALS.some((s) => s.test(event.detail))) {
     return { subsystem: "tools", rule: "command-unavailable" };
   }
   // Exercise: rule "dependency-or-runtime-missing" (environment).

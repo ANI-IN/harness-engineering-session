@@ -1,0 +1,35 @@
+{
+  "runs": [
+    {
+      "id": "lk-1",
+      "task": "upgrade the build to Node 20",
+      "subsystem": "environment",
+      "rule": "dependency-or-runtime-missing",
+      "evidence": "shell_error: \"error: unsupported Node version 14; this project expects version 20\""
+    },
+    {
+      "id": "lk-2",
+      "task": "parse the uploaded spreadsheet",
+      "subsystem": "unattributed",
+      "rule": null,
+      "evidence": null
+    },
+    {
+      "id": "lk-3",
+      "task": "sync the legacy mirror",
+      "subsystem": "unattributed",
+      "rule": null,
+      "evidence": null
+    }
+  ],
+  "summary": {
+    "instructions": 0,
+    "tools": 0,
+    "environment": 1,
+    "state": 0,
+    "feedback": 0,
+    "unattributed": 2
+  },
+  "total_runs": 3,
+  "harness_failure_rate": 0.3333333333333333
+}

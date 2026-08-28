@@ -6,7 +6,9 @@
   "cases": [
     {
       "name": "basic",
-      "args": ["fixtures/runs.jsonl"],
+      "args": [
+        "fixtures/runs.jsonl"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -16,7 +18,9 @@
     },
     {
       "name": "empty-transcript",
-      "args": ["fixtures/empty.jsonl"],
+      "args": [
+        "fixtures/empty.jsonl"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -26,12 +30,26 @@
     },
     {
       "name": "malformed-line",
-      "args": ["fixtures/malformed.jsonl"],
+      "args": [
+        "fixtures/malformed.jsonl"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 1,
         "stdout": null,
         "kind": "text"
+      }
+    },
+    {
+      "name": "lookalike-signals",
+      "args": [
+        "fixtures/lookalike-signals.jsonl"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/lookalike-report.json",
+        "kind": "json"
       }
     }
   ]

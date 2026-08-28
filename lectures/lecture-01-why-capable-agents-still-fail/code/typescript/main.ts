@@ -24,8 +24,17 @@ interface RunReport {
 
 const SUBSYSTEMS = ["instructions", "tools", "environment", "state", "feedback"] as const;
 
-const TOOL_SIGNALS = ["command not found", "permission denied"];
-const ENVIRONMENT_SIGNALS = ["ModuleNotFoundError", "Cannot find module", "version"];
+// Signals match whole words. A bare substring test reads `version` inside
+// `conversion` and `subversion`, so a TypeError and a stale VCS mirror both
+// attributed to the environment. That is the mistake lectures 02 to 04 spend
+// four exercises teaching against, and the fixture
+// `fixtures/lookalike-signals.jsonl` pins the distinction.
+const TOOL_SIGNALS = [/\bcommand not found\b/, /\bpermission denied\b/];
+const ENVIRONMENT_SIGNALS = [
+  /\bModuleNotFoundError\b/,
+  /\bCannot find module\b/,
+  /\bversion\b/,
+];
 
 export function attributeEvent(
   event: RunEvent,
@@ -36,10 +45,10 @@ export function attributeEvent(
     return { subsystem: "instructions", rule: "asked-for-repo-fact" };
   }
   if (event.type === "shell_error") {
-    if (TOOL_SIGNALS.some((signal) => event.detail.includes(signal))) {
+    if (TOOL_SIGNALS.some((signal) => signal.test(event.detail))) {
       return { subsystem: "tools", rule: "command-unavailable" };
     }
-    if (ENVIRONMENT_SIGNALS.some((signal) => event.detail.includes(signal))) {
+    if (ENVIRONMENT_SIGNALS.some((signal) => signal.test(event.detail))) {
       return { subsystem: "environment", rule: "dependency-or-runtime-missing" };
     }
   }

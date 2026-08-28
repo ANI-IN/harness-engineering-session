@@ -1,0 +1,38 @@
+{
+  "disabled": null,
+  "feature": "format-dates",
+  "convention": "MM/DD/YYYY",
+  "steps": [
+    {
+      "subsystem": "instructions",
+      "ok": true,
+      "note": "read convention from AGENTS.md: dates are US short form (MM/DD/YYYY)"
+    },
+    {
+      "subsystem": "state",
+      "ok": true,
+      "note": "feature_list.json: next feature is format-dates"
+    },
+    {
+      "subsystem": "environment",
+      "ok": true,
+      "note": "formatter dependency installed"
+    },
+    {
+      "subsystem": "tools",
+      "ok": true,
+      "note": "write_file: artifact written"
+    },
+    {
+      "subsystem": "feedback",
+      "ok": true,
+      "note": "run_check date-format: pass"
+    }
+  ],
+  "artifact": {
+    "written": true,
+    "content": "date: 08/27/2026"
+  },
+  "outcome": "completed-verified",
+  "issues": []
+}
