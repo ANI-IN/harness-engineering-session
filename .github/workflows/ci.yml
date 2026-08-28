@@ -55,5 +55,8 @@ jobs:
       - name: Structure check
         run: make lint-structure
 
+      - name: Shared-helper drift check
+        run: make lint-shared-helpers
+
       - name: Fresh-checkout check (units must pass from tracked content only)
         run: make check-fresh

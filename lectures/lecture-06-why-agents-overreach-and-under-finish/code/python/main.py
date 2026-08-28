@@ -24,7 +24,7 @@ DEFAULT_BUDGET = 12
 WIP_RULE = re.compile(r"^- WIP limit: (\d+)$", re.MULTILINE)
 
 
-def load_workspace(workspace: Path) -> tuple[list[dict], int | None]:
+def load_scope_surface(workspace: Path) -> tuple[list[dict], int | None]:
     """The feature list (scope surface) and the boundary, if AGENTS.md draws one."""
     feature_list = json.loads((workspace / "feature_list.json").read_text(encoding="utf-8"))
     rules = (workspace / "AGENTS.md").read_text(encoding="utf-8")
@@ -35,7 +35,7 @@ def load_workspace(workspace: Path) -> tuple[list[dict], int | None]:
 def run(workspace: Path, script: dict, budget: int) -> dict:
     """The scripted session (SPEC.md, "The run"). Behavior derives from the
     workspace files and the script; nothing else is consulted."""
-    features, wip_limit = load_workspace(workspace)
+    features, wip_limit = load_scope_surface(workspace)
     status = {feature["id"]: feature["status"] for feature in features}
     verification = {feature["id"]: feature["verification"] for feature in features}
     assigned = next(feature["id"] for feature in features if feature["status"] == "in-progress")
@@ -152,7 +152,7 @@ def main(argv: list[str]) -> int:
         print(f"error: not a file: {script_path}", file=sys.stderr)
         return 2
     script = json.loads(script_path.read_text(encoding="utf-8"))
-    features, _ = load_workspace(workspace)
+    features, _ = load_scope_surface(workspace)
     active = [feature["id"] for feature in features if feature["status"] == "in-progress"]
     if len(active) != 1:
         print(

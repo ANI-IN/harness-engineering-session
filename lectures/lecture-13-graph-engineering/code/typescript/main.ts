@@ -121,7 +121,7 @@ function asText(value: unknown): string {
 }
 
 // Non-empty lines, LF or CRLF alike (docs/conventions.md, semantic rules).
-function linesOf(text: string): string[] {
+function nonemptyLines(text: string): string[] {
   return text.split(/\r?\n/).filter((line) => line.length > 0);
 }
 
@@ -130,7 +130,7 @@ function declaration(files: Files, goal: Goal): [string, string] {
   const { path, key, value } = goal;
   const text = files[path];
   if (text === undefined) return ["missing", `${path} missing`];
-  const found = linesOf(text).filter((line) => line.startsWith(`${key}=`));
+  const found = nonemptyLines(text).filter((line) => line.startsWith(`${key}=`));
   if (found.length === 0) return ["absent", `${path} has no ${key}= line`];
   if (found.length > 1) return ["duplicated", `${path} declares ${key} ${found.length} times`];
   if (found[0] !== `${key}=${value}`) {
@@ -238,7 +238,7 @@ const nodeUndo: NodeFn = (view) => {
       continue;
     }
     const line = operation.line as string;
-    const body = linesOf(files[path] ?? "");
+    const body = nonemptyLines(files[path] ?? "");
     if (body.length > 0 && body[body.length - 1] === line) {
       files[path] = body
         .slice(0, -1)
@@ -395,7 +395,7 @@ export function run(graph: Graph, root: string) {
   const [steps, routing] = walk(graph, state);
   const after: Record<string, string[]> = {};
   for (const path of Object.keys(state.files).sort()) {
-    after[path] = linesOf(state.files[path] as string);
+    after[path] = nonemptyLines(state.files[path] as string);
   }
   return {
     graph: graph.id,

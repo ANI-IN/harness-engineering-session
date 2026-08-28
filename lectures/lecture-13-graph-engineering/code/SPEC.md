@@ -182,3 +182,13 @@ what the graph does next.
   `expected/structure-declared.json`, exit 0.
 - `structure-finds-the-uncovered-routing-value` to
   `expected/structure-no-rollback.json`, exit 1.
+
+## Declared helper divergences
+
+Lecture demos carry a few helpers verbatim rather than importing a shared
+module, so that each demo stays one readable file. `lint-shared-helpers`
+requires every copy to be identical unless this contract says otherwise.
+
+Helper-divergence: load_workspace (the executor snapshots the workspace to compare it after a rollback, and task.json is the request rather than workspace state, so including it would make every comparison differ for a file no node writes)
+
+Helper-divergence: Files (this executor copies whole workspaces by value between nodes, which a plain object literal expresses directly; the other lecture demos use a Map. Nothing forces the choice and unifying on Map is the tidier end state, but it is declared rather than changed because this unit is green and the change is twenty-one call sites in code that ships as a reference implementation)

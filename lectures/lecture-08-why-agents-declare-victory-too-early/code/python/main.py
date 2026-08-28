@@ -28,7 +28,7 @@ IMPLEMENTATION_STEPS = [
 ]
 
 
-def read_key(path: Path, key: str) -> str | None:
+def read_key_from_file(path: Path, key: str) -> str | None:
     for line in path.read_text(encoding="utf-8").split("\n"):
         if line.startswith(f"{key}="):
             return line[len(key) + 1 :].strip()
@@ -66,10 +66,10 @@ def execute_check(workspace: Path, check: dict) -> tuple[bool, str]:
         for side in (left, right):
             if not (workspace / side["path"]).is_file():
                 return False, f"{side['path']} missing"
-            if read_key(workspace / side["path"], side["key"]) is None:
+            if read_key_from_file(workspace / side["path"], side["key"]) is None:
                 return False, f"{side['path']} has no {side['key']}= line"
-        left_value = read_key(workspace / left["path"], left["key"])
-        right_value = read_key(workspace / right["path"], right["key"])
+        left_value = read_key_from_file(workspace / left["path"], left["key"])
+        right_value = read_key_from_file(workspace / right["path"], right["key"])
         if left_value == right_value:
             return True, (
                 f"{left['path']} {left['key']}={left_value} matches "
@@ -82,7 +82,7 @@ def execute_check(workspace: Path, check: dict) -> tuple[bool, str]:
     raise ValueError(f"unknown check kind: {kind}")
 
 
-def load_workspace(path: Path) -> dict:
+def load_declared_checks(path: Path) -> dict:
     return json.loads((path / "checks.json").read_text(encoding="utf-8"))
 
 
@@ -91,7 +91,7 @@ def session(workspace: Path) -> dict:
     completion decision with CHECK_BUDGET steps left; a check it cannot
     afford is predicted to pass at zero cost, which is the premature
     declaration mechanism under study."""
-    config = load_workspace(workspace)
+    config = load_declared_checks(workspace)
     events = []
     step = 0
 
@@ -157,7 +157,7 @@ def gate(workspace: Path) -> dict:
     """The evidence gate: replays the session to obtain the claim, then
     re-executes every claimed check. The report is claim vs check; the
     exit code is the verdict."""
-    config = load_workspace(workspace)
+    config = load_declared_checks(workspace)
     claim = session(workspace)["claim"]
     by_id = {check["id"]: check for check in config["checks"]}
     reexecution = []

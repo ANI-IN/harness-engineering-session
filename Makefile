@@ -23,7 +23,7 @@ NODE := node
 PNPM := pnpm
 endif
 
-.PHONY: help setup doctor resume status quick verify verify-dedup conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure check-fresh
+.PHONY: help setup doctor resume status quick verify verify-dedup conformance lint lint-py lint-ts lint-md lint-sh lint-prose lint-links lint-links-external lint-mermaid lint-structure lint-shared-helpers check-fresh
 
 help: ## List available targets
 	@grep -E '^[a-z][a-z-]*:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  make %-22s %s\n", $$1, $$2}'
@@ -111,6 +111,9 @@ lint-links-external: ## Also fetch external URLs (network; run before committing
 
 lint-mermaid: ## Parse every mermaid block in every markdown file
 	@$(NODE) tools/lint/mermaid-parse.mjs
+
+lint-shared-helpers: ## Copies of a shared lecture helper must stay identical or declare why not
+	@uv run python tools/lint/check_shared_helpers.py
 
 check-fresh: ## Verify every unit from tracked content only (what a clone gets)
 	@uv run python tools/check_fresh_checkout.py

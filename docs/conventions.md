@@ -259,6 +259,32 @@ after the behavioral run under a heading that says so. Lecture 04's
 budgeted reader replacing its metric-first demo is the reference example;
 lectures 05-13 inherit this rule from day one.
 
+## Shared helpers across lecture demos
+
+A lecture demo is one file a learner reads end to end and copies out, so
+demos do not import a shared module even where nine of them carry the same
+small helper. The duplication is deliberate; the drift it invites is not.
+The reference course this curriculum replaces is the cautionary case: its
+fourteen app copies diverged, one by a single character, and nine stopped
+compiling. It had begun here too, with one lecture's workspace loader
+quietly excluding a file and one track's workspace type being a `Record`
+where two others used a `Map`.
+
+`make lint-shared-helpers` therefore holds every copy of a registered
+helper byte-identical to the first, and a deliberate difference is declared
+in that unit's SPEC.md as
+
+```text
+Helper-divergence: <name> (<reason>)
+```
+
+the same escape shape as `Corpus-divergence:` for fixtures. A helper
+belongs in the registry only when every copy is meant to be the same code:
+a helper that is parameterized per unit (each lecture's
+`resolve_workspace` names the file that makes a directory a workspace for
+that lecture) stays out of it, and a name that covers two different
+contracts is a naming bug to fix rather than a divergence to declare.
+
 ## Fixture copies across projects
 
 Projects are self-contained, so shared fixtures exist as committed

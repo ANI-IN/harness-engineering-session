@@ -81,7 +81,7 @@ class Overlay:
         write_key(self.files[relative], key, value)
 
 
-def run_check(overlay: Overlay, check: dict) -> tuple[bool, str]:
+def run_health_check(overlay: Overlay, check: dict) -> tuple[bool, str]:
     """One declared health check. Rules are `non-empty` (the key carries a
     value) and `positive-integer` (the value parses as an integer above
     zero); details name the file, the key, and the observed value."""
@@ -206,7 +206,7 @@ def resume_report(workspace: Path, observability: str) -> dict:
     events = [json.loads(line) for line in artifacts["log"]]
     checks = json.loads((workspace / "checks.json").read_text(encoding="utf-8"))["checks"]
 
-    failing = [check for check in checks if not run_check(overlay, check)[0]]
+    failing = [check for check in checks if not run_health_check(overlay, check)[0]]
     diagnosis = []
     repaired = 0
     for check in failing:
@@ -239,7 +239,7 @@ def resume_report(workspace: Path, observability: str) -> dict:
     recheck = []
     failing_after = 0
     for check in checks:
-        passed, detail = run_check(overlay, check)
+        passed, detail = run_health_check(overlay, check)
         failing_after += 0 if passed else 1
         recheck.append(
             {"id": check["id"], "status": "pass" if passed else "fail", "detail": detail}

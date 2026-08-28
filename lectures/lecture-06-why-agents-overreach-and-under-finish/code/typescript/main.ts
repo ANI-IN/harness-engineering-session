@@ -52,7 +52,7 @@ function isFile(path: string): boolean {
 }
 
 // The feature list (scope surface) and the boundary, if AGENTS.md draws one.
-function loadWorkspace(workspace: string): { features: Feature[]; wipLimit: number | null } {
+function loadScopeSurface(workspace: string): { features: Feature[]; wipLimit: number | null } {
   const featureList = JSON.parse(readFileSync(join(workspace, "feature_list.json"), "utf8"));
   const rules = readFileSync(join(workspace, "AGENTS.md"), "utf8");
   const match = WIP_RULE.exec(rules);
@@ -69,7 +69,7 @@ function basename(path: string): string {
 // The scripted session (SPEC.md, "The run"). Behavior derives from the
 // workspace files and the script; nothing else is consulted.
 export function run(workspace: string, script: { impulses: Impulse[] }, budget: number) {
-  const { features, wipLimit } = loadWorkspace(workspace);
+  const { features, wipLimit } = loadScopeSurface(workspace);
   const status = new Map(features.map((feature) => [feature.id, feature.status]));
   const verification = new Map(features.map((feature) => [feature.id, feature.verification]));
   const assigned = features.find((feature) => feature.status === "in-progress")?.id ?? "";
@@ -201,7 +201,7 @@ function main(argv: readonly string[]): number {
     return 2;
   }
   const script = JSON.parse(readFileSync(scriptPath, "utf8")) as { impulses: Impulse[] };
-  const { features } = loadWorkspace(workspace);
+  const { features } = loadScopeSurface(workspace);
   const active = features.filter((feature) => feature.status === "in-progress");
   if (active.length !== 1) {
     console.error(`error: expected exactly one in-progress feature, found ${active.length}`);

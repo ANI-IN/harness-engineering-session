@@ -52,7 +52,7 @@ def as_text(value: object) -> str:
     return str(value)
 
 
-def lines_of(text: str) -> list[str]:
+def nonempty_lines(text: str) -> list[str]:
     """Non-empty lines, LF or CRLF alike (docs/conventions.md, semantic rules)."""
     return [line for line in text.replace("\r\n", "\n").replace("\r", "\n").split("\n") if line]
 
@@ -62,7 +62,7 @@ def declaration(files: dict[str, str], goal: dict) -> tuple[str, str]:
     path, key, value = goal["path"], goal["key"], goal["value"]
     if path not in files:
         return "missing", f"{path} missing"
-    found = [line for line in lines_of(files[path]) if line.startswith(f"{key}=")]
+    found = [line for line in nonempty_lines(files[path]) if line.startswith(f"{key}=")]
     if not found:
         return "absent", f"{path} has no {key}= line"
     if len(found) > 1:
@@ -155,7 +155,7 @@ def node_undo(view: dict) -> tuple[dict, str]:
             undone.append(f"removed {path}")
             continue
         line = operation["line"]
-        body = lines_of(files.get(path, ""))
+        body = nonempty_lines(files.get(path, ""))
         if body and body[-1] == line:
             files[path] = "".join(f"{text}\n" for text in body[:-1])
             undone.append(f"removed {line} from {path}")
@@ -305,7 +305,9 @@ def run(graph: dict, root: Path) -> dict:
             "failures": state["failures"],
             "undone": state["undone"],
         },
-        "workspace_after": {path: lines_of(text) for path, text in sorted(state["files"].items())},
+        "workspace_after": {
+            path: nonempty_lines(text) for path, text in sorted(state["files"].items())
+        },
         "matches_opening_state": state["files"] == opening,
         "verdict": verdict_of(state),
     }

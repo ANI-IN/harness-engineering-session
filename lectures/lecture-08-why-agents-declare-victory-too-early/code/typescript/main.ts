@@ -68,7 +68,7 @@ function readLines(workspace: string, name: string): string[] {
   return readFileSync(join(workspace, name), "utf8").split(/\r?\n/);
 }
 
-function readKey(workspace: string, path: string, key: string): string | null {
+function readKeyFromFile(workspace: string, path: string, key: string): string | null {
   for (const line of readLines(workspace, path)) {
     if (line.startsWith(`${key}=`)) return line.slice(key.length + 1).trim();
   }
@@ -107,12 +107,12 @@ function executeCheck(workspace: string, check: Check): [boolean, string] {
     const right = check.right as ValueSide;
     for (const side of [left, right]) {
       if (!fileExists(workspace, side.path)) return [false, `${side.path} missing`];
-      if (readKey(workspace, side.path, side.key) === null) {
+      if (readKeyFromFile(workspace, side.path, side.key) === null) {
         return [false, `${side.path} has no ${side.key}= line`];
       }
     }
-    const leftValue = readKey(workspace, left.path, left.key);
-    const rightValue = readKey(workspace, right.path, right.key);
+    const leftValue = readKeyFromFile(workspace, left.path, left.key);
+    const rightValue = readKeyFromFile(workspace, right.path, right.key);
     if (leftValue === rightValue) {
       return [
         true,
@@ -127,7 +127,7 @@ function executeCheck(workspace: string, check: Check): [boolean, string] {
   throw new Error(`unknown check kind: ${check.kind}`);
 }
 
-function loadWorkspace(workspace: string): WorkspaceConfig {
+function loadDeclaredChecks(workspace: string): WorkspaceConfig {
   return JSON.parse(readFileSync(join(workspace, "checks.json"), "utf8")) as WorkspaceConfig;
 }
 
@@ -140,7 +140,7 @@ function workspaceName(workspace: string): string {
 // predicted to pass at zero cost, which is the premature declaration
 // mechanism under study.
 export function session(workspace: string) {
-  const config = loadWorkspace(workspace);
+  const config = loadDeclaredChecks(workspace);
   const events: SessionEvent[] = [];
   let step = 0;
 
@@ -205,7 +205,7 @@ export function session(workspace: string) {
 // re-executes every claimed check. The report is claim vs check; the exit
 // code is the verdict.
 export function gate(workspace: string) {
-  const config = loadWorkspace(workspace);
+  const config = loadDeclaredChecks(workspace);
   const claim = session(workspace).claim;
   const byId = new Map(config.checks.map((check) => [check.id, check]));
   const reexecution = [];

@@ -132,7 +132,7 @@ class Overlay {
 // One declared health check. Rules are `non-empty` (the key carries a value)
 // and `positive-integer` (the value parses as an integer above zero);
 // details name the file, the key, and the observed value.
-function runCheck(overlay: Overlay, check: Check): [boolean, string] {
+function runHealthCheck(overlay: Overlay, check: Check): [boolean, string] {
   const { path, key, rule } = check;
   const lines = overlay.lines(path);
   if (lines === null) return [false, `${path} missing`];
@@ -257,7 +257,7 @@ export function resumeReport(workspace: string, observability: string) {
   const events = artifacts.log.map((line) => JSON.parse(line) as LogEvent);
   const checks = (readJson(workspace, "checks.json") as { checks: Check[] }).checks;
 
-  const failing = checks.filter((check) => !runCheck(overlay, check)[0]);
+  const failing = checks.filter((check) => !runHealthCheck(overlay, check)[0]);
   const diagnosis = [];
   let repaired = 0;
   for (const check of failing) {
@@ -284,7 +284,7 @@ export function resumeReport(workspace: string, observability: string) {
   const recheck = [];
   let failingAfter = 0;
   for (const check of checks) {
-    const [passed, detail] = runCheck(overlay, check);
+    const [passed, detail] = runHealthCheck(overlay, check);
     if (!passed) failingAfter += 1;
     recheck.push({ id: check.id, status: passed ? "pass" : "fail", detail });
   }

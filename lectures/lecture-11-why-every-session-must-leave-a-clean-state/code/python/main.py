@@ -141,7 +141,7 @@ def run_check(files: dict[str, str], check: dict) -> tuple[bool, str]:
     path = check["path"]
     if path not in files:
         return False, f"{path} missing"
-    lines = lines_of(files, path)
+    lines = files[path].split("\n")
     if check["kind"] == "key-declared-once":
         key = check["key"]
         count = sum(1 for line in lines if line.startswith(f"{key}="))
