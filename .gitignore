@@ -4,10 +4,6 @@ RESEARCH.md
 PROPOSAL.md
 build_state.json
 BUILD_PROGRESS.md
-# The session handoff is local state by nature: it names unpushed commits,
-# carries the working briefs, and is stale the moment a session ends. The
-# shipped artifact is library/templates/session-handoff.md.
-session-handoff.md
 
 # --- dependencies ---
 node_modules/
@@ -32,7 +28,11 @@ coverage/
 .idea/
 .vscode/
 *.swp
-/projects/*/kb-data/
+# `kb-data` is learner scratch a project's own commands create. The glob
+# covers the collided-copy form (`kb-data 2`) too: a fence copying into a
+# directory that already exists produces one, and it must not read as
+# curriculum content.
+/projects/*/kb-data*/
 
 # --- never ignore the grading authority ---
 # Fixtures and expected outputs are committed content: they grade both

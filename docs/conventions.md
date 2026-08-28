@@ -363,6 +363,29 @@ Never show only one track. The only exceptions are the declared single-track
 units (`tools/`), which say so in one
 sentence, and ecosystem-specific notes, which are labeled as such.
 
+## Documented commands are executed
+
+Every ```sh fence in a `Quick start`, `Setup`, `Usage`, `Demo`, or
+`Demo flow` section is executed literally by `make verify`, from the
+repository root, as one `bash -e -o pipefail` script. That covers every
+lecture and project README **and the root README**, which is the
+most-read file here: a command only a human ever ran is the defect class
+this gate exists to prevent.
+
+A fence is expected to exit 0 unless the line above it is
+`<!-- fence-exit: N -->`, which a starter's verifier or a demo with a
+non-zero verdict uses. Under `bash -e` a failing command aborts the rest
+of its fence, so a stanza that mixes a passing and a failing command must
+be split into two fences.
+
+Two kinds of command may not sit in an executed fence. One that installs a
+toolchain, or touches `node_modules`, `.venv`, or a lockfile, is
+classified as shared state and run alone before the others, because
+`pnpm install` can remove a binary a sibling fence is launching. One that
+invokes a repo-wide gate (`make status`, `verify`, `conformance`,
+`check-fresh`) is refused outright, because it would re-enter the gate
+running it; put that in prose.
+
 ## Mermaid diagrams
 
 - Every lecture and project README has at least one diagram that adds

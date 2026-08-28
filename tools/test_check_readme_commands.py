@@ -107,3 +107,27 @@ def test_the_real_tree_serializes_exactly_the_installer_fences():
     assert shared, "expected at least the shared `make setup` stanza"
     for fence in shared:
         assert "make setup" in fence.script, fence.label
+
+
+def test_the_root_readme_is_in_scope():
+    """The entry-point README's commands are executed like any other."""
+    fences = crc.discover_fences()
+    roots = [f for f in fences if f.readme.name == "README.md" and f.readme.parent == crc.REPO_ROOT]
+    assert roots, "the root README must contribute fences"
+
+
+def test_repo_wide_make_targets_are_refused():
+    """A fence invoking a repo-wide gate would re-enter this checker."""
+    for script in ("make status", "make verify", "make conformance", "make check-fresh"):
+        assert crc.recurses_into_the_gate(_fence(script)), script
+
+
+def test_unit_scoped_commands_are_not_refused():
+    for script in ("make quick U=lectures/lecture-01-x", "make doctor", "make setup"):
+        assert not crc.recurses_into_the_gate(_fence(script)), script
+
+
+def test_cloning_the_repository_is_refused():
+    """Bringing the root README into scope executed a clone fence once, and
+    left a whole copy of the repository inside the working tree."""
+    assert crc.recurses_into_the_gate(_fence("git clone https://example.com/x"))

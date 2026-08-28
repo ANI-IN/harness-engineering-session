@@ -38,7 +38,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 COUNTS_MANIFEST = REPO_ROOT / "tools" / "expected_counts.json"
-SECTIONS = {"Setup", "Usage", "Demo", "Demo flow"}
+SECTIONS = {"Quick start", "Setup", "Usage", "Demo", "Demo flow"}
 H2_SPLIT = re.compile(r"(?m)^## (?=\S)")
 FENCE_RE = re.compile(r"(?:<!-- fence-exit: (\d+) -->\n)?```sh\n(.*?)```", re.S)
 
@@ -61,9 +61,15 @@ class Fence:
         return f"{rel} [{self.section} #{self.index}]"
 
 
+# The root README is the most-read file here, so its commands are executed
+# like any other. A command that only a human ever ran is the defect class
+# this gate exists to prevent.
 def discover_fences(root: Path = REPO_ROOT) -> list[Fence]:
-    readmes = sorted(root.glob("lectures/lecture-*/README.md")) + sorted(
-        root.glob("projects/project-*/README.md")
+    root_readme = [root / "README.md"] if (root / "README.md").is_file() else []
+    readmes = (
+        root_readme
+        + sorted(root.glob("lectures/lecture-*/README.md"))
+        + sorted(root.glob("projects/project-*/README.md"))
     )
     fences = []
     for readme in readmes:
@@ -88,6 +94,23 @@ SHARED_STATE = re.compile(
     r"|\.venv\b"
     r"|pnpm-lock\.yaml|uv\.lock|package-lock\.json"
 )
+
+
+# A fence that invokes a repo-wide gate would re-enter this checker and
+# recurse forever. Such a command belongs in prose, not in an executed
+# fence, and saying so by name beats discovering it as a hang.
+RECURSIVE = re.compile(
+    r"\bmake (status|verify|verify-dedup|conformance|check-fresh)\b"
+    # A clone fence checks the repository out inside itself. This one is
+    # not hypothetical: bringing the root README into scope ran it once,
+    # and left a full copy of the repository in the working tree.
+    r"|\bgit clone\b"
+)
+
+
+def recurses_into_the_gate(fence: Fence) -> bool:
+    """True when running this fence would re-enter the gate that runs it."""
+    return bool(RECURSIVE.search(fence.script))
 
 
 def mutates_shared_state(fence: Fence) -> bool:
@@ -166,6 +189,14 @@ def main() -> int:
                 parallel.setdefault(readme, []).append(fence)
 
     failures: list[str] = []
+    for fence in fences:
+        if recurses_into_the_gate(fence):
+            failures.append(
+                f"{fence.label}: invokes a repo-wide gate or clones the "
+                f"repository, either of which re-enters or duplicates the tree "
+                f"this gate runs in; move it into prose"
+            )
+
     for readme, fence in sorted(serial, key=lambda item: item[1].label):
         failures.extend(run_readme_fences(readme, [fence]))
 

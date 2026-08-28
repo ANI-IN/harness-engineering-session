@@ -29,14 +29,14 @@ cover, what they deliberately do not, and what to do afterwards.
 - [Who this is for](#who-this-is-for)
 - [The four-hour session](#the-four-hour-session)
 - [Quick start](#quick-start)
-- [Installation](#installation)
+- [Setup](#setup)
 - [Lectures](#lectures)
 - [Projects](#projects)
 - [How a unit is built](#how-a-unit-is-built)
 - [Architecture](#architecture)
 - [Usage](#usage)
 - [Command reference](#command-reference)
-- [Running a demo](#running-a-demo)
+- [Demo](#demo)
 - [Testing and validation](#testing-and-validation)
 - [Design decisions](#design-decisions)
 - [Repository structure](#repository-structure)
@@ -90,18 +90,19 @@ and lectures 01 and 03 as reading. Those are the self-study path, and the
 
 ## Quick start
 
+Clone with `git clone https://github.com/ANI-IN/harness-engineering-session`
+and `cd harness-engineering-session`, then:
+
 ```sh
-git clone https://github.com/ANI-IN/harness-engineering-session
-cd harness-engineering-session
 make setup TRACK=python   # or TRACK=typescript, or plain `make setup` for both
 make doctor TRACK=python  # confirm exactly what your track requires
-make status               # every gate, with counts; should be green on a fresh clone
 ```
 
+Then run `make status`: every gate, with counts, green on a fresh clone.
 Then start with [lecture 01](lectures/lecture-01-why-capable-agents-still-fail/),
 or read [choosing your track](docs/choosing-your-track.md) first.
 
-## Installation
+## Setup
 
 **Both tracks need Python 3.12 and [uv](https://docs.astral.sh/uv/)**, even
 if you write TypeScript: the verification machinery (conformance runner,
@@ -217,15 +218,24 @@ is executable and its verdict is an exit code.
 
 Work a lecture, then its exercises, then the project that composes them.
 
+Read the lecture, then run its demo:
+
 ```sh
-# read the lecture, then run its demo (both tracks shown in the README)
 uv run python lectures/lecture-02-what-a-harness-actually-is/code/python/main.py \
   lectures/lecture-02-what-a-harness-actually-is/code/fixtures/workspace
+```
 
-# do an exercise: edit starter/<your track>/, then
+Do the exercise: edit `starter/<your track>/`, then run its verifier. It
+exits 1 until you have finished, which is the point of a starter:
+
+<!-- fence-exit: 1 -->
+```sh
 bash lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-01-subsystem-auditor/verify.sh --stack=python
+```
 
-# compare against the committed solution when you are done
+Compare against the committed solution when you are done:
+
+```sh
 bash lectures/lecture-02-what-a-harness-actually-is/exercises/exercise-01-subsystem-auditor/verify.sh --stack=python --target=solution
 ```
 
@@ -260,7 +270,7 @@ Unit-level:
 ./<exercise>/verify.sh --stack=both --target=starter|solution|ci
 ```
 
-## Running a demo
+## Demo
 
 Each lecture's demo lives in `code/` and runs from the repository root. The
 lecture README shows both tracks with real output; the same commands are
@@ -268,12 +278,24 @@ executed by `make verify`, so what is printed is what runs. For example,
 lecture 09's demo runs the same session under two definitions of done, and
 the exit code is the verdict:
 
+Under a definition of done that admits only unit checks, every component
+passes its own case and the session declares done:
+
 ```sh
 L=lectures/lecture-09-why-end-to-end-testing-changes-results
 uv run python $L/code/python/main.py session $L/code/fixtures/workspaces/workspace-seam-gap \
-  $L/code/fixtures/definitions/unit-only.json      # declares done, exit 0
+  $L/code/fixtures/definitions/unit-only.json
+```
+
+The same session, the same workspace, one more kind of check. The record
+built by one component reaches the next component that will not accept it,
+and the run is blocked at the seam (exit 1):
+
+<!-- fence-exit: 1 -->
+```sh
+L=lectures/lecture-09-why-end-to-end-testing-changes-results
 uv run python $L/code/python/main.py session $L/code/fixtures/workspaces/workspace-seam-gap \
-  $L/code/fixtures/definitions/through-e2e.json    # blocked at the seam, exit 1
+  $L/code/fixtures/definitions/through-e2e.json
 ```
 
 ## Testing and validation
