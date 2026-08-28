@@ -83,9 +83,11 @@ serialized, because fences within one README run in order in one worker
 and different READMEs own different paths. So the fence race is not the
 cause of what was observed.
 
-**Nothing in this repository needs fixing for it.** Do not run the gates
-inside iCloud Drive, Dropbox, OneDrive or any synced folder; use a local
-path such as `~/src`. The two defensive changes made while the cause was
+**Nothing in this repository needs fixing for it**, and `make doctor` now
+detects it: a working copy inside iCloud, Dropbox, OneDrive or Google
+Drive, including the macOS Desktop and Documents redirect, produces a loud
+warning naming the client and the fix. It warns rather than fails, because
+it is the user's machine. Use an unsynced path such as `~/src`. The two defensive changes made while the cause was
 unknown are kept because they are right on their own merits: the orphan
 check ignores gitignored scratch, since scratch is not curriculum, and
 `.gitignore` covers `kb-data*` so a conflict copy cannot read as content.

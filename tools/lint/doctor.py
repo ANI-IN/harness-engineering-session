@@ -30,6 +30,69 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
+# Directories a file-sync client owns. A working copy inside one of these is
+# raced by the client: it recreates directories the gates have just removed,
+# mutates files mid-run (including .git/index), and leaves numbered conflict
+# copies such as `kb-data 2`. The visible symptom is a gate failing on a tree
+# nobody touched, which reads as a defect in this repository and is not one.
+# Warn, never fail: it is the user's machine and their choice.
+SYNC_ROOTS = (
+    ("iCloud Drive", "Library/Mobile Documents"),
+    ("iCloud Drive", "Library/CloudStorage/iCloud"),
+    ("Dropbox", "Dropbox"),
+    ("OneDrive", "OneDrive"),
+    ("Google Drive", "Google Drive"),
+    ("Google Drive", "Library/CloudStorage/GoogleDrive"),
+    ("a cloud sync client", "Library/CloudStorage"),
+)
+
+
+def sync_client_owning(path: Path, home: Path) -> str | None:
+    """The sync client that owns `path`, or None.
+
+    Two ways a path lands inside one: it literally sits under the client's
+    directory, or macOS has redirected Desktop and Documents into iCloud,
+    which leaves the paths looking ordinary while the storage is synced.
+    """
+    resolved = Path(path).resolve()
+    parts = resolved.parts
+    for label, marker in SYNC_ROOTS:
+        needle = tuple(Path(marker).parts)
+        for index in range(len(parts) - len(needle) + 1):
+            window = parts[index:index + len(needle)]
+            # All components but the last must match exactly; the last may be
+            # a prefix, because these clients append an account to the folder
+            # name ("OneDrive - Acme", "GoogleDrive-me@example.com").
+            if window[:-1] == needle[:-1] and window[-1].startswith(needle[-1]):
+                return label
+    # macOS "Desktop & Documents" sync: the folder is redirected, so the path
+    # reads as ~/Desktop while the bytes live in CloudDocs.
+    icloud = home / "Library" / "Mobile Documents" / "com~apple~CloudDocs"
+    for folder in ("Desktop", "Documents"):
+        if (icloud / folder).is_dir() and resolved.is_relative_to(home / folder):
+            return "iCloud Drive (Desktop and Documents sync)"
+    return None
+
+
+def report_sync_warning(root: Path) -> bool:
+    """Print a loud warning when the working copy is inside a sync root."""
+    client = sync_client_owning(root, Path.home())
+    if client is None:
+        return False
+    print()
+    print("doctor: WARNING  this working copy is inside " + client + ".")
+    print("doctor: WARNING  A sync client races the working tree: it recreates")
+    print("doctor: WARNING  directories the gates just removed, edits files")
+    print("doctor: WARNING  mid-run including .git/index, and leaves numbered")
+    print("doctor: WARNING  conflict copies such as 'kb-data 2'.")
+    print("doctor: WARNING  The symptom is `make status` failing on a tree you")
+    print("doctor: WARNING  did not touch. That is the sync, not this module.")
+    print("doctor: WARNING  Fix: clone to an unsynced path, for example ~/src.")
+    print("doctor: WARNING  This is a warning, not a failure. Your machine.")
+    print()
+    return True
+
+
 TRACK_TOOLS = {
     "python": ("python", "uv"),
     "typescript": ("python", "node", "pnpm", "uv"),
@@ -98,10 +161,11 @@ def main() -> int:
         )
         note = "python + uv power the course's verification tooling for every track"
         print(f"doctor: track={args.track} ({skipped} not required; {note})")
+    synced = report_sync_warning(REPO_ROOT)
     if failures:
         print(f"doctor: {failures} problem(s)")
         return 1
-    print("doctor: OK")
+    print("doctor: OK" + (" (with 1 warning)" if synced else ""))
     return 0
 
 
