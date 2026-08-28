@@ -16,7 +16,7 @@ Deliberately short. A handoff nobody reads is a handoff that failed.
   fences. Note that `make status` prints only the first five; the fence
   floor is enforced by `check_readme_commands.py` inside the verify gate
   and appears in the root README's generated counts block.
-- `make check-fresh`: 44 units, 484 checks, 0 failures, in both tracks,
+- `make check-fresh`: 44 units, 486 checks, 0 failures, in both tracks,
   against an export of tracked content only. That is the whole of what
   `check-fresh` runs: the conformance suite inside the export, three ways
   per case. It does not invoke each unit's `verify.sh`.

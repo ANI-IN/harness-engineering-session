@@ -32,6 +32,19 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+// Python's read_text() applies universal newlines: CRLF and CR become LF
+// before anything else sees the text. readFileSync does not, so a document
+// authored on Windows split into different lines, paragraphs and chunks in
+// this track than in the Python one, and even hashed differently, since
+// sha256Text hashes the text rather than the bytes. Every text read goes
+// through here so both tracks see identical input. Byte-level reads (sha
+// digests over file bytes, the guard's containment probe) deliberately do
+// not, and stay on readFileSync.
+function readText(path: string): string {
+  return readFileSync(path, "utf8").replace(/\r\n?/g, "\n");
+}
+
+
 const SELF_PATH = fileURLToPath(import.meta.url);
 const PROJECT_DIR = dirname(dirname(dirname(SELF_PATH)));
 const REPO_ROOT = dirname(dirname(PROJECT_DIR));
@@ -70,7 +83,7 @@ function logEvent(
   mkdirSync(join(dataDir, "log"), { recursive: true });
   let seq = 0;
   if (existsSync(logPath)) {
-    const text = readFileSync(logPath, "utf8");
+    const text = readText(logPath);
     seq = text.trim() ? text.replace(/\n+$/, "").split("\n").length : 0;
   }
   const entry = { seq: seq + 1, level, command, event, detail };
@@ -90,7 +103,7 @@ function readLog(dataDir: string): LogEntry[] {
   if (!existsSync(logPath)) {
     return [];
   }
-  const text = readFileSync(logPath, "utf8");
+  const text = readText(logPath);
   if (!text.trim()) {
     return [];
   }
@@ -165,7 +178,7 @@ function readMeta(dataDir: string): MetaEntry[] | null {
   if (!existsSync(metaPath)) {
     return null;
   }
-  return JSON.parse(readFileSync(metaPath, "utf8")) as MetaEntry[];
+  return JSON.parse(readText(metaPath)) as MetaEntry[];
 }
 
 function writeMeta(dataDir: string, entries: MetaEntry[]): void {
@@ -185,7 +198,7 @@ function makeMetaEntry(text: string, filename: string, origin: string): MetaEntr
 }
 
 function documentText(dataDir: string, entry: MetaEntry): string {
-  return readFileSync(join(dataDir, "documents", entry.filename), "utf8");
+  return readText(join(dataDir, "documents", entry.filename));
 }
 
 function readinessError(dataDir: string): string | null {
@@ -248,7 +261,7 @@ function readChunks(dataDir: string): ChunkRecord[] {
   if (!existsSync(chunksPath)) {
     return [];
   }
-  return JSON.parse(readFileSync(chunksPath, "utf8")) as ChunkRecord[];
+  return JSON.parse(readText(chunksPath)) as ChunkRecord[];
 }
 
 interface IndexState {
@@ -384,7 +397,7 @@ export function cmdInit(dataDir: string, seed: string | null): CommandResult {
       const target = join(dataDir, "documents", name);
       if (statSync(source).isFile() && !existsSync(target)) {
         copyFileSync(source, target);
-        const text = readFileSync(source, "utf8");
+        const text = readText(source);
         const entry = makeMetaEntry(text, name, "seeded");
         if (!known.has(entry.id)) {
           entries.push(entry);
@@ -439,7 +452,7 @@ export function cmdImport(dataDir: string, files: string[]): CommandResult {
       skipped.push({ filename, reason: "already-imported" });
       continue;
     }
-    const text = readFileSync(fileArg, "utf8");
+    const text = readText(fileArg);
     copyFileSync(fileArg, join(dataDir, "documents", filename));
     const entry = makeMetaEntry(text, filename, "imported");
     entries.push(entry);
@@ -635,7 +648,7 @@ export function checkRouterTargets(workspace: string): WorkspaceCheck {
     return { id: "router-targets", passed: false, detail: "AGENTS.md missing" };
   }
   const targets: string[] = [];
-  for (const match of readFileSync(agents, "utf8").matchAll(/\]\(([^)]+)\)/g)) {
+  for (const match of readText(agents).matchAll(/\]\(([^)]+)\)/g)) {
     const target = (match[1] as string).split("#")[0] as string;
     if (target && !target.startsWith("http://") && !target.startsWith("https://")) {
       targets.push(target);
@@ -655,7 +668,7 @@ export function checkSessionHandoff(workspace: string): WorkspaceCheck {
   if (!existsSync(handoff)) {
     return { id: "session-handoff", passed: false, detail: "session-handoff.md missing" };
   }
-  const document = parseHandoff(readFileSync(handoff, "utf8"));
+  const document = parseHandoff(readText(handoff));
   if (document.title === null) {
     return { id: "session-handoff", passed: false, detail: "no title line" };
   }
@@ -682,7 +695,7 @@ export function checkFeatureEvidence(workspace: string): WorkspaceCheck {
   if (!existsSync(featurePath)) {
     return { id: "feature-evidence", passed: false, detail: "feature_list.json missing" };
   }
-  const featureList = JSON.parse(readFileSync(featurePath, "utf8")) as FeatureListFile;
+  const featureList = JSON.parse(readText(featurePath)) as FeatureListFile;
   const badStatus: string[] = [];
   const unevidenced: string[] = [];
   for (const feature of featureList.features ?? []) {
@@ -714,7 +727,7 @@ export function checkWipLimit(workspace: string): WorkspaceCheck {
   if (!existsSync(featurePath)) {
     return { id: "wip-limit", passed: false, detail: "feature_list.json missing" };
   }
-  const featureList = JSON.parse(readFileSync(featurePath, "utf8")) as FeatureListFile;
+  const featureList = JSON.parse(readText(featurePath)) as FeatureListFile;
   const inProgress = (featureList.features ?? [])
     .filter((feature) => feature.status === "in-progress")
     .map((feature) => feature.id ?? "?");
@@ -845,7 +858,7 @@ export function runContinuity(workdirArg: string | null): CommandResult {
     writeFileSync(join(base, "session-handoff.md"), HANDOFF_TEMPLATE, "utf8");
     // Session boundary: session B knows only what is on disk.
     const sessionB = SESSION_B_COMMANDS.map((command) => runCliChild(command, base));
-    const handoff = parseHandoff(readFileSync(join(base, "session-handoff.md"), "utf8"));
+    const handoff = parseHandoff(readText(join(base, "session-handoff.md")));
 
     const parsedOutput = (step: ContinuityStep): Record<string, unknown> => {
       if (step.exit !== 0) {
@@ -1076,7 +1089,7 @@ export async function workrun(config: string, workdir: string) {
     }
     if (config === "plan-gen-eval") {
       const planScope = (JSON.parse(
-        readFileSync(join(workspace, "plan.json"), "utf8"),
+        readText(join(workspace, "plan.json")),
       ) as { scope: string[] }).scope;
       for (const event of [...events]) {
         if (event.type !== "edit") {
@@ -1167,10 +1180,10 @@ interface RubricItem {
 // mutates the run it grades.
 export async function scoreRun(workdir: string) {
   const workspace = join(workdir, "workspace");
-  const events = readFileSync(join(workspace, "transcript.jsonl"), "utf8")
+  const events = readText(join(workspace, "transcript.jsonl"))
     .trim().split("\n").map((line) => JSON.parse(line) as WorkEvent);
   const featureList = JSON.parse(
-    readFileSync(join(workspace, "feature_list.json"), "utf8"),
+    readText(join(workspace, "feature_list.json")),
   ) as { features: WorkFeature[] };
   const features = featureList.features;
   const donePositions = events
@@ -1253,7 +1266,7 @@ export async function scoreRun(workdir: string) {
       detail: "no plan artifact: nothing declared the scope",
     });
   } else {
-    const scope = (JSON.parse(readFileSync(planPath, "utf8")) as { scope: string[] }).scope;
+    const scope = (JSON.parse(readText(planPath)) as { scope: string[] }).scope;
     const bad: string[] = [];
     events.forEach((event, index) => {
       if (event.type !== "edit") {

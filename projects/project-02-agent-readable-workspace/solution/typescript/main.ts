@@ -19,6 +19,19 @@ import { createServer, type Server } from "node:http";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
+// Python's read_text() applies universal newlines: CRLF and CR become LF
+// before anything else sees the text. readFileSync does not, so a document
+// authored on Windows split into different lines, paragraphs and chunks in
+// this track than in the Python one, and even hashed differently, since
+// sha256Text hashes the text rather than the bytes. Every text read goes
+// through here so both tracks see identical input. Byte-level reads (sha
+// digests over file bytes, the guard's containment probe) deliberately do
+// not, and stay on readFileSync.
+function readText(path: string): string {
+  return readFileSync(path, "utf8").replace(/\r\n?/g, "\n");
+}
+
+
 const MIN_TOKEN_LENGTH = 4;
 const MAX_CITATIONS = 2;
 const META_FILE = "index/documents-meta.json";
@@ -79,7 +92,7 @@ function readMeta(dataDir: string): MetaEntry[] | null {
   if (!existsSync(metaPath)) {
     return null;
   }
-  return JSON.parse(readFileSync(metaPath, "utf8")) as MetaEntry[];
+  return JSON.parse(readText(metaPath)) as MetaEntry[];
 }
 
 function writeMeta(dataDir: string, entries: MetaEntry[]): void {
@@ -102,7 +115,7 @@ function makeMetaEntry(text: string, filename: string, origin: string): MetaEntr
 function loadDocuments(dataDir: string): LoadedDocument[] {
   const documents: LoadedDocument[] = [];
   for (const entry of readMeta(dataDir) ?? []) {
-    const text = readFileSync(join(dataDir, "documents", entry.filename), "utf8");
+    const text = readText(join(dataDir, "documents", entry.filename));
     documents.push({ ...entry, content_lines: text.replace(/\n+$/, "").split("\n") });
   }
   return documents;
@@ -144,7 +157,7 @@ export function cmdInit(dataDir: string, seed: string | null): CommandResult {
       const target = join(dataDir, "documents", name);
       if (statSync(source).isFile() && !existsSync(target)) {
         copyFileSync(source, target);
-        const text = readFileSync(source, "utf8");
+        const text = readText(source);
         const entry = makeMetaEntry(text, name, "seeded");
         if (!known.has(entry.id)) {
           entries.push(entry);
@@ -198,7 +211,7 @@ export function cmdImport(dataDir: string, files: string[]): CommandResult {
       skipped.push({ filename, reason: "already-imported" });
       continue;
     }
-    const text = readFileSync(fileArg, "utf8");
+    const text = readText(fileArg);
     copyFileSync(fileArg, join(dataDir, "documents", filename));
     const entry = makeMetaEntry(text, filename, "imported");
     entries.push(entry);
@@ -217,7 +230,7 @@ export function cmdShow(dataDir: string, documentId: string): CommandResult {
   }
   for (const entry of readMeta(dataDir) ?? []) {
     if (entry.id === documentId) {
-      const content = readFileSync(join(dataDir, "documents", entry.filename), "utf8");
+      const content = readText(join(dataDir, "documents", entry.filename));
       const report = { ...entry, content };
       return [0, JSON.stringify(report, null, 2) + "\n", ""];
     }
@@ -336,7 +349,7 @@ export function checkRouterTargets(workspace: string): WorkspaceCheck {
     return { id: "router-targets", passed: false, detail: "AGENTS.md missing" };
   }
   const targets: string[] = [];
-  for (const match of readFileSync(agents, "utf8").matchAll(/\]\(([^)]+)\)/g)) {
+  for (const match of readText(agents).matchAll(/\]\(([^)]+)\)/g)) {
     const target = (match[1] as string).split("#")[0] as string;
     if (target && !target.startsWith("http://") && !target.startsWith("https://")) {
       targets.push(target);
@@ -356,7 +369,7 @@ export function checkSessionHandoff(workspace: string): WorkspaceCheck {
   if (!existsSync(handoff)) {
     return { id: "session-handoff", passed: false, detail: "session-handoff.md missing" };
   }
-  const document = parseHandoff(readFileSync(handoff, "utf8"));
+  const document = parseHandoff(readText(handoff));
   if (document.title === null) {
     return { id: "session-handoff", passed: false, detail: "no title line" };
   }
@@ -383,7 +396,7 @@ export function checkFeatureEvidence(workspace: string): WorkspaceCheck {
   if (!existsSync(featurePath)) {
     return { id: "feature-evidence", passed: false, detail: "feature_list.json missing" };
   }
-  const featureList = JSON.parse(readFileSync(featurePath, "utf8")) as FeatureListFile;
+  const featureList = JSON.parse(readText(featurePath)) as FeatureListFile;
   const badStatus: string[] = [];
   const unevidenced: string[] = [];
   for (const feature of featureList.features ?? []) {

@@ -120,3 +120,15 @@ def test_fail_on_empty_floor(monkeypatch, capsys):
     assert runner.main() == 1
     out = capsys.readouterr().out
     assert "requires at least 1" in out
+
+
+def test_project_crlf_fixture_still_has_crlf_bytes():
+    """Guard against tooling silently converting the CRLF import fixture to
+    LF. It pins the read-time newline fold in the project TypeScript tracks:
+    without real CR bytes the case passes while proving nothing."""
+    raw = (
+        CANARY.parents[3] / "projects/project-03-multi-session-continuity"
+        / "fixtures/imports/windows-notes.md"
+    ).read_bytes()
+    assert b"\r\n" in raw, "windows-notes.md lost its CRLF endings (check .gitattributes)"
+    assert raw.count(b"\r\n") == 6, "the fixture's CRLF count changed; regenerate expected/"

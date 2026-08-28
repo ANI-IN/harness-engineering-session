@@ -24,6 +24,19 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+// Python's read_text() applies universal newlines: CRLF and CR become LF
+// before anything else sees the text. readFileSync does not, so a document
+// authored on Windows split into different lines, paragraphs and chunks in
+// this track than in the Python one, and even hashed differently, since
+// sha256Text hashes the text rather than the bytes. Every text read goes
+// through here so both tracks see identical input. Byte-level reads (sha
+// digests over file bytes, the guard's containment probe) deliberately do
+// not, and stay on readFileSync.
+function readText(path: string): string {
+  return readFileSync(path, "utf8").replace(/\r\n?/g, "\n");
+}
+
+
 const SELF_PATH = fileURLToPath(import.meta.url);
 const PROJECT_DIR = dirname(dirname(dirname(SELF_PATH)));
 const EXPERIMENT_DATE = "2026-08-27"; // pinned: the experiment is deterministic by contract
@@ -67,7 +80,7 @@ function loadDocuments(dataDir: string): LoadedDocument[] {
     if (!statSync(path).isFile()) {
       continue;
     }
-    const text = readFileSync(path, "utf8");
+    const text = readText(path);
     const lines = text.replace(/\n+$/, "").split("\n");
     let title = name;
     for (const line of lines) {
@@ -402,20 +415,20 @@ async function fakeAgentWeak(workdir: string): Promise<RunRecord> {
 // evidence filled in; the strong run must start from not-started.
 export function resetEvidence(workdir: string): void {
   const featurePath = join(workdir, "feature_list.json");
-  const featureList = JSON.parse(readFileSync(featurePath, "utf8")) as FeatureList;
+  const featureList = JSON.parse(readText(featurePath)) as FeatureList;
   for (const feature of featureList.features) {
     feature.status = "not-started";
     delete feature.evidence;
   }
   writeFileSync(featurePath, JSON.stringify(featureList, null, 2) + "\n", "utf8");
   const progressPath = join(workdir, "claude-progress.md");
-  const title = readFileSync(progressPath, "utf8").split("\n")[0];
+  const title = readText(progressPath).split("\n")[0];
   writeFileSync(progressPath, title + "\n", "utf8");
 }
 
 export function assertEvidenceReset(workdir: string): boolean {
   const featureList = JSON.parse(
-    readFileSync(join(workdir, "feature_list.json"), "utf8"),
+    readText(join(workdir, "feature_list.json")),
   ) as FeatureList;
   return featureList.features.every(
     (feature) => feature.status === "not-started" && feature.evidence === undefined,
@@ -437,7 +450,7 @@ async function fakeAgentStrong(workdir: string): Promise<RunRecord> {
   mkdirSync(join(workdir, "src"));
   copyFileSync(SELF_PATH, join(workdir, "src", "main.ts"));
   const featurePath = join(workdir, "feature_list.json");
-  const featureList = JSON.parse(readFileSync(featurePath, "utf8")) as FeatureList;
+  const featureList = JSON.parse(readText(featurePath)) as FeatureList;
   const verificationRuns: VerificationRun[] = [];
   const verified: string[] = [];
   // The harness declares scope (the feature list) and proof (each feature's
@@ -456,7 +469,7 @@ async function fakeAgentStrong(workdir: string): Promise<RunRecord> {
   }
   writeFileSync(featurePath, JSON.stringify(featureList, null, 2) + "\n", "utf8");
   const progressPath = join(workdir, "claude-progress.md");
-  const progress = readFileSync(progressPath, "utf8");
+  const progress = readText(progressPath);
   writeFileSync(progressPath, progress + PROGRESS_SESSION_ENTRY, "utf8");
   return {
     harness_files_found: harnessFound,
@@ -484,7 +497,7 @@ export async function runExperiment(workdirArg: string | null): Promise<CommandR
     cleanupBase = false;
   }
   const runs = join(base, "runs");
-  const promptText = readFileSync(join(PROJECT_DIR, "starter", "task-prompt.md"), "utf8");
+  const promptText = readText(join(PROJECT_DIR, "starter", "task-prompt.md"));
   const promptSha = createHash("sha256").update(promptText, "utf8").digest("hex");
   const controls: Record<string, boolean> = {};
   try {

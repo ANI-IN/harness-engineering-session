@@ -342,6 +342,59 @@ def _name_tokens(name: str) -> list[str]:
     return [w.lower().rstrip("s") for w in re.split(r"[_\W]+", spaced) if w]
 
 
+RAW_TEXT_READ = re.compile(r'readFileSync\((?![^)]*\)\s*//)[^;]*?,\s*"utf8"\)')
+READ_TEXT_HELPER = re.compile(
+    r'function readText\(path: string\): string \{\s*\n\s*return readFileSync\('
+    r'path, "utf8"\)\.replace\(/\\r\\n\?/g, "\\n"\);',
+    re.MULTILINE,
+)
+
+
+def check_project_text_reads(errors: list[str], root: Path) -> None:
+    """Project TypeScript must read text through readText(), which folds CRLF
+    and CR to LF the way Python's read_text() does.
+
+    Python applies universal newlines on every text read, so a document
+    authored on Windows reaches the Python track as LF. readFileSync does
+    not, and the two tracks then disagreed on lines, paragraphs, chunk
+    boundaries, and the sha256 of the text: a CRLF import produced
+    `paragraphs: 3` in Python and `1` in TypeScript. No committed fixture had
+    a CR, so conformance could not see it, while `kb import` on any Windows
+    file would have.
+
+    The rule is placed at the read rather than on `split("\n")` on purpose.
+    Splitting on "\n" is correct once the text is normalised, so banning it
+    would flag correct code and miss the actual cause; a raw read is the one
+    thing that can reintroduce the divergence, and there is exactly one
+    sanctioned place to do it. Byte-level reads (sha digests over file bytes,
+    the guard's containment probe) take no encoding argument and are not
+    matched.
+    """
+    base = root / "projects"
+    if not base.is_dir():
+        return
+    for source in sorted(base.glob("project-*/**/typescript/main.ts")):
+        rel = _rel(source, root)
+        text = source.read_text(encoding="utf-8")
+        raw = RAW_TEXT_READ.findall(text)
+        if not raw:
+            continue
+        if not READ_TEXT_HELPER.search(text):
+            errors.append(
+                f"{rel}: reads text with readFileSync(..., \"utf8\") but has no "
+                f"readText() helper folding CRLF to LF; Python's read_text() "
+                f"does this on every read and the tracks diverge without it"
+            )
+            continue
+        if len(raw) > 1:
+            errors.append(
+                f"{rel}: {len(raw)} raw readFileSync(..., \"utf8\") call(s); only "
+                f"the readText() helper may read text directly, so CRLF input "
+                f"cannot reach one track unnormalised (see docs/conventions.md, "
+                f"input line endings)"
+            )
+
+
 def check_task_hints(exercise: Path, rel: str, errors: list[str]) -> None:
     """A starter's failure message must name work the learner actually has to do.
 
@@ -533,6 +586,7 @@ def check_tree(root: Path, floors: dict[str, int] | None = None) -> list[str]:
     check_readmes(errors, root)
     check_units(errors, root)
     check_exercises(errors, root)
+    check_project_text_reads(errors, root)
     check_section_orders(errors, root)
     check_corpus_copies(errors, root)
     check_orphans(errors, root)

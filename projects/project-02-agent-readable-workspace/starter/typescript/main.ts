@@ -18,6 +18,19 @@ import { createServer, type Server } from "node:http";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
+// Python's read_text() applies universal newlines: CRLF and CR become LF
+// before anything else sees the text. readFileSync does not, so a document
+// authored on Windows split into different lines, paragraphs and chunks in
+// this track than in the Python one, and even hashed differently, since
+// sha256Text hashes the text rather than the bytes. Every text read goes
+// through here so both tracks see identical input. Byte-level reads (sha
+// digests over file bytes, the guard's containment probe) deliberately do
+// not, and stay on readFileSync.
+function readText(path: string): string {
+  return readFileSync(path, "utf8").replace(/\r\n?/g, "\n");
+}
+
+
 const MIN_TOKEN_LENGTH = 4;
 const MAX_CITATIONS = 2;
 const NO_MATCH_ANSWER =
@@ -58,7 +71,7 @@ function loadDocuments(dataDir: string): LoadedDocument[] {
     if (!statSync(path).isFile()) {
       continue;
     }
-    const text = readFileSync(path, "utf8");
+    const text = readText(path);
     const lines = text.replace(/\n+$/, "").split("\n");
     let title = name;
     for (const line of lines) {

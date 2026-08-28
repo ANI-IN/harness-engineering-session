@@ -145,8 +145,16 @@ must obey them (the conformance canary demonstrates all three):
   anything that must match goes to stdout or a file.
 - **Input line endings are the implementation's job.** The normalizer
   applies to outputs only. Fixture inputs may deliberately contain CRLF;
-  implementations treat LF and CRLF alike as line separators (Python text
-  mode does this automatically; TypeScript must split on `/\r?\n/`).
+  implementations treat LF and CRLF alike as line separators. Python text
+  mode does this automatically on every read. TypeScript must fold the
+  endings itself, and in the projects it does so once at the read, in a
+  `readText()` helper, rather than at each `split`: nine files read text and
+  a single missed read put a CRLF document into one track unnormalised,
+  which changed its lines, paragraphs, chunk boundaries and the sha256 of
+  its text. `lint-structure` fails on a raw `readFileSync(..., "utf8")`
+  outside that helper, and
+  `projects/project-03-multi-session-continuity/fixtures/imports/windows-notes.md`
+  pins the behaviour with real CRLF bytes.
 - **String lengths count Unicode code points**, not UTF-16 code units.
   `mega🚀rocket` has length 11. TypeScript implementations use code-point
   iteration (`[...str].length`), never `String.length`, wherever a SPEC

@@ -473,3 +473,56 @@ def test_free_prose_that_misdescribes_the_task_is_not_caught(tmp_path):
     errors: list[str] = []
     check_structure.check_task_hints(ex, "ex", errors)
     assert errors == [], "documented limit: prose without a sibling name passes"
+
+
+HELPER_OK = (
+    'function readText(path: string): string {\n'
+    '  return readFileSync(path, "utf8").replace(/\\r\\n?/g, "\\n");\n'
+    '}\n'
+)
+
+
+def _project_ts(tmp_path, body: str):
+    src = tmp_path / "projects/project-03-x/solution/typescript/main.ts"
+    src.parent.mkdir(parents=True)
+    src.write_text(body, encoding="utf-8")
+    return src
+
+
+def test_text_read_through_the_helper_passes(tmp_path):
+    _project_ts(tmp_path, HELPER_OK + 'const a = readText("f.md");\n')
+    errors: list[str] = []
+    check_structure.check_project_text_reads(errors, tmp_path)
+    assert errors == []
+
+
+def test_a_raw_text_read_beside_the_helper_is_rejected(tmp_path):
+    """The reintroduction path: someone adds one more direct read."""
+    _project_ts(tmp_path, HELPER_OK + 'const a = readFileSync("f.md", "utf8");\n')
+    errors: list[str] = []
+    check_structure.check_project_text_reads(errors, tmp_path)
+    assert len(errors) == 1
+    assert "raw readFileSync" in errors[0]
+
+
+def test_a_helper_that_stopped_normalising_is_rejected(tmp_path):
+    """The other reintroduction path: the helper survives, the fold does not."""
+    gutted = (
+        'function readText(path: string): string {\n'
+        '  return readFileSync(path, "utf8");\n'
+        '}\n'
+    )
+    _project_ts(tmp_path, gutted)
+    errors: list[str] = []
+    check_structure.check_project_text_reads(errors, tmp_path)
+    assert len(errors) == 1
+    assert "no readText() helper" in errors[0]
+
+
+def test_byte_level_reads_are_not_matched(tmp_path):
+    """sha digests and the guard's containment probe read bytes on purpose;
+    they take no encoding argument and must not be flagged."""
+    _project_ts(tmp_path, 'const buf = readFileSync(probe);\ndigest.update(readFileSync(p));\n')
+    errors: list[str] = []
+    check_structure.check_project_text_reads(errors, tmp_path)
+    assert errors == []

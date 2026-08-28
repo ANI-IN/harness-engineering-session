@@ -6,7 +6,13 @@
   "cases": [
     {
       "name": "init-records-metadata",
-      "args": ["init", "--data-dir", "kb-data", "--seed", "fixtures/kb-data/documents"],
+      "args": [
+        "init",
+        "--data-dir",
+        "kb-data",
+        "--seed",
+        "fixtures/kb-data/documents"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -23,7 +29,11 @@
     },
     {
       "name": "list-from-metadata",
-      "args": ["list", "--data-dir", "fixtures/kb-data"],
+      "args": [
+        "list",
+        "--data-dir",
+        "fixtures/kb-data"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -33,7 +43,11 @@
     },
     {
       "name": "list-before-init",
-      "args": ["list", "--data-dir", "missing-dir"],
+      "args": [
+        "list",
+        "--data-dir",
+        "missing-dir"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 1,
@@ -43,7 +57,12 @@
     },
     {
       "name": "import-extracts-metadata",
-      "args": ["import", "--data-dir", "fixtures/kb-data", "fixtures/imports/field-guide.md"],
+      "args": [
+        "import",
+        "--data-dir",
+        "fixtures/kb-data",
+        "fixtures/imports/field-guide.md"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -59,8 +78,35 @@
       }
     },
     {
+      "name": "import-crlf-document",
+      "args": [
+        "import",
+        "--data-dir",
+        "fixtures/kb-data",
+        "fixtures/imports/windows-notes.md"
+      ],
+      "stdin": null,
+      "expect": {
+        "exit_code": 0,
+        "stdout": "expected/import-crlf.json",
+        "kind": "json",
+        "files": [
+          {
+            "path": "fixtures/kb-data/documents/windows-notes.md",
+            "expected": "fixtures/imports/windows-notes.md",
+            "kind": "text"
+          }
+        ]
+      }
+    },
+    {
       "name": "show-detail-with-metadata",
-      "args": ["show", "--data-dir", "fixtures/kb-data", "retrieval-plan"],
+      "args": [
+        "show",
+        "--data-dir",
+        "fixtures/kb-data",
+        "retrieval-plan"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -70,7 +116,12 @@
     },
     {
       "name": "show-unknown-id",
-      "args": ["show", "--data-dir", "fixtures/kb-data", "no-such-document"],
+      "args": [
+        "show",
+        "--data-dir",
+        "fixtures/kb-data",
+        "no-such-document"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 1,
@@ -80,7 +131,11 @@
     },
     {
       "name": "index-builds-chunks",
-      "args": ["index", "--data-dir", "fixtures/kb-data"],
+      "args": [
+        "index",
+        "--data-dir",
+        "fixtures/kb-data"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -97,7 +152,11 @@
     },
     {
       "name": "index-idempotent",
-      "args": ["index", "--data-dir", "fixtures/kb-data-indexed"],
+      "args": [
+        "index",
+        "--data-dir",
+        "fixtures/kb-data-indexed"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -107,7 +166,11 @@
     },
     {
       "name": "status-unindexed",
-      "args": ["status", "--data-dir", "fixtures/kb-data"],
+      "args": [
+        "status",
+        "--data-dir",
+        "fixtures/kb-data"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -117,7 +180,11 @@
     },
     {
       "name": "status-ready",
-      "args": ["status", "--data-dir", "fixtures/kb-data-indexed"],
+      "args": [
+        "status",
+        "--data-dir",
+        "fixtures/kb-data-indexed"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -127,7 +194,12 @@
     },
     {
       "name": "ask-before-index",
-      "args": ["ask", "--data-dir", "fixtures/kb-data", "Which lines become citations in the ranking?"],
+      "args": [
+        "ask",
+        "--data-dir",
+        "fixtures/kb-data",
+        "Which lines become citations in the ranking?"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 1,
@@ -137,7 +209,12 @@
     },
     {
       "name": "ask-grounded-in-chunks",
-      "args": ["ask", "--data-dir", "fixtures/kb-data-indexed", "Which lines become citations in the ranking?"],
+      "args": [
+        "ask",
+        "--data-dir",
+        "fixtures/kb-data-indexed",
+        "Which lines become citations in the ranking?"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -147,7 +224,12 @@
     },
     {
       "name": "serve-self-check",
-      "args": ["serve", "--data-dir", "fixtures/kb-data-indexed", "--self-check"],
+      "args": [
+        "serve",
+        "--data-dir",
+        "fixtures/kb-data-indexed",
+        "--self-check"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -157,7 +239,11 @@
     },
     {
       "name": "workspace-ready",
-      "args": ["workspace-check", "--workspace", "fixtures/workspaces/workspace-ready"],
+      "args": [
+        "workspace-check",
+        "--workspace",
+        "fixtures/workspaces/workspace-ready"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -167,7 +253,11 @@
     },
     {
       "name": "workspace-stale",
-      "args": ["workspace-check", "--workspace", "fixtures/workspaces/workspace-stale"],
+      "args": [
+        "workspace-check",
+        "--workspace",
+        "fixtures/workspaces/workspace-stale"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 1,
@@ -177,7 +267,11 @@
     },
     {
       "name": "two-session-continuity",
-      "args": ["continuity", "--workdir", "work"],
+      "args": [
+        "continuity",
+        "--workdir",
+        "work"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 0,
@@ -187,7 +281,9 @@
     },
     {
       "name": "usage-error",
-      "args": ["frobnicate"],
+      "args": [
+        "frobnicate"
+      ],
       "stdin": null,
       "expect": {
         "exit_code": 2,
