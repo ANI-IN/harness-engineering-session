@@ -83,3 +83,31 @@ def test_identity_fields_alone_would_not_catch_it(tmp_path):
 
     assert identity == "Animesh Kumar|Animesh Kumar", "identity is clean"
     assert authorship.check_commit("abc12345", body), "the body is not"
+
+
+def test_an_empty_range_is_refused_rather_than_reported_green(tmp_path, capsys):
+    """On `main` itself, `main..HEAD` selects nothing. A gate that checks zero
+    commits and prints OK is the defect this file exists to prevent, so the
+    resolver widens to `--all` and `main()` refuses a genuinely empty range."""
+    import sys
+    from unittest import mock
+
+    with (
+        mock.patch.object(authorship, "commit_list", return_value=[]),
+        mock.patch.object(sys, "argv", ["check", "--range", "HEAD..HEAD"]),
+    ):
+        code = authorship.main()
+    out = capsys.readouterr().out
+    assert code == 1
+    assert "refusing to report green on an empty range" in out
+
+
+def test_the_resolver_widens_to_all_when_the_branch_range_is_empty():
+    """Standing on main, main..HEAD is empty; the check must not shrink to it."""
+    from unittest import mock
+
+    with (
+        mock.patch.object(authorship, "_rev_exists", return_value=True),
+        mock.patch.object(authorship, "commit_list", return_value=[]),
+    ):
+        assert authorship.resolve_range("main..HEAD") == "--all"

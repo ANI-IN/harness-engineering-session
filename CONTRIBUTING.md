@@ -66,7 +66,9 @@ make lint-links && make lint-mermaid && make lint-structure
 - No co-author trailers or tool attributions. `make lint-authorship`
   enforces this over `main..HEAD` and runs inside `make status` and CI. It
   reads each commit's full body: a trailer is not visible in the author or
-  committer fields, which is how three of them once shipped.
+  committer fields, which is how three of them once shipped. On `main`,
+  where that range is empty, it checks the whole history instead of
+  reporting green on nothing.
 
 ## Reporting problems
 

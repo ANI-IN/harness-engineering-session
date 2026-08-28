@@ -62,14 +62,24 @@ def _rev_exists(rev: str) -> bool:
 
 def resolve_range(rev_range: str) -> str:
     """`main..HEAD` needs a `main`. CI checks out a detached PR merge ref, so
-    the local branch may not exist; `origin/main` usually does. Falling back
-    to `--all` rather than to an empty range matters: an unresolvable base
-    must widen the check, never silently narrow it to nothing."""
+    the local branch may not exist; `origin/main` usually does.
+
+    Two ways this range can degenerate, and neither may report green:
+
+    1. No base ref resolves. Widen to `--all` rather than fail open.
+    2. The base resolves but the range is *empty*, which is the normal state
+       on `main` itself, where `main..HEAD` selects nothing. A gate that
+       checks zero commits and prints OK is the failure this whole file
+       exists to prevent, so an empty range also widens to `--all`.
+    """
     if rev_range != "main..HEAD":
         return rev_range
     for base in ("main", "origin/main"):
         if _rev_exists(base):
-            return f"{base}..HEAD"
+            candidate = f"{base}..HEAD"
+            if commit_list(candidate):
+                return candidate
+            return "--all"
     return "--all"
 
 
@@ -82,12 +92,25 @@ def commit_list(rev_range: str) -> list[str]:
     return [line for line in out.split("\n") if line]
 
 
-def raw_body(sha: str) -> str:
-    """The full commit message: subject, body, and every trailer line."""
-    return subprocess.run(
-        ["git", "log", "-1", "--format=%B", sha],
-        cwd=REPO_ROOT, capture_output=True, text=True, check=True,
+def bodies(rev_range: str) -> list[tuple[str, str]]:
+    """Every (sha, full body) in range, in one git call.
+
+    `%B` is the whole message: subject, body, and every trailer line. The
+    identity fields `%an`/`%cn` are deliberately not what is scanned; a
+    co-author trailer is invisible there, which is how three of them shipped.
+    """
+    args = ["git", "log", "-z", "--format=%H%n%B"]
+    args += ["--all"] if rev_range == "--all" else [rev_range]
+    out = subprocess.run(
+        args, cwd=REPO_ROOT, capture_output=True, text=True, check=True
     ).stdout
+    records = []
+    for chunk in out.split("\0"):
+        if not chunk.strip():
+            continue
+        sha, _, body = chunk.partition("\n")
+        records.append((sha.strip(), body))
+    return records
 
 
 def identity(sha: str) -> tuple[str, str]:
@@ -138,9 +161,16 @@ def main() -> int:
         print(f"lint-authorship: cannot read {rev_range}: {error}")
         return 1
 
+    if not shas:
+        print(
+            f"lint-authorship: {rev_range} selected no commits; refusing to "
+            f"report green on an empty range"
+        )
+        return 1
+
     errors: list[str] = []
-    for sha in shas:
-        errors.extend(check_commit(sha, raw_body(sha)))
+    for sha, body in bodies(rev_range):
+        errors.extend(check_commit(sha, body))
 
     print(
         f"lint-authorship: {len(shas)} commit(s) in {rev_range}, "
