@@ -8,9 +8,11 @@ Deliberately short. A handoff nobody reads is a handoff that failed.
 
 ## Verified now
 
-- `make status` green: every gate (doctor, verify-dedup, conformance, lint,
-  lint-links, lint-mermaid, lint-structure, lint-shared-helpers,
-  check-fresh) exits 0.
+- **Commit `c334ef9` on `main`**, matching `origin/main`, working tree
+  clean, nothing unpushed. CI green on that commit.
+- `make status` green: all ten gates (doctor, verify-dedup, conformance,
+  lint, lint-links, lint-mermaid, lint-structure, lint-shared-helpers,
+  lint-authorship, check-fresh) exit 0.
 - Counts sit exactly on their floors: 44 conformance units, 44 verify
   scripts, 13 lectures, 25 exercises, 5 projects, 105 README command
   fences. Note that `make status` prints only the first five; the fence
@@ -20,6 +22,18 @@ Deliberately short. A handoff nobody reads is a handoff that failed.
   against an export of tracked content only. That is the whole of what
   `check-fresh` runs: the conformance suite inside the export, three ways
   per case. It does not invoke each unit's `verify.sh`.
+
+### What ships, and what does not
+
+The module is **13 lectures, 25 exercises, 5 projects, and the library
+pack** (8 templates plus a schema and a README). That is the whole of it.
+
+Deliberately **not** built, and not promised anywhere in tracked content:
+project 06 (the capstone), projects 07 and 08, the `skills/` pillar, and
+the `advanced/` pack. The earlier brief in `PROPOSAL.md` describes them;
+that file is untracked and gitignored, so a clone never sees it. Do not
+report their absence as a gap, and do not add roadmap language promising
+them.
 
 ## Changed most recently
 
@@ -45,6 +59,51 @@ cost. Read that section before concluding the tree is finished.
 One environment caveat under Open concerns: do not run the gates inside a
 synced folder. That was the cause of a nondeterminism chased for most of
 the build, and it is not a defect in this repository.
+
+### The open items worth knowing before you touch anything
+
+Full detail and cost estimates are in the backlog below. These are the
+ones a new session is most likely to trip over or be asked about.
+
+- **Four gates have no negative test.** `lint-mermaid` has no test file at
+  all. `doctor`, `lint-shared-helpers` and `check-fresh` test helper
+  functions rather than the verdict the gate delivers through its exit
+  code. All four were verified by hand, which is exactly the evidence that
+  evaporates. Deferred on purpose; not a licence to trust their green.
+- **Backlog 2 and 3 are the two remaining checks that cannot fail.**
+  `tools/test_dedup_coverage.py:67-77` cannot detect the removal or the
+  disabling of the projects' only starter-must-fail assertion, and
+  `tools/check_readme_commands.py`'s `escaped` invariant is a tautology
+  that is provably always empty. Take these first if the goal is gate
+  quality.
+- **Lectures 01 and 02 put no verdict in the exit code.** Lecture 01's
+  demo emits a ratio and exits 0; lecture 02's five ablations all exit 0.
+  Lectures 03-13 all exit 1 on the claimed failure. This is the module's
+  headline demo rule, unmet in its two most-read lectures.
+- **Lecture 06's demo fails by budget arithmetic**, a twelve-step counter
+  running out, rather than by content going wrong in a workspace. It
+  satisfies the behavioral-demo rule. The owner has seen this and chose to
+  leave it. It is lecture **06**, not 07; lecture 07's demo audits a
+  done-claim and has no budget in it.
+- **The TASK_HINT gate has a known limit.** `check_task_hints` rejects a
+  hint naming an unchanged sibling of a changed check, which catches the
+  wording that shipped in exercise 02-01. It does **not** catch free prose
+  that misdescribes the task without naming such a sibling, which is what
+  shipped in exercise 06-02. The limit is pinned by
+  `test_free_prose_that_misdescribes_the_task_is_not_caught` so it stays a
+  decision rather than a surprise. A looser token rule was tried and fired
+  on 3 correct hints out of 25, so it was rejected.
+
+### A local file that is not in the repository
+
+`REPORT.md` sits at the repository root. It is a full state report written
+for the owner: inventory, gates, what is absent, defects, evidence, the
+learner path, and an assessment. It is **excluded via
+`.git/info/exclude`, not `.gitignore`, and is deliberately not committed.**
+`.markdownlint-cli2.jsonc` ignores it by name so a local report and a green
+`make status` can coexist; without that entry `lint-md` fails on it, since
+`.git/info/exclude` hides a file from git but not from the linter. Do not
+commit it, and do not delete it without asking.
 
 ## Changed in this session: the full review, and the fixes taken from it
 
@@ -301,6 +360,50 @@ lists six of eight; `curriculum-map.md:42` omits `evaluator-rubric.md`;
   aspect-shaped questions (terminology, duplication, weakest material)
   fold in as standing questions each agent answers for its own area.
 
+## Next best step: capture the module end to end
+
+Run every exercise and every project end to end on this Mac and write
+presentation-ready reference material to **`~/harness-session-materials/`**,
+outside the repository. The point is a record of what this module actually
+does when run, captured from execution rather than written from the source,
+so the material can be used to present and to check the module against
+itself.
+
+Scope: all 25 exercises and all 5 projects, both tracks. For an exercise
+that means the four acceptance runs (starter fails as recorded and solution
+passes, in Python and TypeScript). For a project it means the documented
+Setup, Usage and Demo flow, plus the starter-must-fail gate. Capture the
+real command and its real output.
+
+### How to run it
+
+- **Write outside the repository.** Everything goes to
+  `~/harness-session-materials/`. The repository tree must end this task as
+  clean as it started: `git status --porcelain` empty.
+- **Subagents are allowed here**, because this is read-only capture rather
+  than editing. Fan them out over disjoint units so they cannot race.
+- **No agent may run `make setup` or any repo-wide gate.** Not `make
+  status`, `verify`, `conformance`, or `check-fresh`. `make setup` touches
+  the lockfiles and `node_modules`, and a repo-wide gate re-enters the gate
+  running it; parallel agents doing either will collide. Unit-level
+  commands (`./<unit>/verify.sh`, `uv run python <unit>/...`, `pnpm exec
+  tsx <unit>/...`) are fine.
+- **Anything that writes to a fixture works on a temp copy.** Some project
+  commands write into `fixtures/` or create `kb-data/`. Copy the unit to a
+  temp directory and run there, or use a temp `--data-dir`. Never let a
+  capture run mutate a committed fixture.
+- Toolchain is already installed. If a track fails to start, run
+  `make doctor TRACK=<track>` and read it; do not run `make setup`.
+
+### Two cautions from this session
+
+- Do not run gate work from this checkout if it can be avoided: it sits
+  under the macOS Desktop iCloud redirect (see Standing conventions).
+  Unit-level capture is fine.
+- Two exercises had `verify.sh` task hints that named the wrong work, and
+  both were repaired. If a captured hint still reads wrong, that is a real
+  finding, not a stale note.
+
 ## Open concerns
 
 **Closed: the `make status` nondeterminism was iCloud, not this
@@ -387,6 +490,39 @@ machine-enforced. The rules most easily lost, and why they exist:
 - **Declared escapes are the only escapes**: `Starter-shape: non-code`,
   `Starter-divergence justification:`, `Corpus-divergence:`,
   `Helper-divergence:`, and a SPEC section headed `Seeded defects`.
+
+Rules that cost this project time when they were not followed:
+
+- **No AI attribution in commits.** No `Co-Authored-By:` trailer, no tool
+  attribution, per `CONTRIBUTING.md`. Three commits once shipped a trailer
+  because the rule lived only in prose. `make lint-authorship` now reads
+  every commit body, not `%an`/`%cn`, because a trailer is invisible in the
+  identity fields. It widens to `--all` on `main` and refuses to report
+  green on an empty range.
+- **No em-dashes or en-dashes in markdown prose.** Use a comma, a colon, a
+  plain hyphen, or restructure. `make lint-prose` enforces it, along with
+  the no-roadmap-language and this-is-a-module rules.
+- **Report through artifacts, not assertions.** Paste the command and its
+  real output; never summarise output you did not see. Every figure in
+  prose is generated from a committed fixture, cited, or labeled a
+  heuristic. A claim stands only as far as what re-executes it, which is
+  the module's own thesis and the standard its own reporting is held to.
+- **Integrate sequentially.** One completed, verified unit per commit,
+  landed in order, with the gates green before the next change starts.
+  Parallel work streams merged at once are how the two false-green
+  episodes in this repository happened.
+- **Floors move in the same commit as the thing they count**, set to the
+  exact discovered count, gates green against the raised floor. Adding a
+  conformance case to an existing unit moves no floor; adding a unit or an
+  executed README fence does.
+- **Never run the gates inside a synced folder.** iCloud, Dropbox,
+  OneDrive, Google Drive, including the macOS Desktop and Documents
+  redirect. A synced folder races the working tree and `make status` can
+  fail on an unchanged, committed, green tree. `make doctor` detects this
+  and warns by name; it warns rather than fails because it is the user's
+  machine. **This working copy is currently under the macOS Desktop
+  redirect and doctor warns on every run.** Use an unsynced path such as
+  `~/src` for gate work.
 
 ## Commands
 
