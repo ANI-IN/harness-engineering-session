@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.db.base import utcnow
 from app.db.models import Issue
 from app.repositories import issues as issues_repo
+from app.repositories import labels as labels_repo
 from app.repositories import users as users_repo
 from app.services import audit, projects
 from app.services.context import Actor
@@ -39,10 +40,24 @@ def get(session: Session, actor: Actor, issue_id: int) -> Issue:
 
 
 def list_for_project(
-    session: Session, actor: Actor, project_id: int, after: int | None, limit: int
+    session: Session,
+    actor: Actor,
+    project_id: int,
+    after: int | None,
+    limit: int,
+    label_id: int | None = None,
 ) -> tuple[list[Issue], int | None]:
     project = projects.get(session, actor, project_id)
-    return issues_repo.list_for_project(session, actor.org_id, project.id, after, limit)
+    _check_label(session, actor, label_id)
+    return issues_repo.list_for_project(
+        session, actor.org_id, project.id, after, limit, label_id=label_id
+    )
+
+
+def _check_label(session: Session, actor: Actor, label_id: int | None) -> None:
+    """A label filter from another org is a 404, exactly as if the label did not exist."""
+    if label_id is not None and labels_repo.get(session, actor.org_id, label_id) is None:
+        raise NotFound("label not found")
 
 
 def _check_assignee(session: Session, actor: Actor, assignee_id: int | None) -> None:

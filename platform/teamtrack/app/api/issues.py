@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Query, Response
 from sqlalchemy.orm import Session
 
-from app.api.deps import Id, current_actor, get_db, require_writer
+from app.api.deps import MAX_ID, Id, current_actor, get_db, require_writer
 from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_page
 from app.api.schemas import AssignIn, IssueCreate, IssueOut, IssuePatch, TransitionIn
 from app.services import issues
@@ -15,12 +15,13 @@ router = APIRouter(tags=["issues"])
 @router.get("/projects/{project_id}/issues", response_model=Page[IssueOut])
 def list_project_issues(
     project_id: Id,
+    label_id: int | None = Query(default=None, ge=1, le=MAX_ID),
     params: PageParams = Depends(page_params),
     actor: Actor = Depends(current_actor),
     db: Session = Depends(get_db),
 ) -> Page[IssueOut]:
     rows, next_after = issues.list_for_project(
-        db, actor, project_id, decode_cursor(params.cursor), params.limit
+        db, actor, project_id, decode_cursor(params.cursor), params.limit, label_id=label_id
     )
     return to_page(rows, next_after, IssueOut.model_validate)
 

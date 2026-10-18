@@ -48,6 +48,12 @@ class MemberOut(_Out):
     added_at: datetime
 
 
+class LabelBrief(_Out):
+    id: int
+    name: str
+    color: str
+
+
 class IssueOut(_Out):
     id: int
     org_id: int
@@ -61,6 +67,7 @@ class IssueOut(_Out):
     version: int
     created_at: datetime
     updated_at: datetime
+    labels: list[LabelBrief] = []
 
 
 class AuditOut(_Out):

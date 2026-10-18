@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from app.api import audit, auth, health, issues, legacy_v1, members, projects, users
+from app.api import audit, auth, health, issues, labels, legacy_v1, members, projects, users
 from app.api.errors import install_error_handlers
 from app.api.middleware import RequestIdMiddleware
 from app.db.base import Base
@@ -30,7 +30,7 @@ def create_app(settings: TeamTrackSettings | None = None) -> FastAPI:
     app.state.settings = settings
     app.add_middleware(RequestIdMiddleware)
     install_error_handlers(app)
-    for module in (auth, users, projects, members, issues, audit, health, legacy_v1):
+    for module in (auth, users, projects, members, issues, labels, audit, health, legacy_v1):
         app.include_router(module.router)
     app.include_router(board.router)
     app.mount("/board/static", StaticFiles(directory=board.STATIC_DIR), name="board-static")

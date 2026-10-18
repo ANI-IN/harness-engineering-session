@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from sqlalchemy.orm import Session
 
 from app.repositories import issues as issues_repo
+from app.repositories import labels as labels_repo
 from app.repositories import members as members_repo
 from app.repositories import orgs as orgs_repo
 from app.repositories import projects as projects_repo
@@ -93,4 +94,21 @@ def seed(session: Session) -> None:
                     spec.admin,
                 )
                 assert issue.id == next(issue_ids)
+    _seed_labels(session)
     session.commit()
+
+
+# Three labels per org (ids 1-3 Acme, 4-6 Globex); the second and third issues carry some.
+SEED_LABELS = {ACME.slug: (1, 2, 3), GLOBEX.slug: (4, 5, 6)}
+_LABELS = [("bug", "#d73a4a"), ("feature", "#a2eeef"), ("docs", "#0075ca")]
+
+
+def _seed_labels(session: Session) -> None:
+    for spec, _name, _projects in _ORGS:
+        ids = SEED_LABELS[spec.slug]
+        for (name, color), label_id in zip(_LABELS, ids, strict=True):
+            label = labels_repo.add(session, spec.org_id, name, color)
+            assert label.id == label_id
+        labels_repo.link(session, spec.issues[1], ids[0])
+        labels_repo.link(session, spec.issues[2], ids[0])
+        labels_repo.link(session, spec.issues[2], ids[1])
