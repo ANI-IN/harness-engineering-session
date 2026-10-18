@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
+from app.repositories import comments as comments_repo
 from app.repositories import issues as issues_repo
 from app.repositories import members as members_repo
 from app.repositories import orgs as orgs_repo
@@ -93,4 +94,20 @@ def seed(session: Session) -> None:
                     spec.admin,
                 )
                 assert issue.id == next(issue_ids)
+    _seed_comments(session)
     session.commit()
+
+
+# Two comments per org on the org's first issue: ids 1-2 (Acme issue 1), 3-4 (Globex issue 21).
+SEED_COMMENTS = {ACME.slug: (1, 2), GLOBEX.slug: (3, 4)}
+
+
+def _seed_comments(session: Session) -> None:
+    for spec, _name, _projects in _ORGS:
+        notes = (
+            (spec.member, "I can reproduce this on the latest build."),
+            (spec.admin, "Thanks, we are looking into it."),
+        )
+        for (author, body), comment_id in zip(notes, SEED_COMMENTS[spec.slug], strict=True):
+            comment = comments_repo.add(session, spec.org_id, spec.issues[0], author, body)
+            assert comment.id == comment_id

@@ -87,8 +87,8 @@ The check: a schema-based fuzzer (Schemathesis) plus assertions on the list and 
 Create endpoints accept an `Idempotency-Key` header. The same key with the same body returns the first
 response and creates nothing new; the same key with a different body returns 409
 `idempotency_conflict`. Keys are scoped per org and per endpoint. Use `services.idempotency.run_once`;
-see `POST /projects` for the pattern. (Issue creation does not support keys yet; that is on the
-roadmap.)
+see `POST /projects` for the pattern. Issue creation (`POST /projects/{project_id}/issues`)
+accepts keys too, with the same semantics.
 
 The check: a duplicate POST with the same key must leave exactly one new record.
 

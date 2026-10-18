@@ -23,3 +23,13 @@ def list_page(
 ) -> tuple[list[AuditEntry], int | None]:
     stmt = page(select(AuditEntry).where(AuditEntry.org_id == org_id), AuditEntry.id, after, limit)
     return split_page(list(session.scalars(stmt)), limit, lambda a: a.id)
+
+
+def list_for_entity(
+    session: Session, org_id: int, entity: str, entity_id: int, after: int | None, limit: int
+) -> tuple[list[AuditEntry], int | None]:
+    base = select(AuditEntry).where(
+        AuditEntry.org_id == org_id, AuditEntry.entity == entity, AuditEntry.entity_id == entity_id
+    )
+    stmt = page(base, AuditEntry.id, after, limit)
+    return split_page(list(session.scalars(stmt)), limit, lambda entry: entry.id)
