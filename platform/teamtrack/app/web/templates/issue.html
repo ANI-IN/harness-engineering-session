@@ -24,4 +24,21 @@
   </form>
   {% endif %}
 </article>
+<section class="comments" aria-label="Comments">
+  <h2>Comments <span class="count">{{ comments|length }}</span></h2>
+  {% for comment in comments %}
+  <article class="comment" data-comment-id="{{ comment.id }}" data-org="{{ slugs.get(comment.org_id, 'unknown') }}">
+    <p class="comment-meta">User #{{ comment.author_id }} · {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p class="comment-body">{{ comment.body }}</p>
+  </article>
+  {% else %}
+  <p class="no-comments">No comments yet.</p>
+  {% endfor %}
+  {% if actor.can_write %}
+  <form class="add-comment" method="post" action="/board/issues/{{ issue.id }}/comments">
+    <label>Add a comment <textarea name="body" required maxlength="5000"></textarea></label>
+    <button type="submit">Comment</button>
+  </form>
+  {% endif %}
+</section>
 {% endblock %}

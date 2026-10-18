@@ -63,6 +63,8 @@ def create(
     description: str,
     priority: str,
     assignee_id: int | None,
+    *,
+    commit: bool = True,
 ) -> Issue:
     project = projects.get(session, actor, project_id)
     _validate(title, description, priority)
@@ -71,7 +73,8 @@ def create(
         session, actor.org_id, project.id, title, description, priority, assignee_id, actor.user_id
     )
     audit.record(session, actor, "issue.create", "issue", issue.id)
-    session.commit()
+    if commit:
+        session.commit()
     return issue
 
 
@@ -116,3 +119,36 @@ def delete(session: Session, actor: Actor, issue_id: int) -> None:
     _touch(issue)
     audit.record(session, actor, "issue.delete", "issue", issue.id)
     session.commit()
+
+
+def search(
+    session: Session,
+    actor: Actor,
+    *,
+    status: str | None = None,
+    priority: str | None = None,
+    assignee_id: int | None = None,
+    project_id: int | None = None,
+    q: str | None = None,
+    after: int | None = None,
+    limit: int = 20,
+) -> tuple[list[Issue], int | None]:
+    """Org-wide search: live issues of the caller's org in active projects, filters ANDed.
+
+    A project or assignee id that is not in the caller's org is a 404, exactly as if it did not
+    exist (house rule R1)."""
+    if project_id is not None:
+        projects.get(session, actor, project_id)
+    if assignee_id is not None and users_repo.get(session, actor.org_id, assignee_id) is None:
+        raise NotFound("assignee not found")
+    return issues_repo.search(
+        session,
+        actor.org_id,
+        status=status,
+        priority=priority,
+        assignee_id=assignee_id,
+        project_id=project_id,
+        q=q,
+        after=after,
+        limit=limit,
+    )
