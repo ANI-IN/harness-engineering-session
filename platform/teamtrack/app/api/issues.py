@@ -1,11 +1,19 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Query, Response
 from sqlalchemy.orm import Session
 
-from app.api.deps import Id, current_actor, get_db, require_writer
+from app.api.deps import MAX_ID, Id, current_actor, get_db, require_writer
 from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_page
-from app.api.schemas import AssignIn, IssueCreate, IssueOut, IssuePatch, TransitionIn
+from app.api.schemas import (
+    AssignIn,
+    IssueCreate,
+    IssueOut,
+    IssuePatch,
+    Priority,
+    Status,
+    TransitionIn,
+)
 from app.services import issues
 from app.services.context import Actor
 
@@ -21,6 +29,34 @@ def list_project_issues(
 ) -> Page[IssueOut]:
     rows, next_after = issues.list_for_project(
         db, actor, project_id, decode_cursor(params.cursor), params.limit
+    )
+    return to_page(rows, next_after, IssueOut.model_validate)
+
+
+@router.get("/issues", response_model=Page[IssueOut])
+def search_issues(
+    status: Status | None = Query(default=None),
+    priority: Priority | None = Query(default=None),
+    assignee_id: int | None = Query(default=None, ge=1, le=MAX_ID),
+    project_id: int | None = Query(default=None, ge=1, le=MAX_ID),
+    q: str | None = Query(
+        default=None, min_length=1, max_length=100, description="Substring of the title."
+    ),
+    params: PageParams = Depends(page_params),
+    actor: Actor = Depends(current_actor),
+    db: Session = Depends(get_db),
+) -> Page[IssueOut]:
+    """Issues of the caller's org across its projects; every filter is optional (AND)."""
+    rows, next_after = issues.search(
+        db,
+        actor,
+        status=status,
+        priority=priority,
+        assignee_id=assignee_id,
+        project_id=project_id,
+        q=q,
+        after=decode_cursor(params.cursor),
+        limit=params.limit,
     )
     return to_page(rows, next_after, IssueOut.model_validate)
 

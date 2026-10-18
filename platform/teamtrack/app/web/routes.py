@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import Id, get_db
 from app.seed import ACME, GLOBEX
-from app.services import auth, issues, orgs, projects
+from app.services import auth, comments, issues, orgs, projects
 from app.services.context import Actor
 from app.services.errors import Forbidden, Unauthorized
 
@@ -133,7 +133,31 @@ def issue_detail(issue_id: Id, request: Request, db: Session = Depends(get_db)) 
     if actor is None:
         return _to_login()
     issue = issues.get(db, actor, issue_id)
-    return _render(request, "issue.html", actor, db, issue=issue)
+    return _render(
+        request, "issue.html", actor, db, issue=issue, comments=_all_comments(db, actor, issue.id)
+    )
+
+
+def _all_comments(db: Session, actor: Actor, issue_id: int) -> list[Any]:
+    rows, after = comments.list_page(db, actor, issue_id, None, 100)
+    collected = list(rows)
+    while after is not None:
+        rows, after = comments.list_page(db, actor, issue_id, after, 100)
+        collected.extend(rows)
+    return collected
+
+
+@router.post("/issues/{issue_id}/comments")
+def add_comment(
+    issue_id: Id, request: Request, body: str = Form(...), db: Session = Depends(get_db)
+) -> Response:
+    actor = _actor(request, db)
+    if actor is None:
+        return _to_login()
+    if not actor.can_write:
+        raise Forbidden("viewers cannot change data")
+    comments.create(db, actor, issue_id, body)
+    return RedirectResponse(f"/board/issues/{issue_id}", status_code=303)
 
 
 @router.post("/issues/{issue_id}/transition")
