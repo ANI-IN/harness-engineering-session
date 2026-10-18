@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Edit conflict · #{{ issue.id }} · TeamTrack{% endblock %}
+{% block content %}
+<section class="conflict" role="alert" data-issue-id="{{ issue.id }}" data-org="{{ slugs.get(issue.org_id, 'unknown') }}">
+  <h1>This issue was changed by someone else</h1>
+  <p>Your form was based on version {{ sent_version if sent_version is not none else "(unknown)" }}, but the issue is now at version <span class="current-version">{{ issue.version }}</span>. Your changes were not saved.</p>
+  <p><a href="/board/issues/{{ issue.id }}">Reload the issue</a> and make your change again.</p>
+</section>
+{% endblock %}

@@ -16,3 +16,10 @@ def list_page(
     session: Session, actor: Actor, after: int | None, limit: int
 ) -> tuple[list[AuditEntry], int | None]:
     return audit_repo.list_page(session, actor.org_id, after, limit)
+
+
+def list_for_entity(
+    session: Session, actor: Actor, entity: str, entity_id: int, after: int | None, limit: int
+) -> tuple[list[AuditEntry], int | None]:
+    """Audit entries about one entity of the caller's org, oldest first."""
+    return audit_repo.list_for_entity(session, actor.org_id, entity, entity_id, after, limit)

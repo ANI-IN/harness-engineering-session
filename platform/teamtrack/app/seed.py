@@ -6,11 +6,14 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
+from app.repositories import comments as comments_repo
 from app.repositories import issues as issues_repo
+from app.repositories import labels as labels_repo
 from app.repositories import members as members_repo
 from app.repositories import orgs as orgs_repo
 from app.repositories import projects as projects_repo
 from app.repositories import users as users_repo
+from app.repositories import watchers as watchers_repo
 
 
 @dataclass(frozen=True)
@@ -54,6 +57,15 @@ _TITLES = [
     "Broken link in footer",
 ]
 _PRIORITIES = ["low", "medium", "high"]
+# Each org's member watches the org's first two issues: watcher ids 1-2 (Acme), 3-4 (Globex).
+SEED_WATCHERS = {ACME.slug: (1, 2), GLOBEX.slug: (3, 4)}
+
+
+def _seed_watchers(session: Session) -> None:
+    for spec, _name, _projects in _ORGS:
+        for issue_id, watcher_id in zip(spec.issues[:2], SEED_WATCHERS[spec.slug], strict=True):
+            watcher = watchers_repo.add(session, spec.org_id, issue_id, spec.member)
+            assert watcher.id == watcher_id
 
 
 def seed(session: Session) -> None:
@@ -93,4 +105,38 @@ def seed(session: Session) -> None:
                     spec.admin,
                 )
                 assert issue.id == next(issue_ids)
+    _seed_comments(session)
+    _seed_watchers(session)
+    _seed_labels(session)
     session.commit()
+
+
+# Two comments per org on the org's first issue: ids 1-2 (Acme issue 1), 3-4 (Globex issue 21).
+SEED_COMMENTS = {ACME.slug: (1, 2), GLOBEX.slug: (3, 4)}
+
+
+def _seed_comments(session: Session) -> None:
+    for spec, _name, _projects in _ORGS:
+        notes = (
+            (spec.member, "I can reproduce this on the latest build."),
+            (spec.admin, "Thanks, we are looking into it."),
+        )
+        for (author, body), comment_id in zip(notes, SEED_COMMENTS[spec.slug], strict=True):
+            comment = comments_repo.add(session, spec.org_id, spec.issues[0], author, body)
+            assert comment.id == comment_id
+
+
+# Three labels per org (ids 1-3 Acme, 4-6 Globex); the second and third issues carry some.
+SEED_LABELS = {ACME.slug: (1, 2, 3), GLOBEX.slug: (4, 5, 6)}
+_LABELS = [("bug", "#d73a4a"), ("feature", "#a2eeef"), ("docs", "#0075ca")]
+
+
+def _seed_labels(session: Session) -> None:
+    for spec, _name, _projects in _ORGS:
+        ids = SEED_LABELS[spec.slug]
+        for (name, color), label_id in zip(_LABELS, ids, strict=True):
+            label = labels_repo.add(session, spec.org_id, name, color)
+            assert label.id == label_id
+        labels_repo.link(session, spec.issues[1], ids[0])
+        labels_repo.link(session, spec.issues[2], ids[0])
+        labels_repo.link(session, spec.issues[2], ids[1])
