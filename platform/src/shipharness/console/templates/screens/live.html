@@ -1,0 +1,97 @@
+{% from "screens/_macros.html" import screen_head, arm_label, referee_line %}
+{{ screen_head(key, title, state) }}
+<div class="grid two">
+{% for arm in arms %}
+{% set a = state.arm(arm) %}
+{% if state.not_run(arm) %}
+<article class="panel arm-panel" data-arm="{{ arm }}">
+  <header class="arm-head"><h2>{{ arm_label(arm, a) }}</h2></header>
+  {% if state.constructed %}
+  <p class="muted not-run">{{ state.not_run(arm) }}: a constructed example drives the harness arm alone with scripted steps. The bare-vs-harness comparison comes from the A/B runs (make demo-N).</p>
+  {% else %}
+  <p class="muted not-run">{{ state.not_run(arm) }}: this run shows the harness arm alone. The bare-vs-harness comparison comes from the A/B runs (make demo-N).</p>
+  {% endif %}
+</article>
+{% else %}
+<article class="panel arm-panel" data-arm="{{ arm }}">
+  <header class="arm-head">
+    <h2>{{ arm_label(arm, a) }}</h2>
+    <p class="sandbox-line">
+      {% if a.sandbox %}container {{ a.sandbox.container_id }} · network {{ a.sandbox.network }}{% else %}no container yet{% endif %}
+      {% if a.usage %} · CPU {{ "%.0f"|format(a.usage.cpu_pct) }}% · {{ "%.0f"|format(a.usage.mem_mb) }} / {{ "%.0f"|format(a.usage.mem_limit_mb) }} MB · {{ mmss(a.usage.time_left_s) }} left{% endif %}
+    </p>
+    <p class="sandbox-line">
+      {% if a.cost %}cost {{ usd(a.cost.run_usd) }} / {{ usd(a.cost.limit_usd, 2) }}{% else %}cost –{% endif %}
+      {% if a.run_end %} · {{ status("done" if a.run_end.status == "completed" else "fail", "run " ~ a.run_end.status) }} · {{ a.run_end.turns_total }} turns{% endif %}
+    </p>
+  </header>
+
+  {# A finished run shows its whole timeline (scrollable); a live run shows the latest rows. #}
+  {% set done = a.run_end is not none %}
+  <div class="list-head"><h3>{% if done %}All turns{% else %}Last turns{% endif %}</h3>
+    <button type="button" class="expand-toggle" data-expand="turns-{{ arm }}" aria-controls="turns-{{ arm }}">Expand</button></div>
+  <ol class="turns scroll-list{% if done %} full{% endif %}" id="turns-{{ arm }}" data-scroll tabindex="0" aria-label="{{ arm }} turns">
+  {% for row in (a.timeline if done else a.recent(15)) %}
+    {% if row.kind == "turn" %}
+    <li class="turn{% if row.flags %} flagged{% endif %}">
+      <span class="turn-no">{{ row.session_index }}.{{ row.turn }}</span>
+      <span class="msg" title="{{ row.message }}">{{ breakable(row.message|truncate(140, true, "…")) }}</span>
+      <span class="tools">
+      {% for t in row.tools[-3:] %}
+        <span class="tool{% if t.harness_doc %} harness-doc{% endif %}">{% if t.ok == false %}{{ status("fail", t.name) }}{% else %}{{ t.name }}{% endif %} <span title="{{ t.target }}">{{ breakable(t.target|truncate(90, true, "…")) }}</span></span>
+      {% endfor %}
+      {% for f in row.flags %}{{ status(f) }}{% endfor %}
+      {% for n in row.notes[-1:] %}<span class="note" title="{{ n }}">{{ breakable(n|truncate(120, true, "…")) }}</span>{% endfor %}
+      </span>
+    </li>
+    {% else %}
+    <li class="marker">{{ status(row.kind, ("Session %d stopped" if row.kind == "session_stop" else "Session %d resumed")|format(row.session_index)) }} <span class="detail" title="{{ row.detail }}">{{ breakable(row.detail|truncate(120, true, "…")) }}</span></li>
+    {% endif %}
+  {% else %}
+    <li class="muted">No turns yet.</li>
+  {% endfor %}
+  </ol>
+
+  {# Refused 'done' claims, always visible (not only in the scrolling decisions list). #}
+  {% set refusals = a.gate_refusals() %}
+  {% if refusals %}
+  <ul class="gate-refusals">
+  {% for r in refusals %}
+    <li>{{ status("gate_fail", "refused") }} {{ r.text }}</li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if not a.decisions %}
+  <h3>Harness decisions</h3>
+  <p class="decisions empty muted">{% if arm == "bare" %}None: bare arm has no layers.{% else %}None yet.{% endif %}</p>
+  {% else %}
+  <div class="list-head"><h3>Harness decisions</h3>
+    <button type="button" class="expand-toggle" data-expand="decisions-{{ arm }}" aria-controls="decisions-{{ arm }}">Expand</button></div>
+  <ul class="decisions scroll-list{% if done %} full{% endif %}" id="decisions-{{ arm }}" data-scroll tabindex="0" aria-label="{{ arm }} harness decisions">
+  {% for d in a.decisions %}
+    <li title="{{ d.message }}">{{ status(d.kind) }} <span class="layer">{{ d.layer }}</span> {{ breakable(d.message|truncate(200, true, "…")) }}</li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+
+  <h3>Gate</h3>
+  <div class="pills">
+  {% if a.gate %}
+    {# Short form on the pill ("House rule 1"), the full name and the detail in the tooltip. #}
+    {% for item in a.gate["items"] %}{{ status(item.status, check_short(item.name), check_label(item.name) ~ (": " ~ item.detail if item.detail else "")) }}{% endfor %}
+  {% else %}
+    <span class="muted">No gate{% if arm == "bare" %} (verify layer off){% endif %}.</span>
+  {% endif %}
+  {% for p in a.progress.values() %}<span class="progress" title="{{ check_label(p.check) }}">{{ progress_label(p.check, p.label) }}</span>{% endfor %}
+  </div>
+
+  <div class="claims">
+    <p><span class="k">Agent said:</span> {% for key, words in a.claim_parts %}{% if not loop.first %} · {% endif %}{{ status(key, words) }}{% endfor %}</p>
+    <p class="referee"><span class="k">Referee</span> {{ referee_line(a) }}</p>
+    {% if a.claim_supported is not none %}<p>{{ status("supported" if a.claim_supported else "unsupported") }}</p>{% endif %}
+  </div>
+</article>
+{% endif %}
+{% endfor %}
+</div>

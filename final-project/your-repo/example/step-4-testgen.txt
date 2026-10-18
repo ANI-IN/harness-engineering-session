@@ -1,0 +1,14 @@
+$ cd "$TARGET"
+[exit code 0]
+
+$ MAX_RUN_COST_USD=0.10 uv run --project "$SHIPHARNESS" shipharness testgen --repo . --module boltons/queueutils.py --tests tests/test_queueutils.py --layers verify --max-tests 3 --sandbox local --python "$SHIPHARNESS/.venv/bin/python" --out /tmp/fp-example-testgen
+! UNSANDBOXED — results not official: generated tests run on this machine
+Baseline: existing suite without doctests
+testgen r-20261017-200812-6d069b: completed; kept 3 of 3 proposed tests
++ tests/test_queueutils_generated.py::test_queue_order_peek_and_priority_update
++ tests/test_queueutils_generated.py::test_queue_custom_priority_key_and_removal
++ tests/test_queueutils_generated.py::test_queue_empty_operations_and_defaults
+Kept tests and report: /tmp/fp-example-testgen
+Cost: $0.001522 (testgen, model gpt-6-luna)
+[exit code 0]
+

@@ -1,0 +1,45 @@
+# captured on 2026-10-17 from `make --no-print-directory grade-assignment-1 SUBMISSION=submodules/section-1-instructions/assignment/starter` at commit d52d8c6 (offline command, no model calls); your output will differ
+$ make --no-print-directory grade-assignment-1 SUBMISSION=submodules/section-1-instructions/assignment/starter
+uv run python scripts/grade_assignment.py 1 "submodules/section-1-instructions/assignment/starter"
+A1 grade: submodules/section-1-instructions/assignment/starter
+A Map and layout                           0.6/15
+  layout                       0.6/5  missing ARCHITECTURE.md, docs/SECURITY.md, docs/RELIABILITY.md, docs/QUALITY_SCORE.md, docs/PLANS.md, docs/design-docs/index.md, docs/product-specs/index.md; follow A1's layout (README, 'Expected project structure')
+  map-length                   0.0/3  AGENTS.md still holds the starter TODO stub
+  map-reach                    0.0/4  build the layout first
+  no-overwrite                 0.0/3  build the layout first
+B Rule coverage                            0.0/25
+  original-unchanged           0.0/2  scaled by coverage
+  coverage                     0.0/12  0 of 66 active rules covered; missing or weak: CV-01, CV-02, CV-03, CV-04, CV-05, CV-06, CV-07, CV-08
+  no-duplicates                0.0/2
+  no-retired                   0.0/2
+  no-unknown                   0.0/2
+  no-rule-in-map               0.0/2
+  no-new-facts                 0.0/3  5 code spans are not in the original file and are not existing paths: AGENTS.md: `original/AGENTS.md`; AGENTS.md: `ARCHITECTURE.md`; AGENTS.md: `skills/skill-template`; AGENTS.md: `.agents/skills/<your-skill>/`; AGENTS.md: `uv run shipharness skills validate` (restructure, do not add facts: the A/B must stay fair)
+C Skill                                    0.0/12
+  skill-valid                  0.0/4  need exactly one skill in .agents/skills/ (found: none)
+  skill-frontmatter            0.0/2  need exactly one skill in .agents/skills/ (found: none)
+  skill-sections               0.0/2  need exactly one skill in .agents/skills/ (found: none)
+  skill-linked                 0.0/2  need exactly one skill in .agents/skills/ (found: none)
+  skill-cites                  0.0/2  need exactly one skill in .agents/skills/ (found: none)
+D Docs checker                             1.2/26
+  checker-tests                0.0/2  pytest submodules/section-1-instructions/assignment/starter/checker: 12 failed, 3 passed in 0.37s
+  checker-clean                0.0/2  make the checker tests pass first: a checker that finds nothing proves nothing
+  pristine-visible-tests       1.2/6  3 of 15 visible tests
+  reference-tree               0.0/6  clean on the reference tree: True; injected faults found: 0 of 3
+  hidden-cases                 0.0/10  0 of 11 hidden cases; failing: reference-style link definitions, anchors with repeated headings and product targets, links that leave the tree, absolute links, and missing images, code-span paths inside a skill, missing active rules; a retired rule may be left out, weak statements; the statement stops at the next list item, duplicate and retired definitions across files, unknown references, linked ids, and a definition in the map
+E A/B report                               0.0/10
+  report-sections              0.0/2  TODO markers are left in the report (sections needed: Setup, Results, Links, Cost and traces, Reading the result, Limits)
+  report-command               0.0/2  Setup needs the exact command (--split section-1 --k 3 --layers instructions --batch <name>), 'Instructions tree commit: <sha>', and 'Runs per arm: <n>'
+  report-results               0.0/2  Results needs an R1 row and an R3 row, each with 'failing/runs' counts per arm (for example 3/24), runs equal to 'Runs per arm', and no percentages
+  report-links                 0.0/1  Links needs the two LangSmith experiment URLs (bare and harness)
+  report-cost                  0.0/1  'Cost: $<x>' at most 2.50 and 'Traces: <n>' at most 150
+  report-reading               0.0/2  Reading the result: at least 60 words that discuss R1 and R3; Limits: at least 20
+F Live run evidence                        0.0/12
+  live-files                   0.0/3  live evidence missing or malformed: no live/ folder in the work folder; collect it with live_evidence.py (README, task 6)
+  live-command                 0.0/3  live evidence missing or malformed: no live/ folder in the work folder; collect it with live_evidence.py (README, task 6)
+  live-caps                    0.0/2  live evidence missing or malformed: no live/ folder in the work folder; collect it with live_evidence.py (README, task 6)
+  live-tree                    0.0/2  live evidence missing or malformed: no live/ folder in the work folder; collect it with live_evidence.py (README, task 6)
+  live-report                  0.0/2  live evidence missing or malformed: no live/ folder in the work folder; collect it with live_evidence.py (README, task 6)
+Score: 1.8/100
+grading assignment 1: submodules/section-1-instructions/assignment/starter
+(exit 0)

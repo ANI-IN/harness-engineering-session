@@ -1,0 +1,462 @@
+/* Live Demo Guide: print styles (A4, Chromium). Colours come from the console's tokens in
+   platform/src/shipharness/console/static/console.css: the console background and panels for the
+   dark parts, --bare (orange) and --harness (blue) for the two arms, --good and --warn for the
+   checkpoint and warning boxes. On white paper each token gets a darker ink and a light tint. */
+:root {
+  --console-bg: #0b0f14;
+  --panel: #151b23;
+  --panel-2: #1d2530;
+  --border: #3a4554;
+  --console-text: #f5f7fa;
+  --console-muted: #b8c2cf;
+  --harness: #7fd7ff;
+  --harness-ink: #0b6688;
+  --harness-tint: #eaf8fe;
+  --bare: #ffb86b;
+  --bare-ink: #a85600;
+  --bare-tint: #fff4e8;
+  --good: #5ee08a;
+  --good-ink: #1b7440;
+  --good-tint: #ecfaf1;
+  --warn: #ffd166;
+  --warn-ink: #7f5a00;
+  --warn-tint: #fff8e3;
+  --ink: #1b222c;
+  --ink-soft: #4a5565;
+  --rule: #d5dbe3;
+  --paper-grey: #f3f5f8;
+  --sans: "DejaVu Sans", sans-serif;
+  --mono: "DejaVu Sans Mono", monospace;
+}
+
+@page {
+  size: A4;
+  margin: 22mm 18mm 20mm 18mm;
+  @top-left {
+    content: "Module 1 · Live Demo Guide";
+    font: 7.5pt var(--sans);
+    color: #6b7684;
+    vertical-align: bottom;
+    padding-bottom: 3mm;
+  }
+  @top-right {
+    font: 700 7.5pt var(--sans);
+    color: var(--harness-ink);
+    vertical-align: bottom;
+    padding-bottom: 3mm;
+  }
+  @bottom-right {
+    content: counter(page);
+    font: 700 8.5pt var(--sans);
+    color: var(--ink);
+    vertical-align: top;
+    padding-top: 3mm;
+  }
+  @bottom-left {
+    content: "Harness Engineering for Coding Agents";
+    font: 7.5pt var(--sans);
+    color: #6b7684;
+    vertical-align: top;
+    padding-top: 3mm;
+  }
+}
+@page cover {
+  margin: 0;
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+@page front {
+  @top-right { content: "Contents"; }
+}
+
+* { box-sizing: border-box; }
+html { font-size: 10pt; }
+body {
+  margin: 0;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.5;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  orphans: 3;
+  widows: 3;
+}
+p { margin: 0 0 2.6mm; }
+a { color: var(--harness-ink); text-decoration: none; }
+strong { font-weight: 700; }
+ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
+li { margin: 0 0 1mm; }
+li > p { margin: 0 0 1mm; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 5mm 0; }
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--paper-grey);
+  border: 1px solid #e3e7ed;
+  border-radius: 3px;
+  padding: 0 1.2mm;
+  overflow-wrap: anywhere;
+}
+kbd {
+  font: 700 0.85em var(--mono);
+  border: 1px solid #8a95a3;
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 0 1.4mm;
+  background: #ffffff;
+}
+
+/* -- cover ---------------------------------------------------------------------------------- */
+.cover {
+  page: cover;
+  width: 210mm;
+  height: 297mm;
+  background: var(--console-bg);
+  color: var(--console-text);
+  display: flex;
+  flex-direction: column;
+  padding: 24mm 22mm 20mm;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 7mm;
+  background: linear-gradient(var(--bare) 0 50%, var(--harness) 50% 100%);
+}
+.cover-tag {
+  font: 700 9pt var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--console-muted);
+  text-transform: uppercase;
+}
+.cover-main { margin-top: auto; margin-bottom: auto; }
+.cover-arms { display: flex; gap: 3mm; margin-bottom: 9mm; }
+.arm {
+  font: 700 9pt var(--sans);
+  padding: 1.5mm 4mm;
+  border-radius: 2mm;
+  color: #111111;
+}
+.arm-bare { background: var(--bare); }
+.arm-harness { background: var(--harness); }
+.cover-title {
+  font-size: 30pt;
+  line-height: 1.15;
+  margin: 0 0 6mm;
+  font-weight: 700;
+  max-width: 160mm;
+}
+.cover-sub {
+  font-size: 20pt;
+  color: var(--harness);
+  font-weight: 700;
+  margin-bottom: 10mm;
+}
+.cover-blurb {
+  font-size: 11.5pt;
+  color: var(--console-muted);
+  max-width: 130mm;
+  line-height: 1.55;
+}
+.cover-foot {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-top: 5mm;
+  font: 9pt var(--sans);
+  color: var(--console-muted);
+}
+.cover-foot span:first-child { font: 700 11pt var(--mono); color: var(--console-text); }
+
+/* -- contents ------------------------------------------------------------------------------- */
+.toc { page: front; }
+.toc-title {
+  font-size: 22pt;
+  margin: 0 0 8mm;
+  padding-bottom: 3mm;
+  border-bottom: 3px solid var(--harness);
+}
+.toc-list { list-style: none; margin: 0; padding: 0; }
+.toc-list li { margin: 0; break-inside: avoid; }
+.toc-list a { display: flex; align-items: baseline; color: var(--ink); gap: 2mm; }
+.toc-1 { margin-top: 4.5mm !important; font-weight: 700; font-size: 11.5pt; }
+.toc-1:first-child { margin-top: 0 !important; }
+.toc-2 { font-size: 9.5pt; padding-left: 9mm; color: var(--ink-soft); line-height: 1.75; }
+.toc-2 a { color: var(--ink-soft); }
+.toc-kicker {
+  display: inline-block;
+  min-width: 34mm;
+  color: var(--bare-ink);
+  font-size: 9pt;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.toc-dots { flex: 1; border-bottom: 1px dotted #a5afbb; transform: translateY(-1mm); }
+.toc-page { font-variant-numeric: tabular-nums; min-width: 8mm; text-align: right; }
+
+/* -- parts and chapter bands ---------------------------------------------------------------- */
+.part { break-before: page; }
+.band {
+  background: var(--panel);
+  color: var(--console-text);
+  border-left: 5mm solid var(--harness);
+  border-radius: 0 2mm 2mm 0;
+  padding: 7mm 8mm 7mm 8mm;
+  margin: 0 0 8mm;
+  break-after: avoid;
+}
+.part-intro .band, .part-appendix .band, .part-part0 .band { border-left-color: var(--bare); }
+.band-kicker {
+  font: 700 9.5pt var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--bare);
+  margin-bottom: 2mm;
+}
+.part-ch1 .band-kicker, .part-ch2 .band-kicker, .part-ch3 .band-kicker,
+.part-ch4 .band-kicker, .part-ch5 .band-kicker { color: var(--harness); }
+.band h1 { margin: 0; font-size: 21pt; line-height: 1.2; }
+
+h2 {
+  font-size: 14.5pt;
+  margin: 8mm 0 3.5mm;
+  padding-bottom: 1.5mm;
+  border-bottom: 2px solid var(--rule);
+  break-after: avoid;
+}
+h3 { font-size: 11.5pt; margin: 6mm 0 2.5mm; break-after: avoid; }
+.band + h2 { margin-top: 2mm; }
+
+/* -- steps ---------------------------------------------------------------------------------- */
+.step {
+  margin: 0 0 6mm;
+  border-top: 1px solid var(--rule);
+  padding-top: 3.5mm;
+}
+/* A step may break between blocks; its title stays with its first block (.step-head), and no
+   command, box, or figure is ever split. Keeping whole steps together left half-empty pages. */
+.step-head { break-inside: avoid; }
+.step-title {
+  display: flex;
+  align-items: baseline;
+  gap: 3mm;
+  margin: 0 0 3mm;
+  font-size: 12pt;
+}
+.step-num {
+  flex: none;
+  font-size: 9pt;
+  font-weight: 700;
+  color: #111111;
+  background: var(--harness);
+  border-radius: 1.5mm;
+  padding: 0.6mm 2.4mm;
+  letter-spacing: 0.02em;
+}
+.part-intro .step-num, .part-part0 .step-num, .part-appendix .step-num { background: var(--bare); }
+.step-text { line-height: 1.3; }
+
+.field { margin: 0 0 2.2mm; padding-left: 34mm; }
+.field > strong:first-child {
+  display: inline-block;
+  width: 34mm;
+  margin-left: -34mm;
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--harness-ink);
+}
+.part-part0 .field > strong:first-child,
+.part-appendix .field > strong:first-child { color: var(--bare-ink); }
+.field-type + .cmd, .field-see + .out, .field-see + figure { margin-top: 1mm; }
+/* A label line stays on the page of the command, output, or screenshot it introduces. */
+.keep { break-inside: avoid; }
+
+/* -- commands and output -------------------------------------------------------------------- */
+.cmd {
+  background: var(--panel);
+  border-radius: 2mm;
+  margin: 1.5mm 0 3.5mm;
+  break-inside: avoid;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.cmd-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel-2);
+  padding: 1mm 3mm;
+  font: 700 7pt var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--console-muted);
+}
+.cmd-copy {
+  border: 1px solid var(--border);
+  border-radius: 1mm;
+  padding: 0.2mm 2mm;
+  color: var(--harness);
+  letter-spacing: 0.04em;
+}
+.cmd-body {
+  margin: 0;
+  padding: 2.6mm 3.5mm;
+  color: var(--console-text);
+  font: 9pt/1.5 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.cmd-body code { background: none; border: 0; padding: 0; font: inherit; color: inherit; }
+.out {
+  background: var(--paper-grey);
+  border: 1px solid var(--rule);
+  border-radius: 2mm;
+  margin: 1.5mm 0 3.5mm;
+  break-inside: avoid;
+}
+.out-bar {
+  font: 700 7pt var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 1mm 3mm;
+  border-bottom: 1px solid var(--rule);
+}
+.out-body {
+  margin: 0;
+  padding: 2.2mm 3.5mm;
+  font: 7.8pt/1.45 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+.out-body code { background: none; border: 0; padding: 0; font: inherit; }
+
+/* -- boxes ---------------------------------------------------------------------------------- */
+.box {
+  border-radius: 2mm;
+  padding: 2.6mm 4mm 1.2mm;
+  margin: 2.5mm 0 3mm;
+  break-inside: avoid;
+  border-left: 1.6mm solid;
+}
+.box-title {
+  font: 700 8pt var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 1.2mm;
+}
+.box p { margin: 0 0 1.6mm; }
+.box ul, .box ol { margin-bottom: 1.6mm; }
+.box-checkpoint { background: var(--good-tint); border-color: var(--good); }
+.box-checkpoint .box-title { color: var(--good-ink); }
+.box-warning { background: var(--warn-tint); border-color: var(--warn); }
+.box-warning .box-title { color: var(--warn-ink); }
+.box-instructor {
+  background: var(--harness-tint);
+  border-color: var(--harness-ink);
+  border-left-width: 1.6mm;
+  outline: 1px solid #bfe6f7;
+}
+.box-instructor .box-title { color: var(--harness-ink); }
+.box-instructor .box-title::before { content: "◆ "; }
+.box-ifdifferent { background: var(--paper-grey); border-color: #8a95a3; }
+.box-ifdifferent .box-title { color: var(--ink-soft); }
+.box-note { background: #ffffff; border: 1px solid var(--rule); border-left: 1.6mm solid var(--rule); }
+
+/* -- screenshots ---------------------------------------------------------------------------- */
+figure.shot {
+  margin: 2mm 0 4.5mm;
+  break-inside: avoid;
+}
+figure.shot img {
+  display: block;
+  width: 100%;
+  max-height: 150mm;
+  object-fit: contain;
+  object-position: left top;
+  border: 1px solid var(--border);
+  border-radius: 1.5mm;
+  background: var(--console-bg);
+}
+figcaption {
+  font-size: 8.8pt;
+  color: var(--ink-soft);
+  margin-top: 1.8mm;
+  padding-left: 3mm;
+  border-left: 2px solid var(--bare);
+}
+ol.callouts {
+  list-style: none;
+  counter-reset: callout;
+  margin: 2.5mm 0 0;
+  padding: 0;
+  font-size: 9pt;
+}
+ol.callouts > li {
+  counter-increment: callout;
+  position: relative;
+  padding-left: 8mm;
+  margin-bottom: 1.4mm;
+}
+ol.callouts > li::before {
+  content: counter(callout);
+  position: absolute;
+  left: 0;
+  top: 0.2mm;
+  width: 5mm;
+  height: 5mm;
+  border-radius: 50%;
+  background: var(--harness);
+  color: #111111;
+  font: 700 7.5pt/5mm var(--sans);
+  text-align: center;
+}
+.img-missing {
+  display: block;
+  border: 2px dashed var(--bare);
+  background: var(--bare-tint);
+  color: var(--bare-ink);
+  padding: 8mm 5mm;
+  text-align: center;
+  font-size: 8.5pt;
+  border-radius: 2mm;
+}
+
+/* -- tables --------------------------------------------------------------------------------- */
+.table-wrap { margin: 2mm 0 4mm; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.8pt;
+  line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th {
+  text-align: left;
+  background: var(--panel);
+  color: var(--console-text);
+  font-weight: 700;
+  padding: 1.8mm 2.4mm;
+}
+td { padding: 1.6mm 2.4mm; border-bottom: 1px solid var(--rule); vertical-align: top; }
+tbody tr:nth-child(even) td { background: #f8f9fb; }
+td code, th code { font-size: 0.92em; }
+
+/* Appendix: the cheat sheet fits one page. */
+.part-appendix table { font-size: 8pt; }
+
+blockquote {
+  margin: 2mm 0 3mm;
+  padding: 1mm 4mm;
+  border-left: 1.2mm solid var(--rule);
+  color: var(--ink-soft);
+}

@@ -1,0 +1,1 @@
+uv run shipharness ab --section demo-3 --feature F3 --no-preview --purpose assignment

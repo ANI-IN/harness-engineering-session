@@ -1,0 +1,250 @@
+diff --git a/app/api/issues.py b/app/api/issues.py
+index c3ded1b..a4fb0dc 100644
+--- a/app/api/issues.py
++++ b/app/api/issues.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+-from fastapi import APIRouter, Depends, Query, Response
++from fastapi import APIRouter, Depends, Header, Query, Response
++from fastapi.responses import JSONResponse
+ from sqlalchemy.orm import Session
+ 
+ from app.api.deps import MAX_ID, Id, current_actor, get_db, require_writer
+@@ -14,7 +15,7 @@ from app.api.schemas import (
+     Status,
+     TransitionIn,
+ )
+-from app.services import issues
++from app.services import idempotency, issues
+ from app.services.context import Actor
+ 
+ router = APIRouter(tags=["issues"])
+@@ -65,13 +66,35 @@ def search_issues(
+ def create_issue(
+     project_id: Id,
+     body: IssueCreate,
++    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+     actor: Actor = Depends(require_writer),
+     db: Session = Depends(get_db),
+-) -> IssueOut:
+-    issue = issues.create(
+-        db, actor, project_id, body.title, body.description, body.priority, body.assignee_id
++) -> JSONResponse:
++    # Preserve the normal authorization and project-visibility checks even on a replay.
++    issues.check_project(db, actor, project_id)
++
++    def create() -> dict[str, object]:
++        issue = issues.create(
++            db,
++            actor,
++            project_id,
++            body.title,
++            body.description,
++            body.priority,
++            body.assignee_id,
++            commit=False,
++        )
++        return IssueOut.model_validate(issue).model_dump(mode="json")
++
++    status, payload = idempotency.run_once(
++        db,
++        actor,
++        idempotency_key,
++        f"POST /projects/{project_id}/issues",
++        body.model_dump(),
++        create,
+     )
+-    return IssueOut.model_validate(issue)
++    return JSONResponse(payload, status_code=status)
+ 
+ 
+ @router.get("/issues/{issue_id}", response_model=IssueOut)
+diff --git a/app/services/issues.py b/app/services/issues.py
+index 94cce31..ac3b1b0 100644
+--- a/app/services/issues.py
++++ b/app/services/issues.py
+@@ -38,6 +38,11 @@ def get(session: Session, actor: Actor, issue_id: int) -> Issue:
+     return issue
+ 
+ 
++def check_project(session: Session, actor: Actor, project_id: int) -> None:
++    """Ensure the requested project is visible before idempotency replay handling."""
++    projects.get(session, actor, project_id)
++
++
+ def list_for_project(
+     session: Session, actor: Actor, project_id: int, after: int | None, limit: int
+ ) -> tuple[list[Issue], int | None]:
+@@ -63,6 +68,8 @@ def create(
+     description: str,
+     priority: str,
+     assignee_id: int | None,
++    *,
++    commit: bool = True,
+ ) -> Issue:
+     project = projects.get(session, actor, project_id)
+     _validate(title, description, priority)
+@@ -71,7 +78,8 @@ def create(
+         session, actor.org_id, project.id, title, description, priority, assignee_id, actor.user_id
+     )
+     audit.record(session, actor, "issue.create", "issue", issue.id)
+-    session.commit()
++    if commit:
++        session.commit()
+     return issue
+ 
+ 
+diff --git a/docs/HANDBOOK.md b/docs/HANDBOOK.md
+index e96b977..adc9284 100644
+--- a/docs/HANDBOOK.md
++++ b/docs/HANDBOOK.md
+@@ -87,8 +87,8 @@ The check: a schema-based fuzzer (Schemathesis) plus assertions on the list and
+ Create endpoints accept an `Idempotency-Key` header. The same key with the same body returns the first
+ response and creates nothing new; the same key with a different body returns 409
+ `idempotency_conflict`. Keys are scoped per org and per endpoint. Use `services.idempotency.run_once`;
+-see `POST /projects` for the pattern. (Issue creation does not support keys yet; that is on the
+-roadmap.)
++see `POST /projects` for the pattern. Issue creation (`POST /projects/{project_id}/issues`) accepts keys
++too.
+ 
+ The check: a duplicate POST with the same key must leave exactly one new record.
+ 
+diff --git a/tests/visible/test_issue_idempotency.py b/tests/visible/test_issue_idempotency.py
+new file mode 100644
+index 0000000..c7a1e36
+--- /dev/null
++++ b/tests/visible/test_issue_idempotency.py
+@@ -0,0 +1,132 @@
++"""Idempotency behavior for POST /projects/{project_id}/issues (house rule R4)."""
++
++from __future__ import annotations
++
++from conftest import auth, error_code
++
++
++def issue_count(client, user_id: int, project_id: int) -> int:
++    response = client.get(
++        f"/projects/{project_id}/issues?limit=100", headers=auth(user_id)
++    )
++    assert response.status_code == 200
++    return len(response.json()["items"])
++
++
++def audit_count(client, user_id: int) -> int:
++    response = client.get("/audit?limit=100", headers=auth(user_id))
++    assert response.status_code == 200
++    return len(response.json()["items"])
++
++
++def test_replay_returns_first_response_and_creates_one_issue(client, acme) -> None:
++    path = f"/projects/{acme.projects[0]}/issues"
++    headers = {**auth(acme.member), "Idempotency-Key": "issue-retry"}
++    body = {"title": "Retry me", "description": "Mobile timeout", "priority": "high"}
++    before = issue_count(client, acme.member, acme.projects[0])
++
++    first = client.post(path, json=body, headers=headers)
++    replay = client.post(path, json=body, headers=headers)
++
++    assert first.status_code == replay.status_code == 201
++    assert first.json() == replay.json()
++    assert first.json()["id"]
++    assert issue_count(client, acme.member, acme.projects[0]) == before + 1
++
++
++def test_different_body_with_same_key_conflicts_without_creating(client, acme) -> None:
++    path = f"/projects/{acme.projects[0]}/issues"
++    headers = {**auth(acme.member), "Idempotency-Key": "issue-body-conflict"}
++    before = issue_count(client, acme.member, acme.projects[0])
++    first = client.post(path, json={"title": "Original"}, headers=headers)
++    conflict = client.post(path, json={"title": "Changed"}, headers=headers)
++
++    assert first.status_code == 201
++    assert conflict.status_code == 409
++    assert error_code(conflict) == "idempotency_conflict"
++    assert issue_count(client, acme.member, acme.projects[0]) == before + 1
++
++
++def test_replay_does_not_add_audit_row(client, acme) -> None:
++    path = f"/projects/{acme.projects[0]}/issues"
++    headers = {**auth(acme.member), "Idempotency-Key": "issue-audit-replay"}
++    body = {"title": "Audited once"}
++    before = audit_count(client, acme.admin)
++
++    created = client.post(path, json=body, headers=headers)
++    after_create = audit_count(client, acme.admin)
++    replay = client.post(path, json=body, headers=headers)
++
++    assert created.status_code == replay.status_code == 201
++    assert after_create == before + 1
++    assert audit_count(client, acme.admin) == after_create
++
++
++def test_key_is_scoped_to_org_and_issue_path(client, acme, globex) -> None:
++    body = {"title": "Shared key"}
++    key = "issue-scope"
++    acme_path = f"/projects/{acme.projects[0]}/issues"
++    other_project_path = f"/projects/{acme.projects[1]}/issues"
++    globex_path = f"/projects/{globex.projects[0]}/issues"
++
++    acme_first = client.post(acme_path, json=body, headers={**auth(acme.member), "Idempotency-Key": key})
++    same_org_other_project = client.post(
++        other_project_path, json=body, headers={**auth(acme.member), "Idempotency-Key": key}
++    )
++    other_org = client.post(
++        globex_path, json=body, headers={**auth(globex.member), "Idempotency-Key": key}
++    )
++
++    assert acme_first.status_code == same_org_other_project.status_code == other_org.status_code == 201
++    assert len({acme_first.json()["id"], same_org_other_project.json()["id"], other_org.json()["id"]}) == 3
++
++
++def test_issue_key_is_scoped_separately_from_project_creation(client, acme) -> None:
++    key = "endpoint-scope"
++    issue = client.post(
++        f"/projects/{acme.projects[0]}/issues",
++        json={"title": "Endpoint-specific"},
++        headers={**auth(acme.member), "Idempotency-Key": key},
++    )
++    project = client.post(
++        "/projects",
++        json={"name": "Separate endpoint", "key": "SEP"},
++        headers={**auth(acme.member), "Idempotency-Key": key},
++    )
++    assert issue.status_code == project.status_code == 201
++
++
++def test_failed_validation_and_viewer_requests_do_not_consume_key(client, acme) -> None:
++    path = f"/projects/{acme.projects[0]}/issues"
++    key = "retry-after-failure"
++    viewer_headers = {**auth(acme.viewer), "Idempotency-Key": key}
++    member_headers = {**auth(acme.member), "Idempotency-Key": key}
++
++    denied = client.post(path, json={"title": "Denied"}, headers=viewer_headers)
++    assert denied.status_code == 403
++    invalid = client.post(path, json={}, headers=member_headers)
++    assert invalid.status_code == 422
++    created = client.post(path, json={"title": "Can retry"}, headers=member_headers)
++    replay = client.post(path, json={"title": "Can retry"}, headers=member_headers)
++
++    assert created.status_code == replay.status_code == 201
++    assert created.json() == replay.json()
++
++
++def test_without_key_each_issue_post_creates(client, acme) -> None:
++    path = f"/projects/{acme.projects[0]}/issues"
++    before = issue_count(client, acme.member, acme.projects[0])
++    first = client.post(path, json={"title": "No key one"}, headers=auth(acme.member))
++    second = client.post(path, json={"title": "No key two"}, headers=auth(acme.member))
++    assert first.status_code == second.status_code == 201
++    assert first.json()["id"] != second.json()["id"]
++    assert issue_count(client, acme.member, acme.projects[0]) == before + 2
++
++
++def test_cross_org_project_stays_hidden_with_idempotency_key(client, acme, globex) -> None:
++    response = client.post(
++        f"/projects/{globex.projects[0]}/issues",
++        json={"title": "Invisible project"},
++        headers={**auth(acme.member), "Idempotency-Key": "cross-org-project"},
++    )
++    assert response.status_code == 404

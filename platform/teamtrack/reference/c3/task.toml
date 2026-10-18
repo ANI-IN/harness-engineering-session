@@ -1,0 +1,23 @@
+# Control task C3 (M5 builder contract §3). Easy, low-trap: both arms should complete it.
+id = "C3"
+title = "Filter a project's issues by priority"
+section = "control"
+start_checkpoint = "m1-s1-start"   # base product; needs no feature
+primary_measure = ""               # ruling R-5: controls have no primary measure
+mutant_set = "app.services.errors,app.repositories.common"
+session_budget = [20]              # provisional (ruling R-6)
+canonical_ticket = """Let people filter a project's issue list by priority.
+
+GET /projects/{project_id}/issues should accept an optional `priority` query parameter (low,
+medium, or high) and return only the project's issues with that priority. Any other value is a 422
+validation_error. The filter must work with cursor and limit like every other list. Deleted issues
+stay hidden, and another org's project is still a 404.
+
+Spec: docs/features/c3.md. House rules: docs/HANDBOOK.md. Add tests in tests/visible/."""
+
+[allowed_paths]
+build = ["app/api/issues.py", "app/services/issues.py", "app/repositories/issues.py", "tests/visible/**"]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/c3/test_c3_priority_filter.py"]

@@ -1,0 +1,48 @@
+# captured on 2026-10-17 from `make check-assignment-3` (offline: no model calls, no containers); details in docs/evidence.md
+$ make check-assignment-3
+uv run python section-3-scope-sandbox/assignment/check.py 
+A3 self-check: section-3-scope-sandbox/assignment/starter
+  check                                              visible tests  status  where
+  diff parsing and path matching                              0/28  FAIL    a3scope/diffparse.py, a3scope/scope.py (glob_matches)
+  out-of-scope diffs rejected                                  0/8  FAIL    a3scope/scope.py (check_diff)
+  legitimate diffs accepted                                    0/6  FAIL    a3scope/scope.py (check_diff)
+  passes set with evidence                                     0/2  FAIL    a3scope/status.py
+  passes kept false without evidence                           0/5  FAIL    a3scope/status.py
+  history rule denies                                          0/8  FAIL    a3scope/policy.py
+  history rule allows (no false positives)                     6/6  ok
+  your denial test passes                                           FAIL    tests/test_a3_sandbox_rule.py
+  your denial test fails with the rule removed                      FAIL    tests/test_a3_sandbox_rule.py
+  your denial test uses check_command/PolicySandbox                 FAIL    tests/test_a3_sandbox_rule.py
+  live A/B evidence (live/)                                         missing (required for the grade: README 'Live step')
+
+  Failing visible tests (57; first 10):
+    - test_parse_changed_paths[bad-middleware-file]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-feature-list-edit]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-test-phase-source-edit]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-parent-traversal]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-rename-out-of-scope]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-binary-out-of-scope]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-in-scope-build]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-state-files]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-rename-in-scope]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-space-in-path]: NotImplementedError: TODO(A3 Part A1): parse_diff
+
+  TODO markers left (14):
+    - a3scope/diffparse.py:40: TODO(A3 Part A1)
+    - a3scope/diffparse.py:43: TODO(A3 Part A1)
+    - a3scope/diffparse.py:52: TODO(A3 Part A1)
+    - a3scope/diffparse.py:53: TODO(A3 Part A1)
+    - a3scope/policy.py:14: TODO(A3 Part C)
+    - a3scope/policy.py:18: TODO(A3 Part C)
+    - a3scope/scope.py:67: TODO(A3 Part A2)
+    - a3scope/scope.py:68: TODO(A3 Part A2)
+    - a3scope/scope.py:77: TODO(A3 Part A2)
+    - a3scope/scope.py:81: TODO(A3 Part A2)
+    - a3scope/status.py:51: TODO(A3 Part B)
+    - a3scope/status.py:54: TODO(A3 Part B)
+    - tests/test_a3_sandbox_rule.py:20: TODO(A3 task 6)
+    - tests/test_a3_sandbox_rule.py:23: TODO(A3 task 6)
+
+Self-check FAILED: fix the FAIL rows above (README 'Step-by-step tasks').
+make: *** [Makefile:191: check-assignment-3] Error 1
+(exit code 2)

@@ -1,0 +1,103 @@
+[project]
+name = "shipharness"
+version = "0.1.0"
+description = "Harness engineering for coding agents: instructions, state, scope, and verification that make agent-written code safe to merge."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "ANI-IN" }]
+requires-python = ">=3.12"
+dependencies = [
+    "alembic==1.20.0",
+    "fastapi==0.143.2",
+    "httpx==0.28.1",
+    "jinja2==3.1.6",
+    "langsmith==0.14.9",
+    "openai==3.31.0",
+    "pydantic==2.14.1",
+    "pydantic-settings==2.16.0",
+    "python-multipart==0.0.32",
+    "rich==15.0.0",
+    "sqlalchemy==2.1.4",
+    "sse-starlette==3.5.0",
+    "structlog==26.1.0",
+    "typer==0.27.3",
+    "uvicorn==0.54.0",
+]
+
+[project.scripts]
+shipharness = "shipharness.cli:app"
+
+[dependency-groups]
+dev = [
+    "coverage==7.16.2",
+    "hypothesis==6.170.0",
+    "import-linter==2.15",
+    "playwright==1.64.0",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "pytest-xdist==3.8.0",
+    "python-pptx==1.0.2",
+    "ruff==0.17.1",
+    "schemathesis==4.31.1",
+    "skills-ref==0.1.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.13,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "shipharness"
+module-root = "platform/src"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".claude", ".superpowers", "research"]
+
+[tool.ruff.format]
+exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["shipharness", "app", "conftest"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI and Typer parameter markers are meant to be called in argument defaults.
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Query",
+    "fastapi.Header",
+    "fastapi.Form",
+    "fastapi.params.Depends",
+    "typer.Option",
+    "typer.Argument",
+]
+
+[tool.pytest.ini_options]
+# The platform suite, TeamTrack's visible tests, and the section assignment tests that pass on
+# the committed code (the scenario tests and the reference solutions' own tests). Left out: the
+# starter and visible assignment tests (they fail on the unchanged starter by design; make
+# check-assignment-N runs them) and test folders with their own conftest.py (a second
+# `conftest` module would shadow the one TeamTrack's tests import by name). The graders' tests
+# are private and not in this repository.
+testpaths = [
+    "platform/tests/unit",
+    "platform/teamtrack/tests/visible",
+    "section-1-instructions/assignment/solution/work/checker",
+    "section-2-state-lifecycle/assignment/tests",
+    "section-2-state-lifecycle/assignment/solution/tests",
+]
+norecursedirs = [".claude", ".superpowers", ".venv", ".git", ".hypothesis", ".shipharness", "exports", "research", "node_modules"]
+pythonpath = ["platform/teamtrack"]
+markers = [
+    "live: needs OPENAI_API_KEY and LANGSMITH_API_KEY and calls external services",
+    "docker: needs a working Docker or Podman runtime",
+    "browser: needs a Playwright Chromium browser (uv run playwright install chromium)",
+    "slow: long-running validation (mutant kills, referee on references, full check runs); make test-all",
+]
+# A -m on the command line replaces this one: `-m slow`, or `make test-all` for everything.
+addopts = "-m 'not live and not docker and not slow'"

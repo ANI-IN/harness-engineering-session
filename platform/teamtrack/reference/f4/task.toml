@@ -1,0 +1,57 @@
+id = "F4"
+title = "Optimistic concurrency (ETag, If-Match) and issue history"
+section = "S4"
+start_checkpoint = "m1-s4-start"
+primary_measure = "hidden_passed,mutants_killed"
+mutant_set = "features/f4"
+session_budget = [40]
+canonical_ticket = """
+Stop lost updates on issues and show each issue's history.
+
+Two people editing the same issue overwrite each other without noticing. GET /issues/{issue_id}
+must return ETag: "<version>". PATCH /issues/{issue_id}, POST /issues/{issue_id}/assign and
+POST /issues/{issue_id}/transition accept an optional If-Match: "<version>" header: without it the
+write works as before; a stale or malformed one is 412 precondition_failed; every successful write
+returns the new ETag. Checks run in the order 401, 403, 404, 412, 422, and the 412 response is
+documented in the OpenAPI schema. Add GET /issues/{issue_id}/history (the issue's audit entries,
+oldest first). On the board, the edit form sends its version, and a stale save gets a 409 page
+instead of overwriting.
+
+The full spec is in docs/features/f4.md. Follow the house rules in docs/HANDBOOK.md and ship tests
+that would catch a regression.
+"""
+
+[allowed_paths]
+build = [
+    "app/api/issues.py",
+    "app/api/schemas.py",
+    "app/services/issues.py",
+    "app/repositories/issues.py",
+    "app/services/audit.py",
+    "app/repositories/audit.py",
+    "app/web/**",
+    "tests/visible/**",
+]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s4-start" = [
+    "tests/hidden/f4/test_f4_concurrency.py",
+    "tests/hidden/f4/test_f4_history.py",
+    "tests/hidden/f4/test_f4_board.py",
+    "tests/hidden/f4/test_f4_guards.py",
+    "tests/hidden/f4/test_f4_with_f1.py",
+    "tests/hidden/f4/test_f4_with_f3.py",
+]
+"m1-alt-a" = [
+    "tests/hidden/f4/test_f4_concurrency.py",
+    "tests/hidden/f4/test_f4_history.py",
+    "tests/hidden/f4/test_f4_board.py",
+    "tests/hidden/f4/test_f4_guards.py",
+]
+"m1-alt-b" = [
+    "tests/hidden/f4/test_f4_concurrency.py",
+    "tests/hidden/f4/test_f4_history.py",
+    "tests/hidden/f4/test_f4_board.py",
+    "tests/hidden/f4/test_f4_guards.py",
+]

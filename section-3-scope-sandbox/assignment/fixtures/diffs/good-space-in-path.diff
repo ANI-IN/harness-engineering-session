@@ -1,0 +1,9 @@
+diff --git a/docs/design notes/f3 retry.md b/docs/design notes/f3 retry.md
+index 040702a..f54f8b2 100644
+--- a/docs/design notes/f3 retry.md	
++++ b/docs/design notes/f3 retry.md	
+@@ -1,3 +1,4 @@
+ # Retry notes
+ 
+ Clients retry after 10 s.
++Keys expire after 24 h.

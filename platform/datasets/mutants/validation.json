@@ -1,0 +1,489 @@
+{
+  "description": "Each library mutant applied to the pinned source is killed by the upstream test in killed_by (which passes on the unmutated source). Produced on Windows 11, Python 3.12, pytest 9.1.1, one mutant at a time in a copy of the source. The ten mutants re-chosen on 2026-10-16 so that each original matches exactly one line were validated the same way on Ubuntu (WSL2), Python 3.12, pytest 9.1.1; failing_tests counts the module's existing tests that fail, known failures excluded.",
+  "libraries": {
+    "boltons": {
+      "commit": "4332b35a278d694f30c99881faa61cde695c7a96",
+      "known_failures": [
+        "tests/test_jsonutils.py::test_reverse_iter_lines"
+      ]
+    },
+    "wtforms": {
+      "commit": "ea57c11591556333b4f0ac494d1e5d3f250ab305",
+      "known_failures": [
+        "tests/fields/test_date.py::test_basic"
+      ]
+    }
+  },
+  "mutants": {
+    "boltons.formatutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_formatutils.py::test_pos_infer",
+      "failing_tests": 3
+    },
+    "boltons.formatutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_formatutils.py::test_pos_infer",
+      "failing_tests": 1
+    },
+    "boltons.formatutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_formatutils.py::test_pos_infer",
+      "failing_tests": 1
+    },
+    "boltons.formatutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_formatutils.py::test_pos_infer",
+      "failing_tests": 1
+    },
+    "boltons.formatutils-m5": {
+      "library": "boltons",
+      "killed_by": "tests/test_formatutils.py::test_deferredvalue",
+      "failing_tests": 1
+    },
+    "boltons.ioutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_ioutils.py::TestMultiFileReader::test_read_seek_bytes",
+      "failing_tests": 2
+    },
+    "boltons.ioutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_ioutils.py::TestSpooledStringIO::test_codepoints_all_enc",
+      "failing_tests": 17
+    },
+    "boltons.ioutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_ioutils.py::TestSpooledStringIO::test_seek_codepoints_SEEK_END",
+      "failing_tests": 2
+    },
+    "boltons.ioutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_ioutils.py::TestSpooledStringIO::test_seek_codepoints_SEEK_CUR",
+      "failing_tests": 2
+    },
+    "boltons.ioutils-m5": {
+      "library": "boltons",
+      "killed_by": "tests/test_ioutils.py::TestMultiFileReader::test_read_seek_bytes",
+      "failing_tests": 2
+    },
+    "boltons.jsonutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_jsonutils.py::test_jsonl_iterator_rel_seek_negative",
+      "failing_tests": 1
+    },
+    "boltons.jsonutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_jsonutils.py::test_jsonl_iterator_rel_seek_negative",
+      "failing_tests": 1
+    },
+    "boltons.jsonutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_jsonutils.py::test_reverse_iter_lines_uses_file_encoding",
+      "failing_tests": 3
+    },
+    "boltons.jsonutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_jsonutils.py::test_jsonl_iterator",
+      "failing_tests": 5
+    },
+    "boltons.jsonutils-m5": {
+      "library": "boltons",
+      "killed_by": "tests/test_jsonutils.py::test_jsonl_iterator",
+      "failing_tests": 5
+    },
+    "boltons.jsonutils-m6": {
+      "library": "boltons",
+      "killed_by": "tests/test_jsonutils.py::test_jsonl_explicit_end_seek",
+      "failing_tests": 1
+    },
+    "boltons.listutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_listutils.py::test_barrel_list",
+      "failing_tests": 5
+    },
+    "boltons.listutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_listutils.py::test_barrel_list_insert_at_end",
+      "failing_tests": 1
+    },
+    "boltons.listutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_listutils.py::test_barrel_list",
+      "failing_tests": 2
+    },
+    "boltons.listutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_listutils.py::test_barrel_list",
+      "failing_tests": 2
+    },
+    "boltons.mathutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_mathutils.py::test_clamp_examples",
+      "failing_tests": 1
+    },
+    "boltons.mathutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_mathutils.py::test_floor_basic",
+      "failing_tests": 1
+    },
+    "boltons.mathutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_mathutils.py::test_ceil_basic",
+      "failing_tests": 1
+    },
+    "boltons.mathutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_mathutils.py::test_bits",
+      "failing_tests": 1
+    },
+    "boltons.mathutils-m5": {
+      "library": "boltons",
+      "killed_by": "tests/test_mathutils.py::test_bits_len_bound",
+      "failing_tests": 1
+    },
+    "boltons.namedutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_namedutils.py::test_namedtuple_pickle",
+      "failing_tests": 1
+    },
+    "boltons.namedutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_namedutils.py::test_namedlist",
+      "failing_tests": 1
+    },
+    "boltons.namedutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_namedutils.py::test_namedlist",
+      "failing_tests": 1
+    },
+    "boltons.namedutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_namedutils.py::test_namedlist",
+      "failing_tests": 1
+    },
+    "boltons.queueutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_queueutils.py::test_heap_queue",
+      "failing_tests": 2
+    },
+    "boltons.queueutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_queueutils.py::test_heap_queue",
+      "failing_tests": 2
+    },
+    "boltons.queueutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_queueutils.py::test_heap_queue",
+      "failing_tests": 2
+    },
+    "boltons.queueutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_queueutils.py::test_heap_queue",
+      "failing_tests": 2
+    },
+    "boltons.queueutils-m5": {
+      "library": "boltons",
+      "killed_by": "tests/test_queueutils.py::test_sorted_queue",
+      "failing_tests": 1
+    },
+    "boltons.tableutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_tableutils.py::test_table_dicts",
+      "failing_tests": 1
+    },
+    "boltons.tableutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_tableutils.py::test_table_lists",
+      "failing_tests": 2
+    },
+    "boltons.tableutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_tableutils.py::test_table_dicts",
+      "failing_tests": 1
+    },
+    "boltons.tableutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_tableutils.py::test_table_dicts",
+      "failing_tests": 1
+    },
+    "boltons.tableutils-m5": {
+      "library": "boltons",
+      "killed_by": "tests/test_tableutils.py::test_to_text_short_headers_padded",
+      "failing_tests": 1
+    },
+    "boltons.timeutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_timeutils.py::test_daterange_with_same_start_stop",
+      "failing_tests": 1
+    },
+    "boltons.timeutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_timeutils.py::test_daterange_years",
+      "failing_tests": 4
+    },
+    "boltons.timeutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_timeutils.py::test_daterange_years",
+      "failing_tests": 1
+    },
+    "boltons.timeutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_timeutils.py::test_isoparse_fractional_seconds",
+      "failing_tests": 1
+    },
+    "boltons.timeutils-m5": {
+      "library": "boltons",
+      "killed_by": "tests/test_timeutils.py::test_us_timezone_dst_fold",
+      "failing_tests": 2
+    },
+    "boltons.typeutils-m1": {
+      "library": "boltons",
+      "killed_by": "tests/test_typeutils.py::test_sentinel_falsiness",
+      "failing_tests": 1
+    },
+    "boltons.typeutils-m2": {
+      "library": "boltons",
+      "killed_by": "tests/test_typeutils.py::test_sentinel_copy",
+      "failing_tests": 1
+    },
+    "boltons.typeutils-m3": {
+      "library": "boltons",
+      "killed_by": "tests/test_typeutils.py::test_sentinel_copy",
+      "failing_tests": 1
+    },
+    "boltons.typeutils-m4": {
+      "library": "boltons",
+      "killed_by": "tests/test_typeutils.py::test_sentinel_pickle",
+      "failing_tests": 1
+    },
+    "boltons.typeutils-m5": {
+      "library": "boltons",
+      "killed_by": "tests/test_typeutils.py::test_sentinel_pickle",
+      "failing_tests": 1
+    },
+    "wtforms.csrf.session-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/test_csrf.py::test_session_csrf_with_time_limit",
+      "failing_tests": 2
+    },
+    "wtforms.csrf.session-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/test_csrf.py::test_session_csrf_no_time_limit",
+      "failing_tests": 3
+    },
+    "wtforms.csrf.session-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/test_csrf.py::test_session_csrf_detailed_expected_values",
+      "failing_tests": 1
+    },
+    "wtforms.csrf.session-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/test_csrf.py::test_session_csrf_detailed_expected_values",
+      "failing_tests": 1
+    },
+    "wtforms.fields.choices-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_select.py::test_defaults",
+      "failing_tests": 3
+    },
+    "wtforms.fields.choices-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_select.py::test_callable_choices",
+      "failing_tests": 3
+    },
+    "wtforms.fields.choices-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_selectmultiple.py::test_with_data",
+      "failing_tests": 1
+    },
+    "wtforms.fields.choices-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_select.py::test_default_coerce",
+      "failing_tests": 2
+    },
+    "wtforms.fields.core-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_defaults.py::test_defaults",
+      "failing_tests": 1
+    },
+    "wtforms.fields.core-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_label.py::test_escaped_label_text",
+      "failing_tests": 1
+    },
+    "wtforms.fields.core-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_filters.py::test_failure",
+      "failing_tests": 1
+    },
+    "wtforms.fields.core-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_filters.py::test_extra",
+      "failing_tests": 2
+    },
+    "wtforms.fields.datetime-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_month.py::test_basic",
+      "failing_tests": 1
+    },
+    "wtforms.fields.datetime-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_datetime.py::test_basic",
+      "failing_tests": 2
+    },
+    "wtforms.fields.datetime-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_datetime.py::test_basic",
+      "failing_tests": 2
+    },
+    "wtforms.fields.datetime-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_datetime.py::test_basic",
+      "failing_tests": 2
+    },
+    "wtforms.fields.datetime-m5": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_week.py::test_basic",
+      "failing_tests": 1
+    },
+    "wtforms.fields.list-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_list.py::test_min_max_entries",
+      "failing_tests": 1
+    },
+    "wtforms.fields.list-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_list.py::test_min_max_entries",
+      "failing_tests": 1
+    },
+    "wtforms.fields.list-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_list.py::test_form",
+      "failing_tests": 10
+    },
+    "wtforms.fields.list-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_list.py::test_form",
+      "failing_tests": 5
+    },
+    "wtforms.fields.list-m5": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_list.py::test_entry_management",
+      "failing_tests": 1
+    },
+    "wtforms.fields.numeric-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_decimal.py::test_quantize",
+      "failing_tests": 1
+    },
+    "wtforms.fields.numeric-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_integer.py::test_integer_field",
+      "failing_tests": 1
+    },
+    "wtforms.fields.numeric-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_decimal.py::test_decimal_field",
+      "failing_tests": 1
+    },
+    "wtforms.fields.numeric-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_decimal.py::test_quantize",
+      "failing_tests": 1
+    },
+    "wtforms.fields.simple-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_file.py::test_multiple_file_field",
+      "failing_tests": 1
+    },
+    "wtforms.fields.simple-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_string.py::test_string_field",
+      "failing_tests": 1
+    },
+    "wtforms.fields.simple-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_boolean.py::test_rendering",
+      "failing_tests": 2
+    },
+    "wtforms.fields.simple-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/fields/test_boolean.py::test_rendering",
+      "failing_tests": 1
+    },
+    "wtforms.form-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/test_form.py::test_ordered_fields",
+      "failing_tests": 1
+    },
+    "wtforms.form-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/test_form.py::test_baseform_prefixes",
+      "failing_tests": 1
+    },
+    "wtforms.form-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/test_form.py::test_validate",
+      "failing_tests": 2
+    },
+    "wtforms.form-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/test_form.py::test_validate",
+      "failing_tests": 2
+    },
+    "wtforms.validators-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/validators/test_length.py::test_correct_length_passes[6--1]",
+      "failing_tests": 2
+    },
+    "wtforms.validators-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/validators/test_data_required.py::test_data_required_raises",
+      "failing_tests": 1
+    },
+    "wtforms.validators-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/validators/test_url.py::test_bad_url_raises",
+      "failing_tests": 1
+    },
+    "wtforms.validators-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/validators/test_input_required.py::test_input_required_raises",
+      "failing_tests": 3
+    },
+    "wtforms.validators-m5": {
+      "library": "wtforms",
+      "killed_by": "tests/validators/test_anyof.py::test_none_multiple_values",
+      "failing_tests": 1
+    },
+    "wtforms.validators-m6": {
+      "library": "wtforms",
+      "killed_by": "tests/validators/test_number_range.py::test_number_range_nan[nan1]",
+      "failing_tests": 1
+    },
+    "wtforms.widgets.core-m1": {
+      "library": "wtforms",
+      "killed_by": "tests/test_widgets.py::test_basic",
+      "failing_tests": 6
+    },
+    "wtforms.widgets.core-m2": {
+      "library": "wtforms",
+      "killed_by": "tests/test_widgets.py::test_quoting",
+      "failing_tests": 1
+    },
+    "wtforms.widgets.core-m3": {
+      "library": "wtforms",
+      "killed_by": "tests/test_widgets.py::test_basic",
+      "failing_tests": 2
+    },
+    "wtforms.widgets.core-m4": {
+      "library": "wtforms",
+      "killed_by": "tests/test_widgets.py::test_basic",
+      "failing_tests": 1
+    },
+    "wtforms.widgets.core-m5": {
+      "library": "wtforms",
+      "killed_by": "tests/test_widgets.py::test_render_option",
+      "failing_tests": 1
+    }
+  }
+}

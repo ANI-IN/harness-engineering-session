@@ -1,0 +1,23 @@
+# Control task C4 (M5 builder contract §3). Easy, low-trap: both arms should complete it.
+id = "C4"
+title = "Store issue titles without surrounding whitespace"
+section = "control"
+start_checkpoint = "m1-s1-start"   # base product; needs no feature
+primary_measure = ""               # ruling R-5: controls have no primary measure
+mutant_set = "app.services.context"
+session_budget = [20]              # provisional (ruling R-6)
+canonical_ticket = """Trim issue titles.
+
+When an issue is created or its title is edited (API or board), store the title without leading or
+trailing whitespace, and return the trimmed title. The 1 to 200 character limit applies after
+trimming, so a 200-character title with extra spaces around it is accepted; a title that is empty
+after trimming is still a 422 validation_error.
+
+Spec: docs/features/c4.md. House rules: docs/HANDBOOK.md. Add tests in tests/visible/."""
+
+[allowed_paths]
+build = ["app/api/schemas.py", "app/services/issues.py", "tests/visible/**"]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/c4/test_c4_trim_titles.py"]

@@ -1,0 +1,104 @@
+{
+  "run_id": "r-20261017-200812-6d069b",
+  "status": "completed",
+  "unsandboxed": true,
+  "baseline_includes_doctests": false,
+  "kept": [
+    "tests/test_queueutils_generated.py::test_queue_order_peek_and_priority_update",
+    "tests/test_queueutils_generated.py::test_queue_custom_priority_key_and_removal",
+    "tests/test_queueutils_generated.py::test_queue_empty_operations_and_defaults"
+  ],
+  "not_evaluated": [],
+  "results": [
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_order_peek_and_priority_update",
+      "filter": 1,
+      "passed": true,
+      "reason": "collected 2 tests"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_order_peek_and_priority_update",
+      "filter": 2,
+      "passed": true,
+      "reason": "passed 5 of 5 runs"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_order_peek_and_priority_update",
+      "filter": 3,
+      "passed": true,
+      "reason": "adds 5 covered lines: boltons/queueutils.py:134,163-165,170"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_order_peek_and_priority_update",
+      "filter": 4,
+      "passed": true,
+      "reason": "has real assertions and does not mock boltons.queueutils"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_order_peek_and_priority_update",
+      "filter": 5,
+      "passed": true,
+      "reason": "no source file changed during the test phase"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_custom_priority_key_and_removal",
+      "filter": 1,
+      "passed": true,
+      "reason": "collected 2 tests"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_custom_priority_key_and_removal",
+      "filter": 2,
+      "passed": true,
+      "reason": "passed 5 of 5 runs"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_custom_priority_key_and_removal",
+      "filter": 3,
+      "passed": true,
+      "reason": "adds 4 covered lines: boltons/queueutils.py:163-165,170"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_custom_priority_key_and_removal",
+      "filter": 4,
+      "passed": true,
+      "reason": "has real assertions and does not mock boltons.queueutils"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_custom_priority_key_and_removal",
+      "filter": 5,
+      "passed": true,
+      "reason": "no source file changed during the test phase"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_empty_operations_and_defaults",
+      "filter": 1,
+      "passed": true,
+      "reason": "collected 2 tests"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_empty_operations_and_defaults",
+      "filter": 2,
+      "passed": true,
+      "reason": "passed 5 of 5 runs"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_empty_operations_and_defaults",
+      "filter": 3,
+      "passed": true,
+      "reason": "adds 7 covered lines: boltons/queueutils.py:163-164,166-169,183"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_empty_operations_and_defaults",
+      "filter": 4,
+      "passed": true,
+      "reason": "has real assertions and does not mock boltons.queueutils"
+    },
+    {
+      "test_id": "tests/test_queueutils_generated.py::test_queue_empty_operations_and_defaults",
+      "filter": 5,
+      "passed": true,
+      "reason": "no source file changed during the test phase"
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+diff --git a/app/api/issues.py b/app/api/issues.py
+index c3ded1b..aea0c85 100644
+--- a/app/api/issues.py
++++ b/app/api/issues.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+-from fastapi import APIRouter, Depends, Query, Response
++from fastapi import APIRouter, Depends, Header, Query, Response
++from fastapi.responses import JSONResponse
+ from sqlalchemy.orm import Session
+ 
+ from app.api.deps import MAX_ID, Id, current_actor, get_db, require_writer
+@@ -14,7 +15,7 @@ from app.api.schemas import (
+     Status,
+     TransitionIn,
+ )
+-from app.services import issues
++from app.services import idempotency, issues
+ from app.services.context import Actor
+ 
+ router = APIRouter(tags=["issues"])
+@@ -65,13 +66,32 @@ def search_issues(
+ def create_issue(
+     project_id: Id,
+     body: IssueCreate,
++    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+     actor: Actor = Depends(require_writer),
+     db: Session = Depends(get_db),
+-) -> IssueOut:
+-    issue = issues.create(
+-        db, actor, project_id, body.title, body.description, body.priority, body.assignee_id
++) -> JSONResponse:
++    def create() -> dict[str, object]:
++        issue = issues.create(
++            db,
++            actor,
++            project_id,
++            body.title,
++            body.description,
++            body.priority,
++            body.assignee_id,
++            commit=False,
++        )
++        return IssueOut.model_validate(issue).model_dump(mode="json")
++
++    status, payload = idempotency.run_once(
++        db,
++        actor,
++        idempotency_key,
++        f"POST /projects/{project_id}/issues",
++        body.model_dump(),
++        create,
+     )
+-    return IssueOut.model_validate(issue)
++    return JSONResponse(payload, status_code=status)
+ 
+ 
+ @router.get("/issues/{issue_id}", response_model=IssueOut)
+diff --git a/app/services/issues.py b/app/services/issues.py
+index 94cce31..2b599d3 100644
+--- a/app/services/issues.py
++++ b/app/services/issues.py
+@@ -63,6 +63,8 @@ def create(
+     description: str,
+     priority: str,
+     assignee_id: int | None,
++    *,
++    commit: bool = True,
+ ) -> Issue:
+     project = projects.get(session, actor, project_id)
+     _validate(title, description, priority)
+@@ -71,7 +73,8 @@ def create(
+         session, actor.org_id, project.id, title, description, priority, assignee_id, actor.user_id
+     )
+     audit.record(session, actor, "issue.create", "issue", issue.id)
+-    session.commit()
++    if commit:
++        session.commit()
+     return issue
+ 
+ 
+diff --git a/docs/HANDBOOK.md b/docs/HANDBOOK.md
+index e96b977..d0e39c9 100644
+--- a/docs/HANDBOOK.md
++++ b/docs/HANDBOOK.md
+@@ -87,8 +87,8 @@ The check: a schema-based fuzzer (Schemathesis) plus assertions on the list and
+ Create endpoints accept an `Idempotency-Key` header. The same key with the same body returns the first
+ response and creates nothing new; the same key with a different body returns 409
+ `idempotency_conflict`. Keys are scoped per org and per endpoint. Use `services.idempotency.run_once`;
+-see `POST /projects` for the pattern. (Issue creation does not support keys yet; that is on the
+-roadmap.)
++see `POST /projects` for the pattern. Issue creation (`POST /projects/{project_id}/issues`) accepts
++keys too.
+ 
+ The check: a duplicate POST with the same key must leave exactly one new record.
+ 
+diff --git a/docs/exec-plans/active/F3.md b/docs/exec-plans/active/F3.md
+index 070dc4e..3a692bd 100644
+--- a/docs/exec-plans/active/F3.md
++++ b/docs/exec-plans/active/F3.md
+@@ -1,35 +1,21 @@
+ # F3: Idempotency keys on issue creation
+ 
+-This execution plan is a living document checked into the repository (A7). Keep it self-contained:
+-a new session must be able to restart from this plan, progress.md, and the git log alone. The
+-harness moves it to docs/exec-plans/completed/ when the feature passes.
+-
+ ## Purpose
+ 
+-Idempotency keys on issue creation
+-
+-Steps from the ticket:
+-
+-- Idempotency keys on issue creation
++Add test coverage for the completed implementation of idempotency keys on
++`POST /projects/{project_id}/issues`. This is the test phase; do not change
++application code. The full feature requirements are in `docs/features/f3.md`.
+ 
+ ## Progress
+ 
+-- [x] Harness initializer step: init.sh, progress.md, session-handoff.md, and this plan created.
+-- [ ] (add one line per step with a UTC timestamp, for example 2026-10-16T10:00Z)
+-
+-## Surprises & Discoveries
+-
+-- None yet.
++- [x] 2026-10-17: Reviewed repository state and handoff, read feature list, and ran `bash init.sh` successfully (one migration head; 16 basic checks passed).
++- [ ] Read testing guidance and feature specification; add focused visible tests and validate.
+ 
+ ## Decision Log
+ 
+-- None yet. Record each decision with the reason and the date.
+-
+-## Outcomes & Retrospective
+-
+-- Not finished yet.
++- 2026-10-17: Keep all feature-phase changes in `tests/visible/` only; the implementation was completed in build commit `0cc7baa`.
+ 
+ ## Validation
+ 
+-- `bash init.sh` (migrations at one head, basic test run)
++- `bash init.sh`
+ - `python -m pytest tests/visible -q`
+diff --git a/docs/exec-plans/completed/F3.md b/docs/exec-plans/completed/F3.md
+new file mode 100644
+index 0000000..070dc4e
+--- /dev/null
++++ b/docs/exec-plans/completed/F3.md
+@@ -0,0 +1,35 @@
++# F3: Idempotency keys on issue creation
++
++This execution plan is a living document checked into the repository (A7). Keep it self-contained:
++a new session must be able to restart from this plan, progress.md, and the git log alone. The
++harness moves it to docs/exec-plans/completed/ when the feature passes.
++
++## Purpose
++
++Idempotency keys on issue creation
++
++Steps from the ticket:
++
++- Idempotency keys on issue creation
++
++## Progress
++
++- [x] Harness initializer step: init.sh, progress.md, session-handoff.md, and this plan created.
++- [ ] (add one line per step with a UTC timestamp, for example 2026-10-16T10:00Z)
++
++## Surprises & Discoveries
++
++- None yet.
++
++## Decision Log
++
++- None yet. Record each decision with the reason and the date.
++
++## Outcomes & Retrospective
++
++- Not finished yet.
++
++## Validation
++
++- `bash init.sh` (migrations at one head, basic test run)
++- `python -m pytest tests/visible -q`
+diff --git a/feature_list.json b/feature_list.json
+index b49db0e..81b8671 100644
+--- a/feature_list.json
++++ b/feature_list.json
+@@ -8,9 +8,15 @@
+       "steps": [
+         "Idempotency keys on issue creation"
+       ],
+-      "passes": false,
+-      "evidence": null,
+-      "testedAt": null
++      "passes": true,
++      "evidence": {
++        "gate_id": "visible-tests",
++        "commit": "8f09b5c2520f7c6347aead416961dbd6efc8f65a",
++        "visible": "180/180",
++        "existing": "not run (verify layer off)",
++        "checks": []
++      },
++      "testedAt": "2026-10-17T09:32:27Z"
+     }
+   ]
+ }
+diff --git a/progress.md b/progress.md
+index 6902ba9..72b81a3 100644
+--- a/progress.md
++++ b/progress.md
+@@ -10,14 +10,18 @@ F3: Idempotency keys on issue creation
+ 
+ ## Done
+ 
+-- Nothing yet.
++- Build phase: issue creation now uses idempotency keys (commit 0cc7baa).
++- Test phase setup: ran `bash init.sh`; migrations have one head and its 16 basic checks passed.
+ 
+ ## In progress
+ 
+-- Nothing yet.
++- Write and run focused tests for F3 under `tests/visible/` only.
+ 
+ ## Next
+ 
+-- Read feature_list.json and docs/exec-plans/active/F3.md, then start on the first step.
++- Read `docs/features/f3.md` and `docs/QUALITY_SCORE.md`, inspect issue/project idempotency tests and implementation, then add focused tests under `tests/visible/` for same-key replay, changed-body conflict, org/endpoint scoping, and no duplicate audit row. Run the focused tests and full visible suite; commit the test changes.
+ 
+ ## Session log
++
++- Session 1 (build): start a33ba80, end 0cc7baa, ended by claim_done after 22 turns. 3 files changed; visible tests passed=180 failed=0 errors=0. Agent summary: "Implemented Idempotency-Key handling for POST /projects/{project_id}/issues via services.idempotency.run_once, with the request path as the endpoint scope. Added commit=False support to issue creation"
++- Session 2 (test): start ce80e32, end ce80e32, ended by turn_budget after 12 turns. 3 files changed; visible tests passed=180 failed=0 errors=0.
+diff --git a/session-handoff.md b/session-handoff.md
+index e2ed36d..e82039c 100644
+--- a/session-handoff.md
++++ b/session-handoff.md
+@@ -6,10 +6,25 @@ the agent" before the session ends.
+ 
+ ## Machine summary
+ 
+-No session has ended yet.
++Written by the harness at the end of session 2 (test phase, ended by turn_budget after 12 turns).
++
++- Commits: start ce80e32, end ce80e32
++- Files changed in this session (3): docs/exec-plans/active/F3.md, progress.md, session-handoff.md
++- Visible tests: passed=180 failed=0 errors=0
++- Last commits:
++  - ce80e32 harness: F3 exec plan completed
++  - 362fdb5 harness: F3 passes
++  - 8f09b5c harness: session 1 handoff for F3
++  - 0cc7baa Add idempotency keys to issue creation
++  - a33ba80 harness setup
++- Open TODO markers in changed files:
++  - session-handoff.md:20: - Open TODO markers: none
++- Migration heads: 1 (0002_comments)
++- Harness documents read so far: ARCHITECTURE.md, docs/RELIABILITY.md
+ 
+ ## Notes from the agent
+ 
+-- What I was doing:
+-- What is left:
+-- What to watch out for:
++- What I was doing: Started the separate test phase for F3. Read `progress.md`, git history, this handoff, the completed execution plan, and `feature_list.json`. The feature was implemented in commit `0cc7baa` (API/service/handbook); feature list currently reports F3 passes, but the requested test-phase work remains.
++- What is left: Write tests as new files under `tests/visible/` only. Cover identical key+body replay with same response and one issue, same key/different body 409 `idempotency_conflict`, per-org and per-endpoint key scoping, and that replay creates no second audit entry. Read `docs/features/f3.md` and `docs/QUALITY_SCORE.md`, and inspect existing tests and implementation before editing. Run focused tests and the full visible suite, then commit.
++- What to watch out for: This phase may not modify application code; tests must be new test files under `tests/visible/`. Do not change `feature_list.json`; harness updates its pass evidence. `bash init.sh` succeeded: one Alembic head (`0002_comments`) and 16 basic checks passed. Prior build session reported 180/180 visible tests. The exact spec lives in `docs/features/f3.md`; project idempotency behavior is the reference. Keep tests aligned with repo API conventions and tenant scoping, and verify audit replay behavior.
++- House rules and file locations: Root `AGENTS.md` maps policies; F3 relates to idempotency R4 in `docs/RELIABILITY.md`/`docs/HANDBOOK.md`, endpoint/API conventions in `docs/design-docs/api-conventions.md`, and test guidance in `docs/QUALITY_SCORE.md`. Implementation is `app/api/issues.py`, `app/services/issues.py`, shared helper `app/services/idempotency.py`; visible tests are `tests/visible/`. For this test-phase scope, modify only tests. `docs/exec-plans/active/F3.md` tracks this test work.

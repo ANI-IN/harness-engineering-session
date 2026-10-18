@@ -1,0 +1,140 @@
+{% from "screens/_macros.html" import screen_head, arm_label, not_run %}
+{{ screen_head(key, title, state) }}
+<div class="grid three evidence">
+<article class="panel">
+  <h2>{{ section_label(1) }} · {{ section_label(2) }}</h2>
+  {% for arm in arms %}
+  {% set a = state.arm(arm) %}
+  <section class="arm-block" data-arm="{{ arm }}">
+    <h3>{{ arm_label(arm, a) }}</h3>
+    {% if state.not_run(arm) %}
+    {{ not_run(state.not_run(arm)) }}
+    {% else %}
+    <h4>Files read</h4>
+    <ul class="files">
+    {% for category, files in a.files_by_category() %}
+      {% for f in files[:4] %}
+      <li><span class="cat">{{ category }}</span> {{ breakable(f.path) }}{% if f.count > 1 %} ×{{ f.count }}{% endif %}</li>
+      {% endfor %}
+      {% if files|length > 4 %}<li class="muted">+{{ files|length - 4 }} more {{ category }}</li>{% endif %}
+    {% else %}
+      <li class="muted">Nothing read yet.</li>
+    {% endfor %}
+    </ul>
+    <h4>Sessions</h4>
+    <ol class="sessions">
+    {% for s in a.sessions() %}
+      <li>{% if s.phase == "test" %}Test phase{% else %}Session {{ s.index }}{% endif %} · {{ s.turns }} turn{{ "s" if s.turns != 1 }}{% if s.ended_by %} · {{ s.ended_by }}{% endif %}
+        {% for p in s.redone[:2] %}<div class="redone">{{ status("redone") }} {{ breakable(p) }}</div>{% endfor %}
+      </li>
+    {% else %}
+      <li class="muted">No sessions yet.</li>
+    {% endfor %}
+    </ol>
+    {% endif %}
+  </section>
+  {% endfor %}
+</article>
+
+<article class="panel">
+  <h2>{{ section_label(3) }}</h2>
+  {% for arm in arms %}
+  {% set a = state.arm(arm) %}
+  <section class="arm-block" data-arm="{{ arm }}">
+    <h3>{{ arm_label(arm, a) }}</h3>
+    {% if state.not_run(arm) %}
+    {{ not_run(state.not_run(arm)) }}
+    {% else %}
+    <h4>Diff map</h4>
+    <ul class="diffmap">
+    {% for path, label in a.diff_map().items() %}
+      <li>{{ status(label) }} {{ breakable(path) }}</li>
+    {% else %}
+      <li class="muted">No changes yet.</li>
+    {% endfor %}
+    </ul>
+    <h4>Sandbox denials</h4>
+    <ul class="denials">
+    {% for d in a.denials[-3:] %}
+      <li>{{ status("denied", d.reason_code) }} {{ breakable(d.command) }}</li>
+    {% else %}
+      <li>{{ status("pass", "none") }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+  {% endfor %}
+</article>
+
+<article class="panel">
+  <h2>{{ section_label(4) }}</h2>
+  {% for arm in arms %}
+  {% set a = state.arm(arm) %}
+  <section class="arm-block" data-arm="{{ arm }}">
+    <h3>{{ arm_label(arm, a) }}</h3>
+    {% if state.not_run(arm) %}
+    {{ not_run(state.not_run(arm)) }}
+    {% else %}
+    <h4>Referee</h4>
+    <ul class="checks">
+    {% for c in a.checks.values() %}
+      {# One row per check: the short name ("House rule 1", "Flaky tests (flakiness)") as text, the
+         result on a short pill, the full name and the probes in the tooltip. #}
+      <li class="check-row" title="{{ check_label(c.check) }}: {{ c.total_probes }} probes"><span class="check-name">{{ check_short(c.check) }}</span> {{ status("pass" if c.passed else "fail", c.new_violations ~ " new") }}</li>
+    {% else %}
+      {% for p in a.progress.values() %}<li class="check-row" title="{{ check_label(p.check) }}"><span class="check-name">{{ progress_label(p.check, p.label) }}</span> {{ status("pending", "running") }}</li>{% else %}<li class="muted">Referee not run yet.</li>{% endfor %}
+    {% endfor %}
+    {% if a.reviewer %}
+    {# The blinded reviewer's own reason, as recorded in its reviewer_output event: one line, the
+       whole text in the tooltip. Nothing extra when none is recorded. #}
+    {% set reason = (a.reviewer.summary or "").strip() %}
+    <li class="reviewer-line"{% if reason %} title="{{ reason }}"{% endif %}>{{ status(a.reviewer.verdict, "reviewer " ~ a.reviewer.verdict) }} tenant risk {{ a.reviewer.tenant_isolation_risk }}{% if reason %} <span class="reviewer-reason">· {{ reason.splitlines()|first|truncate(160, true, "…") }}</span>{% endif %}</li>
+    {% endif %}
+    </ul>
+    {% if a.tests %}
+    <h4>Test filters 1 to 5</h4>
+    {# Each test name on its own full-width row; its five filter ticks and result beneath it. #}
+    <table class="filters">
+      <thead><tr>{% for n in range(1, 6) %}<th title="{{ filter_name(n) }}">{{ breakable(n) }}</th>{% endfor %}<th>result</th></tr></thead>
+      <tbody>
+      {% for t in a.tests.values() %}
+        <tr class="test-name-row"><td colspan="6" class="test-name" title="{{ t.test_id }}">{{ breakable(short_test(t.test_id)) }}</td></tr>
+        <tr>
+          {% for n in range(1, 6) %}
+          {% set r = t.filters.get(n) %}
+          <td class="cell {% if r is none %}tone-muted{% elif r[0] %}tone-good{% else %}tone-bad{% endif %}">{% if r is none %}·{% elif r[0] %}✓{% else %}✗{% endif %}</td>
+          {% endfor %}
+          <td>{% if t.kept %}{{ status("kept") }}{% elif t.kept is none %}{{ status("pending") }}{% else %}{{ status("discarded") }}{% endif %}</td>
+        </tr>
+        {% if t.kept == false %}
+        {% set mismatch = a.spec_mismatch(t) %}
+        <tr><td colspan="6" class="reason">{{ breakable(t.discard_reason) }}{% if mismatch %}<span class="maybe-bug"> · fails on the current code; this may be a real bug: the test expected {{ mismatch[1] }}, which the ticket states, and the code returned {{ mismatch[0] }}</span>{% endif %}</td></tr>
+        {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
+    {% set cov = a.filter_counts(3) %}
+    <p class="coverage">Coverage ({{ filter_name(3) }}): {{ cov[0] }} of {{ cov[1] }} tests</p>
+    {% endif %}
+    {% if a.mutants %}
+    <h4>Mutants</h4>
+    <table class="mutants">
+      <thead><tr><th>filter set</th><th>referee set</th></tr></thead>
+      <tbody>
+      {% for mid in a.mutants|map(attribute="mutant_id")|unique %}
+        <tr class="test-name-row"><td colspan="2" class="test-name" title="{{ mid }}">{{ breakable(mid) }}</td></tr>
+        <tr>
+          {% for s in ("filter", "referee") %}
+          {% set m = a.mutants|selectattr("mutant_id", "equalto", mid)|selectattr("set", "equalto", s)|first %}
+          <td>{% if m %}{{ status(m.outcome) }}{% else %}–{% endif %}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {% endif %}
+  </section>
+  {% endfor %}
+</article>
+</div>

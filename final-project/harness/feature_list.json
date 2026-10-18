@@ -1,0 +1,16 @@
+{
+  "$schema": "./feature_list.schema.json",
+  "features": [
+    {
+      "id": "F5",
+      "category": "feature",
+      "description": "Bulk close of in-progress issues",
+      "steps": [
+        "Bulk close of in-progress issues"
+      ],
+      "passes": false,
+      "evidence": null,
+      "testedAt": null
+    }
+  ]
+}

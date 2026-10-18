@@ -1,0 +1,18 @@
+diff --git a/app/api/issues.py b/app/api/issues.py
+index 6b505cb..522b88e 100644
+--- a/app/api/issues.py
++++ b/app/api/issues.py
+@@ -9,3 +9,5 @@ def create_issue(project_id: int, body: dict, user: dict) -> dict:
+ 
+ def list_issues(project_id: int, user: dict) -> list[dict]:
+     return service.list_for(project_id, user)
++
++# Idempotency-Key handled in middleware
+diff --git a/app/middleware/idempotency.py b/app/middleware/idempotency.py
+new file mode 100644
+index 0000000..ce9dffd
+--- /dev/null
++++ b/app/middleware/idempotency.py
+@@ -0,0 +1,2 @@
++def middleware(request):
++    pass

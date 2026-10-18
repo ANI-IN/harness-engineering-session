@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>shipharness console</title>
+  <link rel="stylesheet" href="/static/console.css?v={{ static_version }}">
+</head>
+<body class="index">
+  <header class="bar"><h1>shipharness console</h1></header>
+  <main class="index-main">
+    <section class="panel">
+      <h2>Runs</h2>
+      {% if runs %}
+      <p class="muted">Newest first.</p>
+      <ul class="runs">
+        {% for run in runs %}
+        <li>
+          <a class="run-link" href="/run/{{ run.run_id }}">{{ breakable(run.run_id) }}</a>
+          <div class="run-meta"><span>{{ run.section }}</span><span>{{ run.feature }}</span><span>{{ run.kind }}</span><span>{{ run.status }}</span><span>started {{ run.started }}</span></div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No runs yet. Start one in a second terminal: <code>make show-1</code> (<code>PURPOSE=pilot</code> outside class) runs the harness arm alone on the Section 1 ticket. The run appears here when it starts: reload this page.</p>
+      {% endif %}
+    </section>
+    <section class="panel">
+      <h2>Keys</h2>
+      <p><kbd>1</kbd> Live Console · <kbd>2</kbd> Boards · <kbd>3</kbd> Evidence · <kbd>4</kbd> A/B Report · <kbd>5</kbd> Traces · <kbd>F</kbd> full screen for one arm · <kbd>H</kbd> or <kbd>Esc</kbd> back to this list</p>
+    </section>
+  </main>
+</body>
+</html>

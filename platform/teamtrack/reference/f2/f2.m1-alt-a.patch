@@ -1,0 +1,559 @@
+diff --git a/app/api/comments.py b/app/api/comments.py
+new file mode 100644
+--- /dev/null
++++ b/app/api/comments.py
+@@ -0,0 +1,74 @@
++"""Comments on issues (F2): create, list oldest first, delete (author or admin)."""
++
++from __future__ import annotations
++
++from datetime import datetime
++
++from fastapi import APIRouter, Depends, Header, Response
++from fastapi.responses import JSONResponse
++from pydantic import BaseModel, ConfigDict, Field
++from sqlalchemy.orm import Session
++
++from app.api.deps import Id, current_actor, get_db, require_writer
++from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_page
++from app.services import comments, idempotency
++from app.services.context import Actor
++
++router = APIRouter(tags=["comments"])
++
++
++class CommentIn(BaseModel):
++    model_config = ConfigDict(extra="forbid")
++
++    body: str = Field(min_length=1, max_length=5000)
++
++
++class CommentOut(BaseModel):
++    model_config = ConfigDict(from_attributes=True)
++
++    id: int
++    org_id: int
++    issue_id: int
++    author_id: int
++    body: str
++    created_at: datetime
++
++
++@router.get("/issues/{issue_id}/comments", response_model=Page[CommentOut])
++def list_comments(
++    issue_id: Id,
++    params: PageParams = Depends(page_params),
++    actor: Actor = Depends(current_actor),
++    db: Session = Depends(get_db),
++) -> Page[CommentOut]:
++    rows, next_after = comments.list_page(
++        db, actor, issue_id, decode_cursor(params.cursor), params.limit
++    )
++    return to_page(rows, next_after, CommentOut.model_validate)
++
++
++@router.post("/issues/{issue_id}/comments", response_model=CommentOut, status_code=201)
++def create_comment(
++    issue_id: Id,
++    body: CommentIn,
++    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
++    actor: Actor = Depends(require_writer),
++    db: Session = Depends(get_db),
++) -> JSONResponse:
++    def create() -> dict[str, object]:
++        comment = comments.create(db, actor, issue_id, body.body, commit=False)
++        return CommentOut.model_validate(comment).model_dump(mode="json")
++
++    endpoint = f"POST /issues/{issue_id}/comments"
++    status, payload = idempotency.run_once(
++        db, actor, idempotency_key, endpoint, body.model_dump(), create
++    )
++    return JSONResponse(payload, status_code=status)
++
++
++@router.delete("/comments/{comment_id}", status_code=204)
++def delete_comment(
++    comment_id: Id, actor: Actor = Depends(require_writer), db: Session = Depends(get_db)
++) -> Response:
++    comments.delete(db, actor, comment_id)
++    return Response(status_code=204)
+diff --git a/app/db/models.py b/app/db/models.py
+--- a/app/db/models.py
++++ b/app/db/models.py
+@@ -104,3 +104,14 @@ class IdempotencyRecord(Base):
+     status_code: Mapped[int] = mapped_column(Integer)
+     response_json: Mapped[str] = mapped_column(Text)
+     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
++
++
++class Comment(Base):
++    __tablename__ = "comments"
++
++    id: Mapped[int] = mapped_column(Integer, primary_key=True)
++    org_id: Mapped[int] = mapped_column(ForeignKey("orgs.id"), index=True)
++    issue_id: Mapped[int] = mapped_column(ForeignKey("issues.id"), index=True)
++    author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
++    body: Mapped[str] = mapped_column(Text)
++    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+diff --git a/app/main.py b/app/main.py
+--- a/app/main.py
++++ b/app/main.py
+@@ -5,7 +5,18 @@ from __future__ import annotations
+ from fastapi import FastAPI
+ from fastapi.staticfiles import StaticFiles
+ 
+-from app.api import audit, auth, health, issues, legacy_v1, members, projects, users, watchers
++from app.api import (
++    audit,
++    auth,
++    comments,
++    health,
++    issues,
++    legacy_v1,
++    members,
++    projects,
++    users,
++    watchers,
++)
+ from app.api.errors import install_error_handlers
+ from app.api.middleware import RequestIdMiddleware
+ from app.db.base import Base
+@@ -30,7 +41,18 @@ def create_app(settings: TeamTrackSettings | None = None) -> FastAPI:
+     app.state.settings = settings
+     app.add_middleware(RequestIdMiddleware)
+     install_error_handlers(app)
+-    for module in (auth, users, projects, members, issues, audit, health, legacy_v1, watchers):
++    for module in (
++        auth,
++        users,
++        projects,
++        members,
++        issues,
++        comments,
++        audit,
++        health,
++        legacy_v1,
++        watchers,
++    ):
+         app.include_router(module.router)
+     app.include_router(board.router)
+     app.mount("/board/static", StaticFiles(directory=board.STATIC_DIR), name="board-static")
+diff --git a/app/repositories/comments.py b/app/repositories/comments.py
+new file mode 100644
+--- /dev/null
++++ b/app/repositories/comments.py
+@@ -0,0 +1,32 @@
++from __future__ import annotations
++
++from sqlalchemy import select
++from sqlalchemy.orm import Session
++
++from app.db.models import Comment
++from app.repositories.common import page, split_page
++
++
++def get(session: Session, org_id: int, comment_id: int) -> Comment | None:
++    return session.scalar(select(Comment).where(Comment.org_id == org_id, Comment.id == comment_id))
++
++
++def list_for_issue(
++    session: Session, org_id: int, issue_id: int, after: int | None, limit: int
++) -> tuple[list[Comment], int | None]:
++    """Comments of one issue, oldest first (ascending id)."""
++    base = select(Comment).where(Comment.org_id == org_id, Comment.issue_id == issue_id)
++    stmt = page(base, Comment.id, after, limit)
++    return split_page(list(session.scalars(stmt)), limit, lambda c: c.id)
++
++
++def add(session: Session, org_id: int, issue_id: int, author_id: int, body: str) -> Comment:
++    comment = Comment(org_id=org_id, issue_id=issue_id, author_id=author_id, body=body)
++    session.add(comment)
++    session.flush()
++    return comment
++
++
++def remove(session: Session, comment: Comment) -> None:
++    session.delete(comment)
++    session.flush()
+diff --git a/app/seed.py b/app/seed.py
+--- a/app/seed.py
++++ b/app/seed.py
+@@ -6,6 +6,7 @@ from dataclasses import dataclass
+ 
+ from sqlalchemy.orm import Session
+ 
++from app.repositories import comments as comments_repo
+ from app.repositories import issues as issues_repo
+ from app.repositories import members as members_repo
+ from app.repositories import orgs as orgs_repo
+@@ -103,5 +104,21 @@ def seed(session: Session) -> None:
+                     spec.admin,
+                 )
+                 assert issue.id == next(issue_ids)
++    _seed_comments(session)
+     _seed_watchers(session)
+     session.commit()
++
++
++# Two comments per org on the org's first issue: ids 1-2 (Acme issue 1), 3-4 (Globex issue 21).
++SEED_COMMENTS = {ACME.slug: (1, 2), GLOBEX.slug: (3, 4)}
++
++
++def _seed_comments(session: Session) -> None:
++    for spec, _name, _projects in _ORGS:
++        notes = (
++            (spec.member, "I can reproduce this on the latest build."),
++            (spec.admin, "Thanks, we are looking into it."),
++        )
++        for (author, body), comment_id in zip(notes, SEED_COMMENTS[spec.slug], strict=True):
++            comment = comments_repo.add(session, spec.org_id, spec.issues[0], author, body)
++            assert comment.id == comment_id
+diff --git a/app/services/comments.py b/app/services/comments.py
+new file mode 100644
+--- /dev/null
++++ b/app/services/comments.py
+@@ -0,0 +1,55 @@
++"""Comments on issues (F2). Every function works only inside actor.org_id."""
++
++from __future__ import annotations
++
++from sqlalchemy.orm import Session
++
++from app.db.models import Comment, Issue
++from app.repositories import comments as comments_repo
++from app.repositories import issues as issues_repo
++from app.repositories import projects as projects_repo
++from app.services import audit
++from app.services.context import Actor
++from app.services.errors import Forbidden, Invalid, NotFound
++
++MAX_BODY = 5000
++
++
++def _issue(session: Session, actor: Actor, issue_id: int) -> Issue:
++    """A live issue in an active project of the caller's org; anything else is a 404."""
++    issue = issues_repo.get(session, actor.org_id, issue_id)
++    if issue is None or projects_repo.get(session, actor.org_id, issue.project_id) is None:
++        raise NotFound("issue not found")
++    return issue
++
++
++def list_page(
++    session: Session, actor: Actor, issue_id: int, after: int | None, limit: int
++) -> tuple[list[Comment], int | None]:
++    issue = _issue(session, actor, issue_id)
++    return comments_repo.list_for_issue(session, actor.org_id, issue.id, after, limit)
++
++
++def create(
++    session: Session, actor: Actor, issue_id: int, body: str, *, commit: bool = True
++) -> Comment:
++    issue = _issue(session, actor, issue_id)
++    if not isinstance(body, str) or not 1 <= len(body) <= MAX_BODY:
++        raise Invalid(f"body must be 1 to {MAX_BODY} characters")
++    comment = comments_repo.add(session, actor.org_id, issue.id, actor.user_id, body)
++    audit.record(session, actor, "comment.create", "comment", comment.id)
++    if commit:
++        session.commit()
++    return comment
++
++
++def delete(session: Session, actor: Actor, comment_id: int) -> None:
++    comment = comments_repo.get(session, actor.org_id, comment_id)
++    if comment is None:
++        raise NotFound("comment not found")
++    _issue(session, actor, comment.issue_id)
++    if comment.author_id != actor.user_id and not actor.is_admin:
++        raise Forbidden("only the author or an admin can delete a comment")
++    audit.record(session, actor, "comment.delete", "comment", comment.id)
++    comments_repo.remove(session, comment)
++    session.commit()
+diff --git a/app/web/routes.py b/app/web/routes.py
+--- a/app/web/routes.py
++++ b/app/web/routes.py
+@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
+ 
+ from app.api.deps import Id, get_db
+ from app.seed import ACME, GLOBEX
+-from app.services import auth, issues, orgs, projects
++from app.services import auth, comments, issues, orgs, projects
+ from app.services.context import Actor
+ from app.services.errors import Forbidden, Unauthorized
+ 
+@@ -133,7 +133,31 @@ def issue_detail(issue_id: Id, request: Request, db: Session = Depends(get_db))
+     if actor is None:
+         return _to_login()
+     issue = issues.get(db, actor, issue_id)
+-    return _render(request, "issue.html", actor, db, issue=issue)
++    return _render(
++        request, "issue.html", actor, db, issue=issue, comments=_all_comments(db, actor, issue.id)
++    )
++
++
++def _all_comments(db: Session, actor: Actor, issue_id: int) -> list[Any]:
++    rows, after = comments.list_page(db, actor, issue_id, None, 100)
++    collected = list(rows)
++    while after is not None:
++        rows, after = comments.list_page(db, actor, issue_id, after, 100)
++        collected.extend(rows)
++    return collected
++
++
++@router.post("/issues/{issue_id}/comments")
++def add_comment(
++    issue_id: Id, request: Request, body: str = Form(...), db: Session = Depends(get_db)
++) -> Response:
++    actor = _actor(request, db)
++    if actor is None:
++        return _to_login()
++    if not actor.can_write:
++        raise Forbidden("viewers cannot change data")
++    comments.create(db, actor, issue_id, body)
++    return RedirectResponse(f"/board/issues/{issue_id}", status_code=303)
+ 
+ 
+ @router.post("/issues/{issue_id}/transition")
+diff --git a/app/web/templates/issue.html b/app/web/templates/issue.html
+--- a/app/web/templates/issue.html
++++ b/app/web/templates/issue.html
+@@ -24,4 +24,21 @@
+   </form>
+   {% endif %}
+ </article>
++<section class="comments" aria-label="Comments">
++  <h2>Comments <span class="count">{{ comments|length }}</span></h2>
++  {% for comment in comments %}
++  <article class="comment" data-comment-id="{{ comment.id }}" data-org="{{ slugs.get(comment.org_id, 'unknown') }}">
++    <p class="comment-meta">User #{{ comment.author_id }} · {{ comment.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
++    <p class="comment-body">{{ comment.body }}</p>
++  </article>
++  {% else %}
++  <p class="no-comments">No comments yet.</p>
++  {% endfor %}
++  {% if actor.can_write %}
++  <form class="add-comment" method="post" action="/board/issues/{{ issue.id }}/comments">
++    <label>Add a comment <textarea name="body" required maxlength="5000"></textarea></label>
++    <button type="submit">Comment</button>
++  </form>
++  {% endif %}
++</section>
+ {% endblock %}
+diff --git a/migrations/versions/0002_comments.py b/migrations/versions/0002_comments.py
+new file mode 100644
+--- /dev/null
++++ b/migrations/versions/0002_comments.py
+@@ -0,0 +1,32 @@
++"""comments on issues
++
++Revision ID: 0002_comments
++Revises: 0003_watchers
++Create Date: 2026-10-16
++"""
++
++from __future__ import annotations
++
++import sqlalchemy as sa
++from alembic import op
++
++revision = "0002_comments"
++down_revision = "0003_watchers"
++branch_labels = None
++depends_on = None
++
++
++def upgrade() -> None:
++    op.create_table(
++        "comments",
++        sa.Column("id", sa.Integer(), primary_key=True),
++        sa.Column("org_id", sa.Integer(), sa.ForeignKey("orgs.id"), nullable=False, index=True),
++        sa.Column("issue_id", sa.Integer(), sa.ForeignKey("issues.id"), nullable=False, index=True),
++        sa.Column("author_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False),
++        sa.Column("body", sa.Text(), nullable=False),
++        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
++    )
++
++
++def downgrade() -> None:
++    op.drop_table("comments")
+diff --git a/tests/visible/test_comments.py b/tests/visible/test_comments.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_comments.py
+@@ -0,0 +1,177 @@
++"""F2: comments on issues (API and the board's comments panel)."""
++
++from __future__ import annotations
++
++import re
++
++from conftest import auth, error_code
++
++ACME_COMMENTS = (1, 2)  # seeded on Acme's first issue: by the member, then by the admin
++GLOBEX_COMMENTS = (3, 4)
++
++
++def post(client, user_id: int, issue_id: int, body: str = "Looks good", **headers):  # type: ignore[no-untyped-def]
++    return client.post(
++        f"/issues/{issue_id}/comments", json={"body": body}, headers={**auth(user_id), **headers}
++    )
++
++
++def listed(client, user_id: int, issue_id: int) -> list[dict]:  # type: ignore[no-untyped-def]
++    response = client.get(f"/issues/{issue_id}/comments?limit=100", headers=auth(user_id))
++    assert response.status_code == 200, response.text
++    return response.json()["items"]
++
++
++def audit_actions(client, o) -> list[str]:  # type: ignore[no-untyped-def]
++    items = client.get("/audit?limit=100", headers=auth(o.admin)).json()["items"]
++    return [item["action"] for item in items]
++
++
++def test_create_comment_returns_201_and_the_comment(client, acme) -> None:
++    response = post(client, acme.member, acme.issues[1], "First!")
++    assert response.status_code == 201
++    comment = response.json()
++    assert set(comment) == {"id", "org_id", "issue_id", "author_id", "body", "created_at"}
++    assert comment["issue_id"] == acme.issues[1]
++    assert comment["author_id"] == acme.member
++    assert comment["org_id"] == acme.org_id
++    assert comment["body"] == "First!"
++
++
++def test_list_is_oldest_first_and_includes_the_seed(client, acme) -> None:
++    new_id = post(client, acme.admin, acme.issues[0]).json()["id"]
++    assert [c["id"] for c in listed(client, acme.viewer, acme.issues[0])] == [
++        *ACME_COMMENTS,
++        new_id,
++    ]
++
++
++def test_list_uses_the_envelope_and_cursor(client, acme) -> None:
++    body = client.get(f"/issues/{acme.issues[0]}/comments?limit=1", headers=auth(acme.member))
++    page = body.json()
++    assert set(page) == {"items", "next_cursor"}
++    assert [c["id"] for c in page["items"]] == [ACME_COMMENTS[0]]
++    rest = client.get(
++        f"/issues/{acme.issues[0]}/comments?limit=1&cursor={page['next_cursor']}",
++        headers=auth(acme.member),
++    ).json()
++    assert [c["id"] for c in rest["items"]] == [ACME_COMMENTS[1]]
++
++
++def test_viewer_cannot_comment(client, acme) -> None:
++    response = post(client, acme.viewer, acme.issues[0])
++    assert response.status_code == 403
++    assert error_code(response) == "forbidden"
++
++
++def test_other_orgs_issue_is_404(client, acme, globex) -> None:
++    assert post(client, acme.member, globex.issues[0]).status_code == 404
++    response = client.get(f"/issues/{globex.issues[0]}/comments", headers=auth(acme.member))
++    assert response.status_code == 404
++
++
++def test_deleted_issue_is_404(client, acme) -> None:
++    client.delete(f"/issues/{acme.issues[0]}", headers=auth(acme.member))
++    assert post(client, acme.member, acme.issues[0]).status_code == 404
++    response = client.get(f"/issues/{acme.issues[0]}/comments", headers=auth(acme.member))
++    assert response.status_code == 404
++    response = client.delete(f"/comments/{ACME_COMMENTS[0]}", headers=auth(acme.admin))
++    assert response.status_code == 404
++
++
++def test_issue_in_archived_project_is_404(client, acme) -> None:
++    client.delete(f"/projects/{acme.projects[0]}", headers=auth(acme.admin))
++    assert post(client, acme.member, acme.issues[0]).status_code == 404
++    response = client.get(f"/issues/{acme.issues[0]}/comments", headers=auth(acme.member))
++    assert response.status_code == 404
++
++
++def test_body_must_be_1_to_5000_characters(client, acme) -> None:
++    for body in ("", "x" * 5001):
++        response = post(client, acme.member, acme.issues[0], body)
++        assert response.status_code == 422
++        assert error_code(response) == "validation_error"
++    assert post(client, acme.member, acme.issues[0], "x" * 5000).status_code == 201
++
++
++def test_author_can_delete_own_comment(client, acme) -> None:
++    response = client.delete(f"/comments/{ACME_COMMENTS[0]}", headers=auth(acme.member))
++    assert response.status_code == 204
++    assert [c["id"] for c in listed(client, acme.member, acme.issues[0])] == [ACME_COMMENTS[1]]
++
++
++def test_member_cannot_delete_someone_elses_comment(client, acme) -> None:
++    response = client.delete(f"/comments/{ACME_COMMENTS[1]}", headers=auth(acme.member))
++    assert response.status_code == 403
++    assert error_code(response) == "forbidden"
++
++
++def test_admin_can_delete_any_comment_in_the_org(client, acme) -> None:
++    response = client.delete(f"/comments/{ACME_COMMENTS[0]}", headers=auth(acme.admin))
++    assert response.status_code == 204
++
++
++def test_other_orgs_comment_is_404(client, acme, globex) -> None:
++    response = client.delete(f"/comments/{GLOBEX_COMMENTS[0]}", headers=auth(acme.admin))
++    assert response.status_code == 404
++    assert error_code(response) == "not_found"
++
++
++def test_create_and_delete_each_add_one_audit_row(client, acme) -> None:
++    before = audit_actions(client, acme)
++    comment_id = post(client, acme.member, acme.issues[0]).json()["id"]
++    assert audit_actions(client, acme)[len(before) :] == ["comment.create"]
++    client.delete(f"/comments/{comment_id}", headers=auth(acme.member))
++    assert audit_actions(client, acme)[len(before) :] == ["comment.create", "comment.delete"]
++
++
++def test_refused_writes_add_no_audit_row(client, acme) -> None:
++    before = audit_actions(client, acme)
++    post(client, acme.viewer, acme.issues[0])
++    client.delete(f"/comments/{ACME_COMMENTS[1]}", headers=auth(acme.member))
++    assert audit_actions(client, acme) == before
++
++
++def test_idempotency_key_replays_and_conflicts(client, acme) -> None:
++    first = post(client, acme.member, acme.issues[0], "Once", **{"Idempotency-Key": "c-1"})
++    again = post(client, acme.member, acme.issues[0], "Once", **{"Idempotency-Key": "c-1"})
++    assert again.status_code == 201
++    assert again.json() == first.json()
++    assert len(listed(client, acme.member, acme.issues[0])) == 3
++    other = post(client, acme.member, acme.issues[0], "Different", **{"Idempotency-Key": "c-1"})
++    assert other.status_code == 409
++    assert error_code(other) == "idempotency_conflict"
++
++
++def login(client, email: str) -> None:  # type: ignore[no-untyped-def]
++    response = client.post("/board/login", data={"email": email}, follow_redirects=False)
++    assert response.status_code == 303
++
++
++def test_board_issue_page_shows_the_comments_panel(client, acme) -> None:
++    login(client, "member@acme.test")
++    html = client.get(f"/board/issues/{acme.issues[0]}").text
++    assert '<section class="comments"' in html
++    found = re.findall(r'class="comment" data-comment-id="(\d+)"', html)
++    assert found == [str(i) for i in ACME_COMMENTS]
++    assert 'class="add-comment"' in html
++
++
++def test_board_hides_the_comment_form_from_viewers(client, acme) -> None:
++    login(client, "viewer@acme.test")
++    html = client.get(f"/board/issues/{acme.issues[0]}").text
++    assert '<section class="comments"' in html
++    assert 'class="add-comment"' not in html
++
++
++def test_board_adds_a_comment_and_escapes_it(client, acme) -> None:
++    login(client, "member@acme.test")
++    response = client.post(
++        f"/board/issues/{acme.issues[0]}/comments",
++        data={"body": "<b>bold</b> claim"},
++        follow_redirects=False,
++    )
++    assert response.status_code == 303
++    html = client.get(f"/board/issues/{acme.issues[0]}").text
++    assert "&lt;b&gt;bold&lt;/b&gt; claim" in html
++    assert len(re.findall(r'class="comment" data-comment-id=', html)) == 3

@@ -1,0 +1,5 @@
+--- a/../teamtrack-secrets.env
++++ b/../teamtrack-secrets.env
+@@ -1 +1 @@
+-DEBUG=0
++DEBUG=1

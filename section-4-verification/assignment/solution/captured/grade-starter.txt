@@ -1,0 +1,71 @@
+# captured on 2026-10-17 from `make grade-assignment-4 SUBMISSION=section-4-verification/assignment/starter` at commit eba4c55 (no model calls); your output will differ; paths shortened for privacy.
+$ make grade-assignment-4 SUBMISSION=section-4-verification/assignment/starter
+uv run python platform/scripts/grade_assignment.py 4 "section-4-verification/assignment/starter"
+A4 grade for ~/wt/gaps/section-4-verification/assignment/starter
+
+Criterion                     Points  Tests
+R8-interface                     1/5  1/5
+    FAIL test_result_has_probes_and_r8_findings_with_detail_keys: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_cli_wrapper_exit_codes_with_and_without_baseline: AssertionError: assert 1 == 3 + where 1 = CompletedProcess(args=['~/wt/gaps/.venv/bin/python', '-m', 'a4_verification.run_r8', '--build', '/tmp/pytest-o...ey": "crashed", "baseline": false}], "duration_ms": 308, "seed": null, "artifacts": [], "metrics": {}}]}\n', stderr='').returncode
+    FAIL test_shipharness_runner_runs_the_check_with_a_baseline: assert (not True)
+    FAIL test_progress_is_reported: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+R8-visible                       0/9  0/2
+    FAIL test_finds_a_deleted_issue_that_resolves_by_id: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_finds_a_deleted_issue_in_the_project_issue_list: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+R8-hidden                       0/17  0/6
+    FAIL test_new_list_endpoint_is_discovered_from_the_schema: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_deleted_issue_nested_inside_a_list_response: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_write_endpoint_that_resolves_a_deleted_issue: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_id_parameter_after_an_issues_segment: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_issue_parameter_after_another_resource_parameter: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_deleted_issue_named_in_a_request_body: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+R8-no-false-positives            0/8  0/4
+    FAIL test_clean_build_reports_only_the_legacy_list: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_lookup_violation_is_reported_only_on_issue_endpoints: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_correct_new_endpoints_are_not_reported: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_shared_numeric_ids_are_not_evidence: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+R8-baseline                      0/7  0/4
+    FAIL test_baseline_counts_only_new_findings: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_findings_are_stable_across_runs: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_baseline_with_several_new_findings: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+    FAIL test_exempt_endpoint_is_reported_as_info: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+F6-interface                     2/4  1/2
+    FAIL test_filter_runs_inside_the_shipharness_pipeline: assert [False, False] == [False, True] At index 1 diff: False != True Use -v to get more diff
+F6-visible                       0/6  0/3
+    FAIL test_renamed_and_reformatted_copy_is_discarded_with_the_original_named: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_a_different_assertion_is_kept: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_a_docstring_alone_does_not_make_a_test_new: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+F6-hidden                       0/13  0/12
+    FAIL test_consistently_renamed_locals_are_a_duplicate: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_swapped_locals_are_not_a_duplicate: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_a_different_fixture_is_not_a_duplicate: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_a_different_global_helper_is_not_a_duplicate: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_a_different_attribute_is_not_a_duplicate: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_parametrize_data_matters: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_a_later_copy_of_an_earlier_kept_candidate_is_discarded: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_an_existing_test_is_not_its_own_duplicate: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_methods_in_test_classes: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_async_duplicates: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_loop_with_and_except_names_are_locals: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+    FAIL test_a_file_that_does_not_parse_is_discarded_with_a_reason: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+own-tests                        0/5  0/2
+    FAIL test_at_least_eight_own_tests: AssertionError: tests/ has 2 test functions: ['test_dedup_filter.py::test_the_function_name_is_ignored', 'test_r8_soft_delete.py::test_issue_id_parameter_addresses_an_issue'] assert 2 >= 8 + where 2 = len(['test_dedup_filter.py::test_the_function_name_is_ignored', 'test_r8_soft_delete.py::test_issue
+    FAIL test_own_tests_pass: AssertionError: tests/: 2 failed in 0.34s; FAILED section-4-verification/assignment/starter/tests/test_dedup_filter.py::test_the_function_name_is_ignored; FAILED section-4-verification/assignment/starter/tests/test_r8_soft_delete.py::test_issue_id_parameter_addresses_an_issue assert 1 == 0 + where 1
+skill                            0/6  0/1
+    FAIL test_own_skill_is_valid_and_not_the_template: AssertionError: skill/: expected exactly one folder with a SKILL.md, found [] assert not ['skill/: expected exactly one folder with a SKILL.md, found []']
+portfolio-evidence               0/5  0/1
+    FAIL test_evidence_report_structure: AssertionError: portfolio/evidence-report.md: still contains TODO portfolio/evidence-report.md: section '## Results' has no Markdown table assert not ['portfolio/evidence-report.md: still contains TODO', "portfolio/evidence-report.md: section '## Results' has no Markdown table"]
+portfolio-langsmith              0/2  0/1
+    FAIL test_langsmith_page_structure: AssertionError: portfolio/langsmith.md: still contains TODO assert not ['portfolio/langsmith.md: still contains TODO']
+portfolio-case-study             0/3  0/1
+    FAIL test_case_study_structure: AssertionError: portfolio/case-study.md: still contains TODO portfolio/case-study.md: 90 words; one page means 250 to 700 assert not ['portfolio/case-study.md: still contains TODO', 'portfolio/case-study.md: 90 words; one page means 250 to 700']
+live-evidence                   0/10  0/4
+    FAIL test_live_testgen_run: AssertionError: live/testgen.txt: missing (the command line and its printed output) live/testgen-report.json: missing assert not ['live/testgen.txt: missing (the command line and its printed output)', 'live/testgen-report.json: missing']
+    FAIL test_live_testgen_report_shows_filter_6: AssertionError: live/testgen-report.json: missing assert not ['live/testgen-report.json: missing']
+    FAIL test_live_ab_command_and_cost: AssertionError: live/ab.txt: missing (the command line and its printed output) assert not ['live/ab.txt: missing (the command line and its printed output)']
+    FAIL test_live_ab_score_records: AssertionError: live/scores: expected 2 score records (bare and harness) from one A/B, found 0 assert not ['live/scores: expected 2 score records (bare and harness) from one A/B, found 0']
+
+Score: 3/100
+Cost: $0.000000 (no model calls)
+grading assignment 4: section-4-verification/assignment/starter
+[exit code 0]

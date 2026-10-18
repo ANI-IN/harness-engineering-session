@@ -1,0 +1,92 @@
+{
+  "ab_id": "ab-20261017-092810-d5d31c",
+  "arms": {
+    "bare": {
+      "allowed_paths": {
+        "build": [
+          "app/api/issues.py",
+          "app/services/issues.py",
+          "docs/HANDBOOK.md",
+          "tests/visible/**"
+        ],
+        "test": [
+          "tests/visible/**"
+        ]
+      },
+      "claim": "done",
+      "claims": {
+        "build": "done",
+        "test": "none"
+      },
+      "cost_limit_usd": 0.2,
+      "cost_usd": 0.008565,
+      "layers": [],
+      "model": "gpt-6-luna",
+      "phase_shas": {
+        "build": [
+          "2fa5eb2e2effb437260b98b1cd61947d88617847",
+          "d7716025e3e556d2b8fc5c7f7f80857fce3b6afb"
+        ],
+        "test": [
+          "d7716025e3e556d2b8fc5c7f7f80857fce3b6afb",
+          "d7716025e3e556d2b8fc5c7f7f80857fce3b6afb"
+        ]
+      },
+      "run_id": "r-20261017-092810-03baf8",
+      "status": "completed",
+      "test_phase_files": [
+        "tests/visible/test_issue_idempotency.py"
+      ],
+      "turns_total": 32
+    },
+    "harness": {
+      "allowed_paths": {
+        "build": [
+          "app/api/issues.py",
+          "app/services/issues.py",
+          "docs/HANDBOOK.md",
+          "tests/visible/**"
+        ],
+        "test": [
+          "tests/visible/**"
+        ]
+      },
+      "claim": "done",
+      "claims": {
+        "build": "done",
+        "test": "none"
+      },
+      "cost_limit_usd": 0.2,
+      "cost_usd": 0.007285,
+      "layers": [
+        "instructions",
+        "scope",
+        "state"
+      ],
+      "model": "gpt-6-luna",
+      "phase_shas": {
+        "build": [
+          "a33ba80e9a19d14514ca499485d1c260e899d9c0",
+          "ce80e329dc6f6d8fb14cdd770859454a67b7bdef"
+        ],
+        "test": [
+          "ce80e329dc6f6d8fb14cdd770859454a67b7bdef",
+          "fa3c4a53927a96ca4b1acaedf6b81c12f4e8a093"
+        ]
+      },
+      "run_id": "r-20261017-092810-1551e0",
+      "status": "ABORTED: timeout",
+      "test_phase_files": [
+        "docs/exec-plans/active/F3.md",
+        "progress.md",
+        "session-handoff.md"
+      ],
+      "turns_total": 34
+    }
+  },
+  "checkpoint_sha": "b974a6744c2df22c9bd28befd6b8512aa4ceae5a",
+  "feature_id": "F3",
+  "from_working_tree": false,
+  "section": "demo-3",
+  "source": "ab.json of A/B ab-20261017-092810-d5d31c"
+}

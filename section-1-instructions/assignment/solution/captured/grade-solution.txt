@@ -1,0 +1,45 @@
+# captured on 2026-10-18 from `make --no-print-directory grade-assignment-1 SUBMISSION=section-1-instructions/assignment/solution/work` (offline command, no model calls); your output will differ
+$ make --no-print-directory grade-assignment-1 SUBMISSION=section-1-instructions/assignment/solution/work
+uv run python platform/scripts/grade_assignment.py 1 "section-1-instructions/assignment/solution/work"
+A1 grade: section-1-instructions/assignment/solution/work
+A Map and layout                          15.0/15
+  layout                       5.0/5
+  map-length                   3.0/3
+  map-reach                    4.0/4
+  no-overwrite                 3.0/3
+B Rule coverage                           25.0/25
+  original-unchanged           2.0/2
+  coverage                    12.0/12
+  no-duplicates                2.0/2
+  no-retired                   2.0/2
+  no-unknown                   2.0/2
+  no-rule-in-map               2.0/2
+  no-new-facts                 3.0/3
+C Skill                                   12.0/12
+  skill-valid                  4.0/4
+  skill-frontmatter            2.0/2
+  skill-sections               2.0/2
+  skill-linked                 2.0/2
+  skill-cites                  2.0/2
+D Docs checker                            26.0/26
+  checker-tests                2.0/2
+  checker-clean                2.0/2
+  pristine-visible-tests       6.0/6
+  reference-tree               6.0/6
+  hidden-cases                10.0/10
+E A/B report                              10.0/10
+  report-sections              2.0/2
+  report-command               2.0/2
+  report-results               2.0/2
+  report-links                 1.0/1
+  report-cost                  1.0/1
+  report-reading               2.0/2
+F Live run evidence                       12.0/12
+  live-files                   3.0/3
+  live-command                 3.0/3
+  live-caps                    2.0/2
+  live-tree                    2.0/2
+  live-report                  2.0/2
+Score: 100.0/100
+grading assignment 1: section-1-instructions/assignment/solution/work
+(exit 0)

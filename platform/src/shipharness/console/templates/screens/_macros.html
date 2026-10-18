@@ -1,0 +1,46 @@
+{% macro screen_head(key, title, state) -%}
+<div class="screen-head">
+  <h1><kbd>{{ key }}</kbd> {{ title }}</h1>
+  <div class="badges">
+    {% if state.recorded %}<span class="badge recording"><span class="sym" aria-hidden="true">●</span> RECORDING</span>{% endif %}
+    {% if state.unsandboxed %}<span class="badge unsandboxed"><span class="sym" aria-hidden="true">⚠</span> UNSANDBOXED — results not official</span>{% endif %}
+    {% if state.constructed %}<span class="badge constructed"><span class="sym" aria-hidden="true">✎</span> CONSTRUCTED EXAMPLE: scripted steps, no model</span>
+    {% elif state.single_arm %}<span class="badge single-arm"><span class="sym" aria-hidden="true">▶</span> HARNESS IN ACTION — one arm, not an A/B</span>{% endif %}
+    {% if state.feature_label %}<span class="badge feature">{{ state.feature_label }}</span>{% endif %}
+    {% if state.profile %}<span class="badge profile">profile: {{ state.profile }}</span>{% endif %}
+  </div>
+</div>
+{%- endmacro %}
+
+{# The bare arm of a single-arm run: one plain line instead of an empty or default result. #}
+{% macro not_run(text) -%}
+<p class="muted not-run">{{ text }}</p>
+{%- endmacro %}
+
+{% macro arm_label(arm, a) -%}
+<span class="arm-name arm-{{ arm }}">{{ arm|upper }}</span>
+{%- if a.run_start and a.run_start.spec.get("layers") %} <span class="layers">{{ a.run_start.spec.get("layers")|join(" + ") }}</span>
+{%- elif arm == "bare" %} <span class="layers">no layers</span>{% endif %}
+{%- endmacro %}
+
+{# The referee for one arm: the primary verdict pill as soon as primary_verdict arrives, then the
+   secondary results with the full verdict (the last part of its summary), and the time from
+   launch to each. #}
+{% macro referee_line(a, width=90) -%}
+{% set view = a.primary_view %}
+{% if view %}
+{# A section without a primary measure (the final) is judged on all checks: no "primary". #}
+<span class="ref-line">{{ status("pass" if view.passed else "fail", ("primary verdict ready: " if view["values"] else "verdict ready: ") ~ ("PASS" if view.passed else "FAIL")) }}</span>
+<span class="ref-line values">{% if view["values"] %}{{ measure_values(view["values"]) }}{% else %}judged on all checks{% endif %}</span>
+{% if a.secondary_pending %}<span class="ref-line">{{ status("pending", "secondary checks running") }}</span>{% elif a.verdict %}{% for part in a.secondary_parts() %}<span class="ref-line secondary">{{ part|truncate(width, true, "…") }}</span>{% endfor %}{% endif %}
+{% else %}
+{{ status("pending", "referee pending") }}
+{% endif %}
+{% if a.time_to_primary_s is not none or a.time_to_verdict_s is not none %}
+<span class="ref-line timing">
+{%- if a.time_to_primary_s is not none %}launch to primary verdict {{ mmss(a.time_to_primary_s) }}{% endif %}
+{%- if a.time_to_primary_s is not none and a.time_to_verdict_s is not none %} · {% endif %}
+{%- if a.time_to_verdict_s is not none %}launch to full verdict {{ mmss(a.time_to_verdict_s) }}{% endif -%}
+</span>
+{% endif %}
+{%- endmacro %}

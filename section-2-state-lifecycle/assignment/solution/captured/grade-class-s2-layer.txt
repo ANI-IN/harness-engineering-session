@@ -1,0 +1,91 @@
+# Captured on 2026-10-17 at commit 0aee4d2 (offline: test stand-in agent, no model calls, no run id).
+# Your output will differ: commit hashes change on every run.
+$ make grade-assignment-2 SUBMISSION=submodules/section-2-state-lifecycle/solution/class_s2_layer
+uv run python scripts/grade_assignment.py 2 "submodules/section-2-state-lifecycle/solution/class_s2_layer"
+A2 grade: 6 scenarios (2 visible, 4 hidden) against submodules/section-2-state-lifecycle/solution/class_s2_layer
+Agent in the scenarios: the test stand-in agent (a2_scenario/literal_agent.py), deterministic, not a model.
+
+V1-boundary-stops: 9 criteria not met
+  finished: last session ended by turn_budget, not claim_done; S2 file missing: app/comments/service.py; S2 file missing: app/comments/validation.py; S3 file missing: migrations/versions/<rev>_comment_index.py; S3 file missing: tests/visible/test_comments.py
+  fresh_upgrade: ] | (Background on this error at: https://sqlalche.me/e/21/e3q8)
+  no_duplicate_table: comments created by c1a1_comments.py, c1a2_comments.py, c1a3_comments.py, c1a4_comments.py
+  no_redone_lines: redone lines session 2: 37.5%, session 3: 23.7%, session 4: 17.3%
+  steps_once: commits per step: S1 x3, S2 x0, S3 x0
+  plan_completed: completed=False, active=True, outcome=no
+  plan_ledger: no [x] line with a matching commit for ['S1', 'S2', 'S3']
+  plan_sessions: missing: ['session 1', 'session 2', 'session 3', 'session 4']
+  clean_tree: uncommitted: app/comments/models.py, migrations/versions/c1a4_comments.py
+V2-mid-step-stops: 9 criteria not met
+  finished: last session ended by turn_budget, not claim_done; S3 file missing: migrations/versions/<rev>_comment_index.py; S3 file missing: tests/visible/test_comments.py
+  fresh_upgrade: ] | (Background on this error at: https://sqlalche.me/e/21/e3q8)
+  no_duplicate_table: comments created by c1a1_comments.py, c1a2_comments.py, c1a3_comments.py, c1a4_comments.py
+  no_redone_lines: redone lines session 2: 37.5%, session 3: 23.7%, session 4: 17.3%
+  steps_once: commits per step: S1 x3, S2 x0, S3 x0
+  plan_completed: completed=False, active=True, outcome=no
+  plan_ledger: no [x] line with a matching commit for ['S1', 'S2', 'S3']
+  plan_sessions: missing: ['session 1', 'session 2', 'session 3', 'session 4']
+  clean_tree: uncommitted: app/comments/service.py, app/comments/validation.py
+H1-uneven-stops: 8 criteria not met
+  finished: last session ended by turn_budget, not claim_done; S3 file missing: migrations/versions/<rev>_comment_index.py; S3 file missing: tests/visible/test_comments.py
+  fresh_upgrade: ] | (Background on this error at: https://sqlalche.me/e/21/e3q8)
+  no_duplicate_table: comments created by c1a1_comments.py, c1a2_comments.py, c1a3_comments.py, c1a4_comments.py
+  no_redone_lines: redone lines session 2: 0.0%, session 3: 17.6%, session 4: 33.8%
+  steps_once: commits per step: S1 x2, S3 x0
+  plan_completed: completed=False, active=True, outcome=no
+  plan_ledger: no [x] line with a matching commit for ['S1', 'S2', 'S3']
+  plan_sessions: missing: ['session 1', 'session 2', 'session 3', 'session 4']
+H2-four-steps: 8 criteria not met
+  finished: last session ended by turn_budget, not claim_done; S2 file missing: app/labels/links.py; S3 file missing: app/labels/service.py; S4 file missing: tests/visible/test_labels.py
+  fresh_upgrade: ] | (Background on this error at: https://sqlalche.me/e/21/e3q8)
+  no_duplicate_table: labels created by l1a1_labels.py, l1a2_labels.py, l1a3_labels.py, l1a4_labels.py
+  no_redone_lines: redone lines session 2: 22.9%, session 3: 16.7%, session 4: 13.1%
+  steps_once: commits per step: S1 x3, S2 x0, S3 x0, S4 x0
+  plan_completed: completed=False, active=True, outcome=no
+  plan_ledger: no [x] line with a matching commit for ['S1', 'S2', 'S3', 'S4']
+  plan_sessions: missing: ['session 1', 'session 2', 'session 3', 'session 4']
+H3-notes-and-rewrite: 11 criteria not met
+  finished: last session ended by turn_budget, not claim_done; S2 file missing: migrations/versions/<rev>_issue_labels.py; S2 file missing: app/labels/links.py; S3 file missing: app/labels/service.py; S4 file missing: tests/visible/test_labels.py
+  fresh_upgrade: ] | (Background on this error at: https://sqlalche.me/e/21/e3q8)
+  no_duplicate_table: labels created by l1a1_labels.py, l1a2_labels.py, l1a3_labels.py, l1a4_labels.py
+  no_redone_lines: redone lines session 2: 36.4%, session 3: 22.9%, session 4: 16.7%
+  steps_once: commits per step: S1 x4, S2 x0, S3 x0, S4 x0
+  progress_sections: missing or out of order: ['## Current feature', '## Done', '## In progress', '## Next']
+  session_log: entries [2, 3, 4], sessions [1, 2, 3, 4]
+  history_consistent: session 1: None != ('a69d16b', 'f5f3793', 'turn_budget')
+  plan_completed: completed=False, active=True, outcome=no
+  plan_ledger: no [x] line with a matching commit for ['S1', 'S2', 'S3', 'S4']
+  plan_sessions: missing: ['session 1', 'session 2', 'session 3', 'session 4']
+H4-early-tick: 9 criteria not met
+  finished: last session ended by turn_budget, not claim_done; S2 file missing: app/comments/service.py; S2 file missing: app/comments/validation.py; S3 file missing: tests/visible/test_comments.py
+  fresh_upgrade: ] | (Background on this error at: https://sqlalche.me/e/21/e3q8)
+  no_duplicate_table: comments created by c1a1_comments.py, c1a2_comments.py, c1a3_comments.py, c1a4_comments.py
+  no_redone_lines: redone lines session 2: 37.5%, session 3: 23.7%, session 4: 15.0%
+  steps_once: commits per step: S1 x3, S2 x0, S3 x0
+  plan_completed: completed=False, active=True, outcome=no
+  plan_ledger: no [x] line with a matching commit for ['S1', 'S2', 'S3']
+  plan_sessions: missing: ['session 1', 'session 2', 'session 3', 'session 4']
+  clean_tree: uncommitted: app/comments/models.py, docs/exec-plans/active/comments.md, migrations/versions/c1a4_comments.py, migrations/versions/c3a3_comment_index.py
+
+Live run evidence: not valid
+  - live/ not found in the submission: run the live step (live/run_live.py --impl <folder> --forced-stops)
+
+Criterion                                                                                                                         Points  Earned
+finished: Feature finished across three forced stops                                                                                  13     0.0
+one_head: Migrations: exactly one Alembic head                                                                                         9     9.0
+fresh_upgrade: Migrations: `alembic upgrade head` works on an empty database                                                           9     0.0
+no_duplicate_table: Migrations: no table is created by two migrations                                                                  5     0.0
+no_redone_lines: Redone work: no session removes lines an earlier one added                                                           13     1.1
+steps_once: Redone work: each step is committed exactly once                                                                           5     0.0
+progress_sections: progress.md keeps its six sections in order: # Progress, Current feature, Done, In progress, Next, Session log      3     2.5
+session_log: progress.md logs every session exactly once, in order                                                                     8     6.7
+history_consistent: Session log entries match the run (commits, how each session ended)                                                4     3.3
+plan_completed: Exec plan moved to docs/exec-plans/completed/, with an outcome                                                         5     0.0
+plan_ledger: Exec plan Progress ticks every step with the commit that did it                                                           5     0.0
+plan_sessions: Exec plan records every session and how it ended                                                                        5     0.0
+handoff: session-handoff.md: final summary, migration heads, agent notes kept                                                          4     4.0
+clean_tree: Every harness write is committed (clean working tree at the end)                                                           2     1.0
+live_run: Live run: gpt-6-luna, four sessions, three forced stops, evidence valid                                                     10     0.0
+
+Score: 27.6/100
+grading assignment 2: submodules/section-2-state-lifecycle/solution/class_s2_layer
+[exit code 0]

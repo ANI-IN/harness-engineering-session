@@ -1,0 +1,42 @@
+# Secrets: never commit. tests/unit/test_secrets.py fails if .env is tracked.
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# shipharness runtime state (run logs, arm workspaces, cost ledger, session meter)
+.shipharness/
+exports/
+
+# TeamTrack local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Playwright
+playwright-report/
+test-results/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Agent worktrees and local tool state
+.claude/
+.superpowers/
+.hypothesis/

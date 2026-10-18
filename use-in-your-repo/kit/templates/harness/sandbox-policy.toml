@@ -1,0 +1,89 @@
+# REPLACE: the sandbox policy for your coding agent's container. These are shipharness's values for TeamTrack (SandboxPolicy in src/shipharness/sandbox/policy.py), identical for both arms of every run. Keep what fits your repository; change a value only with a reason written next to it.
+# Sandbox policy: machine-level limits for the container a coding agent works in.
+# shipharness starts each agent container with the command these values produce:
+#   docker run -d --rm --name <name> --init --network none --memory 1024m --memory-swap 1024m --cpus 1.0 --pids-limit 256 --read-only --tmpfs /tmp:rw,nosuid,size=256m --user 1000:1000 --cap-drop ALL --security-opt no-new-privileges -e HOME=/tmp/home -e PYTHONDONTWRITEBYTECODE=1 -e PYTHONUNBUFFERED=1 -v <workspace>:/work -w /work <image> sleep infinity
+
+version = 1
+# REPLACE: network none leaves only loopback: dependencies must be in the image before the agent starts.
+network = "none"
+cpus = 1.0
+memory_mb = 1024
+swap_mb = 0
+pids_limit = 256
+# REPLACE: a non-root user id that exists in your image.
+user = "1000:1000"
+read_only_root = true
+cap_drop = ["ALL"]
+no_new_privileges = true
+# REPLACE: where your repository is mounted inside the container; the agent may write only here and in /tmp.
+workspace_mount = "/work"
+# REPLACE: seconds per tool call and per run (TOOL_TIMEOUT_S and RUN_TIMEOUT_S in shipharness).
+tool_timeout_s = 120
+run_timeout_s = 300
+
+[tmpfs]
+"/tmp" = "rw,nosuid,size=256m"
+
+# REPLACE: commands refused before they run, with the message the agent sees. Add your package manager if it is not listed.
+[[deny]]
+pattern = '\bpip3?\s+install\b'
+reason_code = "network"
+message = 'the sandbox has no network; dependencies are already installed in the image'
+
+[[deny]]
+pattern = '\buv\s+(add|pip\s+install)\b'
+reason_code = "network"
+message = 'the sandbox has no network; dependencies are already installed in the image'
+
+[[deny]]
+pattern = '\b(curl|wget)\b'
+reason_code = "network"
+message = 'the sandbox has no network; dependencies are already installed in the image'
+
+[[deny]]
+pattern = '\bgit\s+(clone|fetch|pull|push)\b'
+reason_code = "network"
+message = 'the sandbox has no network; dependencies are already installed in the image'
+
+[[deny]]
+pattern = '\b(npm|yarn|pnpm)\s+(install|add)\b'
+reason_code = "network"
+message = 'the sandbox has no network; dependencies are already installed in the image'
+
+[[deny]]
+pattern = '\bapt(-get)?\s+install\b'
+reason_code = "network"
+message = 'the sandbox has no network; dependencies are already installed in the image'
+
+# REPLACE: output patterns that mean a sandbox limit was hit, so the harness can name the cause.
+[[detect]]
+pattern = 'Temporary failure in name resolution'
+reason_code = "network"
+
+[[detect]]
+pattern = 'Name or service not known'
+reason_code = "network"
+
+[[detect]]
+pattern = 'Network is unreachable'
+reason_code = "network"
+
+[[detect]]
+pattern = 'Could not resolve host'
+reason_code = "network"
+
+[[detect]]
+pattern = 'Read-only file system'
+reason_code = "write_outside_workspace"
+
+[[detect]]
+pattern = 'fork: Resource temporarily unavailable'
+reason_code = "pids"
+
+[[detect]]
+pattern = "can't start new thread"
+reason_code = "pids"
+
+[[detect]]
+pattern = '\bMemoryError\b'
+reason_code = "memory"

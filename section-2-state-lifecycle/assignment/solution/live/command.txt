@@ -1,0 +1,2 @@
+python section-2-state-lifecycle/assignment/live/run_live.py --impl section-2-state-lifecycle/assignment/solution --forced-stops
+shipharness ab --dataset section-2-state-lifecycle/assignment/solution/live/task.jsonl --example F2-a2-four-sessions --layers instructions,state --no-reviewer --purpose assignment

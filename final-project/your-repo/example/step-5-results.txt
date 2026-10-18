@@ -1,0 +1,28 @@
+$ ls /tmp/fp-example-testgen
+testgen-report.json
+tests
+[exit code 0]
+
+$ uv run --project "$SHIPHARNESS" python -c "import json; r = json.load(open(\"/tmp/fp-example-testgen/testgen-report.json\")); print(r[\"status\"], \"kept\", len(r[\"kept\"])); [print(x[\"filter\"], \"pass\" if x[\"passed\"] else \"FAIL\", x[\"test_id\"].split(\"::\")[-1], \"-\", x[\"reason\"][:90]) for x in r[\"results\"]]"
+completed kept 3
+1 pass test_queue_order_peek_and_priority_update - collected 2 tests
+2 pass test_queue_order_peek_and_priority_update - passed 5 of 5 runs
+3 pass test_queue_order_peek_and_priority_update - adds 5 covered lines: boltons/queueutils.py:134,163-165,170
+4 pass test_queue_order_peek_and_priority_update - has real assertions and does not mock boltons.queueutils
+5 pass test_queue_order_peek_and_priority_update - no source file changed during the test phase
+1 pass test_queue_custom_priority_key_and_removal - collected 2 tests
+2 pass test_queue_custom_priority_key_and_removal - passed 5 of 5 runs
+3 pass test_queue_custom_priority_key_and_removal - adds 4 covered lines: boltons/queueutils.py:163-165,170
+4 pass test_queue_custom_priority_key_and_removal - has real assertions and does not mock boltons.queueutils
+5 pass test_queue_custom_priority_key_and_removal - no source file changed during the test phase
+1 pass test_queue_empty_operations_and_defaults - collected 2 tests
+2 pass test_queue_empty_operations_and_defaults - passed 5 of 5 runs
+3 pass test_queue_empty_operations_and_defaults - adds 7 covered lines: boltons/queueutils.py:163-164,166-169,183
+4 pass test_queue_empty_operations_and_defaults - has real assertions and does not mock boltons.queueutils
+5 pass test_queue_empty_operations_and_defaults - no source file changed during the test phase
+[exit code 0]
+
+$ git -C "$TARGET" status --short
+?? .shipharness/
+[exit code 0]
+

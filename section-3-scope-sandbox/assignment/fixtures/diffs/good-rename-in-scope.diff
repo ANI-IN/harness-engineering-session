@@ -1,0 +1,4 @@
+diff --git a/tests/visible/test_issues.py b/tests/visible/test_issues_api.py
+similarity index 100%
+rename from tests/visible/test_issues.py
+rename to tests/visible/test_issues_api.py

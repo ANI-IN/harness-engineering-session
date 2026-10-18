@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "feature_list.json",
+  "description": "The scope of this task. Written only by the harness (harness/scope/status.py); the agent reads it. Only the harness changes the passes field, and only with evidence.",
+  "type": "object",
+  "required": ["features"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "category", "description", "steps", "passes", "evidence", "testedAt"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "category": {"type": "string"},
+          "description": {"type": "string"},
+          "steps": {"type": "array", "items": {"type": "string"}},
+          "passes": {"type": "boolean"},
+          "evidence": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "required": ["gate_id", "commit", "visible", "existing", "checks"],
+                "additionalProperties": false,
+                "properties": {
+                  "gate_id": {"type": "string"},
+                  "commit": {"type": "string"},
+                  "visible": {"type": "string"},
+                  "existing": {"type": "string"},
+                  "checks": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            ]
+          },
+          "testedAt": {"oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]}
+        }
+      }
+    }
+  }
+}

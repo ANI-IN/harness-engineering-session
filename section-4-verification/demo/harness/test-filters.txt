@@ -1,0 +1,5 @@
+Filter 1: Builds and collects
+Filter 2: Passes five runs
+Filter 3: Adds coverage or catches a mutant
+Filter 4: Real assertions
+Filter 5: No source changes

@@ -1,0 +1,27 @@
+# import-linter in TeamTrack
+# REPLACE: short notes on a tool your repository uses, written for an agent. TeamTrack's notes on import-linter are the example; replace or delete the file.
+
+> Short reference for the tool behind the R6 check. The rule itself is in ARCHITECTURE.md; this file
+> only explains the tool.
+
+## Command
+
+From the TeamTrack folder:
+
+    lint-imports --config .importlinter
+
+It analyses the imports of the root package (app) and prints each contract as KEPT or BROKEN. A
+broken contract lists the offending import chain, module by module, with line numbers.
+
+## The two contracts in .importlinter
+
+1. A forbidden contract: app.api and app.web must not import app.db. With
+   allow_indirect_imports = True, only direct imports count.
+2. A layers contract, listed from top to bottom: app.web, app.api, app.services, app.repositories,
+   app.db. A module may import from layers below its own, never from layers above.
+
+## When it fails
+
+The usual cause is a router that imports a model or a session to read data. Move the query into a
+repository function that takes org_id, call it from a service function that takes an Actor, and call
+that service from the router. Then run the command again.

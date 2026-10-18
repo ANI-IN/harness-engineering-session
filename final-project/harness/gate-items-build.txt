@@ -1,0 +1,11 @@
+visible tests
+existing tests
+House rule 1: Tenant isolation
+House rule 2: Roles
+House rule 3: API conventions
+House rule 4: Safe retries
+House rule 5: Audit log
+House rule 6: Layering
+House rule 7: Migrations
+board
+clean state

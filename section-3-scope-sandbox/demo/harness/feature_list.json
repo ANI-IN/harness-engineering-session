@@ -1,0 +1,16 @@
+{
+  "$schema": "./feature_list.schema.json",
+  "features": [
+    {
+      "id": "F4",
+      "category": "feature",
+      "description": "Optimistic concurrency (ETag, If-Match) and issue history",
+      "steps": [
+        "Optimistic concurrency (ETag, If-Match) and issue history"
+      ],
+      "passes": false,
+      "evidence": null,
+      "testedAt": null
+    }
+  ]
+}

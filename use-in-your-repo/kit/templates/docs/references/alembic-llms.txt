@@ -1,0 +1,46 @@
+# Alembic in TeamTrack
+# REPLACE: short notes on a tool your repository uses, written for an agent. TeamTrack's notes on Alembic are the example; replace or delete the file.
+
+> Short reference for the Alembic commands and files TeamTrack uses. The rule itself is R7 in
+> docs/RELIABILITY.md; this file only explains the tool.
+
+## Where things are
+
+- alembic.ini (TeamTrack folder): script_location = migrations.
+- migrations/env.py: connects using the TeamTrack settings and turns on batch mode
+  (render_as_batch=True), which SQLite needs to change existing tables.
+- migrations/versions/: one Python file per revision. The first one is 0001_initial.py.
+
+## A revision file
+
+Each file sets four module variables and two functions:
+
+- revision: this revision's id (the first one is "0001_initial").
+- down_revision: the id of the revision this one builds on (None only for the first).
+- branch_labels, depends_on: left as None here.
+- upgrade(): the schema change, written with alembic.op (op.create_table, op.add_column, ...).
+- downgrade(): the reverse of upgrade().
+
+The chain of down_revision links must form one line. Two files with the same down_revision create
+two heads, which R7 forbids.
+
+## Commands (run from the TeamTrack folder)
+
+- alembic heads: lists the head revisions. One line of output means one head.
+- alembic upgrade head: applies every revision up to the head. On an empty database this builds the
+  whole schema, which is what the R7 check does.
+- alembic history: prints the revision chain, newest first.
+- alembic current: shows which revision the database is at.
+- alembic revision -m "short message": writes a new revision file from migrations/script.py.mako,
+  with down_revision set to the current head. Check the result with alembic heads.
+
+## SQLite and batch mode
+
+SQLite cannot change a column's type or constraints in place. Batch mode handles those changes by
+copying the table behind the scenes; it also works for adding columns. Inside upgrade(), change an
+existing table with a batch block, for example:
+
+    with op.batch_alter_table("issues") as batch:
+        batch.add_column(sa.Column("due_date", sa.Date(), nullable=True))
+
+Adding a new table needs no batch block.

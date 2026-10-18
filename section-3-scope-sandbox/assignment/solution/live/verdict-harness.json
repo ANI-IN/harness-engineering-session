@@ -1,0 +1,66 @@
+{
+  "ab_id": "ab-20261017-092810-d5d31c",
+  "arm": "harness",
+  "diff": {
+    "path": "harness/diff.patch",
+    "sha256": "3802a83be37e8191b0216770a5325cdf8af93e5e4129d2caa2203069dc1b14aa"
+  },
+  "feature_id": "F3",
+  "policy": {
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  "referee": {
+    "claim": "done",
+    "out_of_scope_files": 0,
+    "passed_primary": true,
+    "status": "ABORTED: timeout",
+    "test_phase_source_edits": 0
+  },
+  "run_id": "r-20261017-092810-1551e0",
+  "schema": "a3-live-verdict/1",
+  "scope": {
+    "build": {
+      "accepted": false,
+      "refusals": [
+        {
+          "code": "harness_only",
+          "path": "feature_list.json"
+        }
+      ]
+    },
+    "test": {
+      "accepted": true,
+      "files": [
+        "docs/exec-plans/active/F3.md",
+        "progress.md",
+        "session-handoff.md"
+      ],
+      "refusals": []
+    }
+  },
+  "status": {
+    "commands": [
+      "python -m pytest tests/visible -q -rfE --no-header -p no:cacheprovider"
+    ],
+    "evidence": {
+      "checks": [],
+      "commit": "ce80e329dc6f6d8fb14cdd770859454a67b7bdef",
+      "existing": "not run (verify layer off)",
+      "gate_id": "visible-tests",
+      "visible": "180/180"
+    },
+    "kind": "status_set",
+    "message": "F3 passes: visible-tests at ce80e32"
+  }
+}

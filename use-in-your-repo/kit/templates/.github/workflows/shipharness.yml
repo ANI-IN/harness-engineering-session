@@ -1,0 +1,90 @@
+# REPLACE: CI for your repository's house rules. The values are TeamTrack's, as if teamtrack/ were its own repository: the app is at the repository root, the existing tests are in tests/visible, and the adapter is harness/shipharness_adapter.py.
+#
+# check:   `shipharness check` on every push and pull request. No model calls, no secrets, costs $0.
+#          Exit 0 when there is no new violation, 3 when there is one (the job fails), 1 on error.
+# testgen: `shipharness testgen`, only when you start it by hand (Actions tab, Run workflow). It
+#          calls OpenAI with your own OPENAI_API_KEY repository secret and costs money: one run is
+#          capped at MAX_RUN_COST_USD = $0.20 (src/shipharness/config/settings.py in shipharness).
+#          Prices per 1M tokens are in shipharness's config/prices.toml (gpt-6-luna: $0.10 input,
+#          $0.01 cached input, $0.50 output).
+#          One example run (TeamTrack's app/repositories/issues.py, 5 proposed tests, 1 kept)
+#          printed "Cost: $0.003287 (testgen, model gpt-6-luna)"; your cost will differ.
+
+name: shipharness
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      module:
+        # REPLACE: the module testgen writes tests for, relative to the repository root.
+        description: "Module to generate tests for"
+        default: "app/api/pagination.py"
+      tests:
+        # REPLACE: the existing tests of that module (filter 3 measures coverage over them).
+        description: "Existing tests of that module"
+        default: "tests/visible/test_lists.py"
+      max_tests:
+        description: "Proposed tests to evaluate"
+        default: "10"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          # REPLACE: the shipharness repository you cloned for the course (README, Quick start).
+          repository: ANI-IN/harness-engineering-session
+          path: shipharness
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen --project shipharness
+      # REPLACE: install what your app needs to import, into shipharness's environment. TeamTrack's dependencies are already in it, so this step installs nothing.
+      - run: echo "TeamTrack's dependencies come with shipharness"
+      # REPLACE: the rules you keep (docs/house-rules.md) and the baseline file you committed. Create the baseline once with the same command plus --json > harness/check-baseline.json, then commit it.
+      - name: house rules (shipharness check)
+        env:
+          PYTHONPATH: harness
+        run: >-
+          uv run --project shipharness shipharness check --app .
+          --adapter shipharness_adapter:HouseRulesAdapter
+          --rules R1,R2,R3,R4,R5,R6,R7
+          --baseline harness/check-baseline.json
+
+  testgen:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      # REPLACE: add OPENAI_API_KEY under Settings, Secrets and variables, Actions. Never write the key in this file.
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      LANGSMITH_TRACING: "false"
+      MAX_RUN_COST_USD: "0.20"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          # REPLACE: the same shipharness repository as in the check job.
+          repository: ANI-IN/harness-engineering-session
+          path: shipharness
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen --project shipharness
+      - name: generate tests (shipharness testgen; costs money)
+        run: >-
+          uv run --project shipharness shipharness testgen --repo .
+          --module "${{ inputs.module }}" --tests "${{ inputs.tests }}"
+          --layers verify --max-tests "${{ inputs.max_tests }}" --sandbox local
+          --python "$GITHUB_WORKSPACE/shipharness/.venv/bin/python" --out testgen-out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: testgen-out
+          path: testgen-out

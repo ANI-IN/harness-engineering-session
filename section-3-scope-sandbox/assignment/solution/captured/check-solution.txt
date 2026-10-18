@@ -1,0 +1,20 @@
+# captured on 2026-10-17 from `make check-assignment-3 A3_IMPL=section-3-scope-sandbox/assignment/solution` (offline: no model calls, no containers); details in docs/evidence.md
+$ make check-assignment-3 A3_IMPL=section-3-scope-sandbox/assignment/solution
+uv run python section-3-scope-sandbox/assignment/check.py --impl section-3-scope-sandbox/assignment/solution
+A3 self-check: section-3-scope-sandbox/assignment/solution
+  check                                              visible tests  status  where
+  diff parsing and path matching                             28/28  ok
+  out-of-scope diffs rejected                                  8/8  ok
+  legitimate diffs accepted                                    6/6  ok
+  passes set with evidence                                     2/2  ok
+  passes kept false without evidence                           5/5  ok
+  history rule denies                                          8/8  ok
+  history rule allows (no false positives)                     6/6  ok
+  your denial test passes                                           ok
+  your denial test fails with the rule removed                      ok
+  your denial test uses check_command/PolicySandbox                 ok
+  live A/B evidence (live/)                                         ok      live/
+
+Self-check PASSED. Next: submit your folder; the instructor grades it with
+make grade-assignment-3 SUBMISSION=<folder> (adds the hidden cases).
+(exit code 0)

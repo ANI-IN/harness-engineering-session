@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}TeamTrack{% endblock %}</title>
+  <link rel="stylesheet" href="/board/static/board.css">
+  <script src="/board/static/htmx-2.0.11.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/board">TeamTrack</a>
+    {% if actor %}
+      <span class="who">
+        <span class="tenant-badge tenant-{{ user_org }}" title="Your organization">{{ user_org|title }}</span>
+        {{ user_email }} ({{ actor.role }})
+      </span>
+      <a class="switch" href="/board/login">Switch user</a>
+    {% endif %}
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

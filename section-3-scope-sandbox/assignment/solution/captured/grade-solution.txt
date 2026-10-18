@@ -1,0 +1,28 @@
+# captured on 2026-10-17 from `make grade-assignment-3 SUBMISSION=section-3-scope-sandbox/assignment/solution` (offline: no model calls, no containers); details in docs/evidence.md
+$ make grade-assignment-3 SUBMISSION=section-3-scope-sandbox/assignment/solution
+uv run python platform/scripts/grade_assignment.py 3 "section-3-scope-sandbox/assignment/solution"
+A3 grade: section-3-scope-sandbox/assignment/solution
+  criterion                                              tests         points
+  1 Diff parsing and path matching                               15.0 / 15
+      diff parsing and path matching                   75/75
+  2 Diff-scope policy                                            40.0 / 40
+      out-of-scope diffs rejected                      35/35
+      legitimate diffs accepted                        24/24
+  3 Evidence-gated status                                        15.0 / 15
+      passes set with evidence                          9/9
+      passes kept false without evidence               38/38
+  4 Sandbox history rule                                         10.0 / 10
+      history rule denies                              37/37
+      history rule allows (no false positives)         52/52
+  5 Denial test proves the denial                                10.0 / 10
+      passes with the rule (4)                             yes
+      fails with the rule removed (4)                      yes
+      uses check_command or PolicySandbox (2)              yes
+  6 Live A/B evidence (live/)                                    10.0 / 10
+      evidence valid (6)                                   yes
+      verdicts reproduced by your policy (4)               yes
+  Total                                                         100.0 / 100
+  Every out-of-scope diff rejected: yes; zero false positives: yes; live evidence valid: yes
+Result: PASS (needs >= 80 points, every out-of-scope diff rejected, zero false positives, and valid live evidence)
+grading assignment 3: section-3-scope-sandbox/assignment/solution
+(exit code 0)

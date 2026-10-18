@@ -1,0 +1,23 @@
+# Control task C6 (M5 builder contract §3). Easy, low-trap: both arms should complete it.
+id = "C6"
+title = "Filter the audit log by action"
+section = "control"
+start_checkpoint = "m1-s1-start"   # base product; needs no feature
+primary_measure = ""               # ruling R-5: controls have no primary measure
+mutant_set = "app.api.pagination,app.repositories.common"
+session_budget = [20]              # provisional (ruling R-6)
+canonical_ticket = """Add an action filter to the audit log.
+
+GET /audit should accept an optional `action` query parameter (1 to 50 characters) and return only
+the caller's org's audit rows with exactly that action name, for example issue.create. An empty or
+too long value is a 422 validation_error. The filter must work with cursor and limit like every
+other list. The audit log stays admin-only.
+
+Spec: docs/features/c6.md. House rules: docs/HANDBOOK.md. Add tests in tests/visible/."""
+
+[allowed_paths]
+build = ["app/api/audit.py", "app/services/audit.py", "app/repositories/audit.py", "tests/visible/**"]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/c6/test_c6_audit_action_filter.py"]

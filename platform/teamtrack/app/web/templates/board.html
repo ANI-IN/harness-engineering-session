@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name if project else "Board" }} · TeamTrack{% endblock %}
+{% block content %}
+{% if project %}
+<nav class="projects">
+  {% for p in projects %}
+    <a href="/board/projects/{{ p.id }}" class="{{ 'current' if p.id == project.id else '' }}">{{ p.key }} · {{ p.name }}</a>
+  {% endfor %}
+</nav>
+<h1>{{ project.name }}</h1>
+{% if actor.can_write %}
+<form id="new-issue-form" class="new-issue" method="post" action="/board/projects/{{ project.id }}/issues">
+  <label>New issue <input name="title" required maxlength="200"></label>
+  <label>Priority
+    <select name="priority">
+      <option value="low">low</option>
+      <option value="medium" selected>medium</option>
+      <option value="high">high</option>
+    </select>
+  </label>
+  <button type="submit">Create</button>
+</form>
+{% endif %}
+<div class="columns">
+  {% for status, items in columns.items() %}
+  <section class="column" data-column="{{ status }}">
+    <h2>{{ status.replace("_", " ") }} <span class="count">{{ items|length }}</span></h2>
+    {% for issue in items %}
+      {% include "_card.html" %}
+    {% endfor %}
+  </section>
+  {% endfor %}
+</div>
+{% else %}
+<p>No projects yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,123 @@
+diff --git a/app/api/projects.py b/app/api/projects.py
+--- a/app/api/projects.py
++++ b/app/api/projects.py
+@@ -1,6 +1,6 @@
+ from __future__ import annotations
+ 
+-from fastapi import APIRouter, Depends, Header, Response
++from fastapi import APIRouter, Depends, Header, Query, Response
+ from fastapi.responses import JSONResponse
+ from sqlalchemy.orm import Session
+ 
+@@ -16,10 +16,15 @@
+ @router.get("", response_model=Page[ProjectOut])
+ def list_projects(
+     params: PageParams = Depends(page_params),
++    q: str | None = Query(
++        default=None, min_length=1, max_length=100, description="Name contains (any case)."
++    ),
+     actor: Actor = Depends(current_actor),
+     db: Session = Depends(get_db),
+ ) -> Page[ProjectOut]:
+-    rows, next_after = projects.list_page(db, actor, decode_cursor(params.cursor), params.limit)
++    rows, next_after = projects.list_page(
++        db, actor, decode_cursor(params.cursor), params.limit, q=q
++    )
+     return to_page(rows, next_after, ProjectOut.model_validate)
+ 
+ 
+diff --git a/app/repositories/projects.py b/app/repositories/projects.py
+--- a/app/repositories/projects.py
++++ b/app/repositories/projects.py
+@@ -1,6 +1,6 @@
+ from __future__ import annotations
+ 
+-from sqlalchemy import select
++from sqlalchemy import func, select
+ from sqlalchemy.orm import Session
+ 
+ from app.db.models import Project
+@@ -21,9 +21,11 @@
+ 
+ 
+ def list_page(
+-    session: Session, org_id: int, after: int | None, limit: int
++    session: Session, org_id: int, after: int | None, limit: int, q: str | None = None
+ ) -> tuple[list[Project], int | None]:
+     base = select(Project).where(Project.org_id == org_id, Project.archived_at.is_(None))
++    if q is not None:
++        base = base.where(func.lower(Project.name).contains(q.lower(), autoescape=True))
+     stmt = page(base, Project.id, after, limit)
+     return split_page(list(session.scalars(stmt)), limit, lambda p: p.id)
+ 
+diff --git a/app/services/projects.py b/app/services/projects.py
+--- a/app/services/projects.py
++++ b/app/services/projects.py
+@@ -19,9 +19,9 @@
+ 
+ 
+ def list_page(
+-    session: Session, actor: Actor, after: int | None, limit: int
++    session: Session, actor: Actor, after: int | None, limit: int, q: str | None = None
+ ) -> tuple[list[Project], int | None]:
+-    return projects_repo.list_page(session, actor.org_id, after, limit)
++    return projects_repo.list_page(session, actor.org_id, after, limit, q=q)
+ 
+ 
+ def create(session: Session, actor: Actor, name: str, key: str, *, commit: bool = True) -> Project:
+diff --git a/tests/visible/test_c2_project_search.py b/tests/visible/test_c2_project_search.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_c2_project_search.py
+@@ -0,0 +1,51 @@
++"""C2: the project list searches by name."""
++
++from __future__ import annotations
++
++from conftest import auth, error_code
++
++
++def add_project(client, admin: int, name: str, key: str) -> int:  # type: ignore[no-untyped-def]
++    response = client.post("/projects", json={"name": name, "key": key}, headers=auth(admin))
++    assert response.status_code == 201
++    return int(response.json()["id"])
++
++
++def test_search_is_a_case_insensitive_substring(client, acme) -> None:
++    body = client.get("/projects?q=SITE", headers=auth(acme.viewer)).json()
++    assert [p["id"] for p in body["items"]] == [acme.projects[0]]
++    assert body["next_cursor"] is None
++
++
++def test_search_stays_in_the_callers_org(client, globex) -> None:
++    body = client.get("/projects?q=web", headers=auth(globex.admin)).json()
++    assert body == {"items": [], "next_cursor": None}
++
++
++def test_search_treats_percent_as_a_plain_character(client, acme) -> None:
++    body = client.get("/projects", params={"q": "%"}, headers=auth(acme.admin)).json()
++    assert body["items"] == []
++
++
++def test_search_length_is_checked(client, acme) -> None:
++    for q in ("", "x" * 101):
++        response = client.get("/projects", params={"q": q}, headers=auth(acme.admin))
++        assert response.status_code == 422
++        assert error_code(response) == "validation_error"
++
++
++def test_search_pages_without_gaps_or_repeats(client, acme) -> None:
++    extra = [add_project(client, acme.admin, f"Web {n}", f"WEB{chr(65 + n)}") for n in range(3)]
++    expected = [acme.projects[0], *extra]
++    page1 = client.get("/projects?q=web&limit=3", headers=auth(acme.admin)).json()
++    assert [p["id"] for p in page1["items"]] == expected[:3]
++    cursor = page1["next_cursor"]
++    page2 = client.get(f"/projects?q=web&limit=3&cursor={cursor}", headers=auth(acme.admin))
++    assert [p["id"] for p in page2.json()["items"]] == expected[3:]
++    assert page2.json()["next_cursor"] is None
++
++
++def test_search_rejects_a_bad_cursor(client, acme) -> None:
++    response = client.get("/projects?q=web&cursor=not-a-cursor", headers=auth(acme.admin))
++    assert response.status_code == 400
++    assert error_code(response) == "invalid_cursor"

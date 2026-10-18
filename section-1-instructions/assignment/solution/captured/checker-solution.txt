@@ -1,0 +1,4 @@
+# captured on 2026-10-17 from `uv run python submodules/section-1-instructions/solution/work/checker/check_docs.py --original submodules/section-1-instructions/assignment/starter/original/AGENTS.md --tree submodules/section-1-instructions/solution/work/instructions --product teamtrack` at commit d52d8c6 (offline command, no model calls); your output will differ
+$ uv run python submodules/section-1-instructions/solution/work/checker/check_docs.py --original submodules/section-1-instructions/assignment/starter/original/AGENTS.md --tree submodules/section-1-instructions/solution/work/instructions --product teamtrack
+OK: 13 files, 147 links, 66 rules covered
+(exit 0)

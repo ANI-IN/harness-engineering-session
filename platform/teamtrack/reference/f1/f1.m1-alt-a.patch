@@ -1,0 +1,311 @@
+diff --git a/app/api/issues.py b/app/api/issues.py
+--- a/app/api/issues.py
++++ b/app/api/issues.py
+@@ -1,9 +1,9 @@
+ from __future__ import annotations
+ 
+-from fastapi import APIRouter, Depends, Response
++from fastapi import APIRouter, Depends, Query, Response
+ from sqlalchemy.orm import Session
+ 
+-from app.api.deps import Id, current_actor, get_db, require_writer
++from app.api.deps import MAX_ID, Id, current_actor, get_db, require_writer
+ from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_page
+ from app.api.schemas import (
+     AssignIn,
+@@ -13,6 +13,8 @@ from app.api.schemas import (
+     IssueCreate,
+     IssueOut,
+     IssuePatch,
++    Priority,
++    Status,
+     TransitionIn,
+ )
+ from app.services import issues
+@@ -34,6 +36,34 @@ def list_project_issues(
+     return to_page(rows, next_after, IssueOut.model_validate)
+ 
+ 
++@router.get("/issues", response_model=Page[IssueOut])
++def search_issues(
++    status: Status | None = Query(default=None),
++    priority: Priority | None = Query(default=None),
++    assignee_id: int | None = Query(default=None, ge=1, le=MAX_ID),
++    project_id: int | None = Query(default=None, ge=1, le=MAX_ID),
++    q: str | None = Query(
++        default=None, min_length=1, max_length=100, description="Substring of the title."
++    ),
++    params: PageParams = Depends(page_params),
++    actor: Actor = Depends(current_actor),
++    db: Session = Depends(get_db),
++) -> Page[IssueOut]:
++    """Issues of the caller's org across its projects; every filter is optional (AND)."""
++    rows, next_after = issues.search(
++        db,
++        actor,
++        status=status,
++        priority=priority,
++        assignee_id=assignee_id,
++        project_id=project_id,
++        q=q,
++        after=decode_cursor(params.cursor),
++        limit=params.limit,
++    )
++    return to_page(rows, next_after, IssueOut.model_validate)
++
++
+ @router.post("/projects/{project_id}/issues", response_model=IssueOut, status_code=201)
+ def create_issue(
+     project_id: Id,
+diff --git a/app/repositories/issues.py b/app/repositories/issues.py
+--- a/app/repositories/issues.py
++++ b/app/repositories/issues.py
+@@ -1,9 +1,9 @@
+ from __future__ import annotations
+ 
+-from sqlalchemy import select
++from sqlalchemy import func, select
+ from sqlalchemy.orm import Session
+ 
+-from app.db.models import Issue
++from app.db.models import Issue, Project
+ from app.repositories.common import page, split_page
+ 
+ 
+@@ -55,6 +55,44 @@ def list_all_legacy(session: Session, offset: int, limit: int) -> list[Issue]:
+     return list(session.scalars(select(Issue).order_by(Issue.id).offset(offset).limit(limit)))
+ 
+ 
++def search(
++    session: Session,
++    org_id: int,
++    *,
++    status: str | None,
++    priority: str | None,
++    assignee_id: int | None,
++    project_id: int | None,
++    q: str | None,
++    after: int | None,
++    limit: int,
++) -> tuple[list[Issue], int | None]:
++    """Live issues of the org in active projects; `q` is a case-insensitive title substring."""
++    base = (
++        select(Issue)
++        .join(Project, Project.id == Issue.project_id)
++        .where(
++            Issue.org_id == org_id,
++            Issue.deleted_at.is_(None),
++            Project.org_id == org_id,
++            Project.archived_at.is_(None),
++        )
++    )
++    if status is not None:
++        base = base.where(Issue.status == status)
++    if priority is not None:
++        base = base.where(Issue.priority == priority)
++    if assignee_id is not None:
++        base = base.where(Issue.assignee_id == assignee_id)
++    if project_id is not None:
++        base = base.where(Issue.project_id == project_id)
++    if q:
++        # autoescape: % and _ in the query are literal characters, not LIKE wildcards.
++        base = base.where(func.lower(Issue.title).contains(q.lower(), autoescape=True))
++    stmt = page(base, Issue.id, after, limit)
++    return split_page(list(session.scalars(stmt)), limit, lambda i: i.id)
++
++
+ def get_many(session: Session, org_id: int, project_id: int, issue_ids: list[int]) -> list[Issue]:
+     """Live issues of one project in the org among `issue_ids` (missing ids are left out)."""
+     return list(
+diff --git a/app/services/issues.py b/app/services/issues.py
+--- a/app/services/issues.py
++++ b/app/services/issues.py
+@@ -118,6 +118,39 @@ def delete(session: Session, actor: Actor, issue_id: int) -> None:
+     session.commit()
+ 
+ 
++def search(
++    session: Session,
++    actor: Actor,
++    *,
++    status: str | None = None,
++    priority: str | None = None,
++    assignee_id: int | None = None,
++    project_id: int | None = None,
++    q: str | None = None,
++    after: int | None = None,
++    limit: int = 20,
++) -> tuple[list[Issue], int | None]:
++    """Org-wide search: live issues of the caller's org in active projects, filters ANDed.
++
++    A project or assignee id that is not in the caller's org is a 404, exactly as if it did not
++    exist (house rule R1)."""
++    if project_id is not None:
++        projects.get(session, actor, project_id)
++    if assignee_id is not None and users_repo.get(session, actor.org_id, assignee_id) is None:
++        raise NotFound("assignee not found")
++    return issues_repo.search(
++        session,
++        actor.org_id,
++        status=status,
++        priority=priority,
++        assignee_id=assignee_id,
++        project_id=project_id,
++        q=q,
++        after=after,
++        limit=limit,
++    )
++
++
+ def bulk_close(
+     session: Session, actor: Actor, project_id: int, issue_ids: list[int]
+ ) -> tuple[list[int], list[tuple[int, str]]]:
+diff --git a/tests/visible/test_issue_search.py b/tests/visible/test_issue_search.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_issue_search.py
+@@ -0,0 +1,144 @@
++"""F1: org-wide issue search (GET /issues) with filters and cursor pagination."""
++
++from __future__ import annotations
++
++from conftest import auth, error_code
++
++
++def search(client, user_id: int, query: str = ""):  # type: ignore[no-untyped-def]
++    return client.get(f"/issues{query}", headers=auth(user_id))
++
++
++def ids(response) -> list[int]:  # type: ignore[no-untyped-def]
++    assert response.status_code == 200, response.text
++    return [item["id"] for item in response.json()["items"]]
++
++
++def change(client, o, issue_id: int, action: str, body: dict):  # type: ignore[no-untyped-def]
++    version = client.get(f"/issues/{issue_id}", headers=auth(o.member)).json()["version"]
++    headers = {**auth(o.member), "If-Match": f'"{version}"'}
++    response = client.post(f"/issues/{issue_id}/{action}", json=body, headers=headers)
++    assert response.status_code == 200, response.text
++
++
++def test_search_returns_only_the_callers_org(client, acme, globex) -> None:
++    found = ids(search(client, acme.member, "?limit=100"))
++    assert sorted(found) == list(acme.issues)
++    assert not set(found) & set(globex.issues)
++
++
++def test_search_uses_the_list_envelope_and_issue_fields(client, acme) -> None:
++    body = search(client, acme.viewer, "?limit=1").json()
++    assert set(body) == {"items", "next_cursor"}
++    assert body["items"][0]["org_id"] == acme.org_id
++    assert {"id", "project_id", "title", "status", "priority", "version"} <= set(body["items"][0])
++
++
++def test_default_page_size_is_20(client, acme) -> None:
++    client.post(
++        f"/projects/{acme.projects[1]}/issues",
++        json={"title": "One more"},
++        headers=auth(acme.member),
++    )
++    body = search(client, acme.member).json()
++    assert len(body["items"]) == 20
++    assert body["next_cursor"] is not None
++
++
++def test_cursor_walks_every_issue_once_in_id_order(client, acme) -> None:
++    seen: list[int] = []
++    cursor = None
++    for _ in range(10):
++        query = "?limit=7" + (f"&cursor={cursor}" if cursor else "")
++        body = search(client, acme.member, query).json()
++        seen.extend(item["id"] for item in body["items"])
++        cursor = body["next_cursor"]
++        if cursor is None:
++            break
++    assert seen == list(acme.issues)
++
++
++def test_filter_by_status(client, acme) -> None:
++    change(client, acme, acme.issues[3], "transition", {"status": "in_progress"})
++    assert ids(search(client, acme.member, "?status=in_progress")) == [acme.issues[3]]
++
++
++def test_filter_by_priority(client, acme) -> None:
++    found = ids(search(client, acme.member, "?priority=high&limit=100"))
++    issues = [client.get(f"/issues/{i}", headers=auth(acme.member)).json() for i in found]
++    assert found and all(issue["priority"] == "high" for issue in issues)
++
++
++def test_filter_by_assignee(client, acme) -> None:
++    change(client, acme, acme.issues[1], "assign", {"assignee_id": acme.viewer})
++    assert ids(search(client, acme.member, f"?assignee_id={acme.viewer}")) == [acme.issues[1]]
++
++
++def test_filter_by_project(client, acme) -> None:
++    found = ids(search(client, acme.member, f"?project_id={acme.projects[1]}&limit=100"))
++    assert found == list(acme.issues[10:])
++
++
++def test_q_is_a_case_insensitive_title_substring(client, acme) -> None:
++    found = ids(search(client, acme.member, "?q=LOGIN%20page&limit=100"))
++    assert found == [acme.issues[0], acme.issues[10]]
++
++
++def test_q_treats_percent_as_a_literal_character(client, acme) -> None:
++    client.post(
++        f"/projects/{acme.projects[0]}/issues",
++        json={"title": "Discount 100% off"},
++        headers=auth(acme.member),
++    )
++    found = ids(search(client, acme.member, "?q=100%25&limit=100"))
++    assert len(found) == 1
++
++
++def test_filters_combine_with_and(client, acme) -> None:
++    query = f"?project_id={acme.projects[0]}&priority=low&q=login"
++    assert ids(search(client, acme.member, query)) == [acme.issues[0]]
++
++
++def test_deleted_issues_are_excluded(client, acme) -> None:
++    client.delete(f"/issues/{acme.issues[0]}", headers=auth(acme.member))
++    assert acme.issues[0] not in ids(search(client, acme.member, "?limit=100"))
++
++
++def test_issues_of_archived_projects_are_excluded(client, acme) -> None:
++    client.delete(f"/projects/{acme.projects[1]}", headers=auth(acme.admin))
++    assert ids(search(client, acme.member, "?limit=100")) == list(acme.issues[:10])
++
++
++def test_project_of_another_org_is_404(client, acme, globex) -> None:
++    response = search(client, acme.member, f"?project_id={globex.projects[0]}")
++    assert response.status_code == 404
++    assert error_code(response) == "not_found"
++
++
++def test_archived_project_filter_is_404(client, acme) -> None:
++    client.delete(f"/projects/{acme.projects[1]}", headers=auth(acme.admin))
++    response = search(client, acme.member, f"?project_id={acme.projects[1]}")
++    assert response.status_code == 404
++
++
++def test_assignee_of_another_org_is_404(client, acme, globex) -> None:
++    response = search(client, acme.member, f"?assignee_id={globex.member}")
++    assert response.status_code == 404
++    assert error_code(response) == "not_found"
++
++
++def test_invalid_filter_values_are_422(client, acme) -> None:
++    for query in (
++        "?status=closed",
++        "?priority=urgent",
++        "?assignee_id=abc",
++        "?q=",
++        "?q=" + "x" * 101,
++    ):
++        response = search(client, acme.member, query)
++        assert response.status_code == 422, query
++        assert error_code(response) == "validation_error"
++
++
++def test_search_requires_authentication(client) -> None:
++    assert client.get("/issues").status_code == 401

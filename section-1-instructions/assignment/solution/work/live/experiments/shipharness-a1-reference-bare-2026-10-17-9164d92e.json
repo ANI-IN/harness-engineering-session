@@ -1,0 +1,56 @@
+{
+  "arm": "bare",
+  "checkpoint_shas": {
+    "m1-alt-a": "a0aef38353660f9ca972b3e0fe336633504fd5c2",
+    "m1-alt-b": "846baab7f99187bfc55a9f1b8db87b54bd58fc50",
+    "m1-s1-start": "e82c59f9ec639805465ee57df27603e9addb705b"
+  },
+  "comparison_url": "https://smith.langchain.com/o/10fe45d9-7a3d-4f39-92ad-8c5dc97653d4/datasets/c8c46487-1d0a-406b-bf4a-11a19b2c405b/compare?selectedSessions=a0b770c7-c675-4ebc-9861-f7ae1fc718d8",
+  "dataset": "teamtrack-features-v1",
+  "k": 3,
+  "metadata": {
+    "arm": "bare",
+    "batch": "a1-reference",
+    "effort": "medium",
+    "k": 3,
+    "layers": [],
+    "model": "gpt-6-luna",
+    "service_tier": "auto"
+  },
+  "name": "shipharness-a1-reference-bare-2026-10-17-9164d92e",
+  "rows": [
+    "r-20261017-211634-936395",
+    "r-20261017-211852-a30c55",
+    "r-20261017-212332-f5fb8e",
+    "r-20261017-212613-11dac0",
+    "r-20261017-213117-700c9d",
+    "r-20261017-213637-0aab2e",
+    "r-20261017-214154-4e314e",
+    "r-20261017-214714-68b4bf",
+    "r-20261017-215209-383574",
+    "r-20261017-215351-cf2944",
+    "r-20261017-215639-686c15",
+    "r-20261017-215923-5c91ac",
+    "r-20261017-220436-406d5d",
+    "r-20261017-220900-0d39fb",
+    "r-20261017-221256-b0d61a",
+    "r-20261017-221752-5141be",
+    "r-20261017-222158-aa85c4",
+    "r-20261017-222535-e9db24",
+    "r-20261017-222849-043f22",
+    "r-20261017-223209-ce9ed3",
+    "r-20261017-223622-e3fbda",
+    "r-20261017-224134-5cd664",
+    "r-20261017-224557-2c96a3",
+    "r-20261017-224906-d1da10"
+  ],
+  "split": "section-1",
+  "stats": {
+    "aborted": 2,
+    "cost_usd": 0.247025,
+    "errors": 0,
+    "passed_primary": "24/24",
+    "runs": 24
+  },
+  "url": "https://smith.langchain.com/o/10fe45d9-7a3d-4f39-92ad-8c5dc97653d4/datasets/c8c46487-1d0a-406b-bf4a-11a19b2c405b/compare?selectedSessions=a0b770c7-c675-4ebc-9861-f7ae1fc718d8"
+}

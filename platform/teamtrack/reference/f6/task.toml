@@ -1,0 +1,41 @@
+id = "F6"
+title = "Watchers on issues"
+section = "final"
+start_checkpoint = "m1-final-start"
+primary_measure = ""
+mutant_set = "features/f6"
+session_budget = [20, 30]
+canonical_ticket = """
+Let users watch issues.
+
+Add PUT and DELETE /issues/{issue_id}/watchers/me (204; watching twice changes nothing and writes no
+audit row), GET /issues/{issue_id}/watchers (a list of {user_id, created_at}) and GET /me/watching
+(the issues I watch, without deleted ones). Admins may also PUT and DELETE
+/issues/{issue_id}/watchers/{user_id} for any user of their org; other user ids are a 404. Audit
+watcher.add and watcher.remove. Store watchers in a new table with one migration and seed a few
+watchers with stable ids.
+
+The full spec is in docs/features/f6.md. Follow the house rules in docs/HANDBOOK.md and add tests.
+This task runs over two sessions.
+"""
+
+[allowed_paths]
+build = [
+    "app/api/watchers.py",
+    "app/api/schemas.py",
+    "app/main.py",
+    "app/services/watchers.py",
+    "app/repositories/watchers.py",
+    "app/db/models.py",
+    "app/seed.py",
+    "migrations/versions/**",
+    "tests/visible/**",
+]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-final-start" = [
+    "tests/hidden/f6/test_f6_watchers.py",
+    "tests/hidden/f6/test_f6_guards.py",
+    "tests/hidden/f6/test_f6_with_f4.py",
+]

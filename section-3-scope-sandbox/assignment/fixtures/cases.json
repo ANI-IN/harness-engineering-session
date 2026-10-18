@@ -1,0 +1,282 @@
+[
+  {
+    "id": "bad-middleware-file",
+    "kind": "bad",
+    "phase": "build",
+    "changed": [
+      "app/api/issues.py",
+      "app/middleware/idempotency.py"
+    ],
+    "refusals": [
+      [
+        "app/middleware/idempotency.py",
+        "outside_allowed_paths"
+      ]
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "bad-feature-list-edit",
+    "kind": "bad",
+    "phase": "build",
+    "changed": [
+      "feature_list.json"
+    ],
+    "refusals": [
+      [
+        "feature_list.json",
+        "harness_only"
+      ]
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "bad-test-phase-source-edit",
+    "kind": "bad",
+    "phase": "test",
+    "changed": [
+      "app/services/issues.py",
+      "tests/visible/test_f3.py"
+    ],
+    "refusals": [
+      [
+        "app/services/issues.py",
+        "test_phase_source_edit"
+      ]
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "bad-parent-traversal",
+    "kind": "bad",
+    "phase": "build",
+    "changed": [
+      "../teamtrack-secrets.env"
+    ],
+    "refusals": [
+      [
+        "../teamtrack-secrets.env",
+        "path_escape"
+      ]
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "bad-rename-out-of-scope",
+    "kind": "bad",
+    "phase": "build",
+    "changed": [
+      "app/api/issues.py",
+      "app/api/issues_v2.py"
+    ],
+    "refusals": [
+      [
+        "app/api/issues_v2.py",
+        "outside_allowed_paths"
+      ]
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "bad-binary-out-of-scope",
+    "kind": "bad",
+    "phase": "build",
+    "changed": [
+      "app/static/logo.png"
+    ],
+    "refusals": [
+      [
+        "app/static/logo.png",
+        "outside_allowed_paths"
+      ]
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "good-in-scope-build",
+    "kind": "good",
+    "phase": "build",
+    "changed": [
+      "app/api/issues.py",
+      "app/services/issues.py",
+      "docs/HANDBOOK.md",
+      "tests/visible/test_f3_replay.py"
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "good-state-files",
+    "kind": "good",
+    "phase": "build",
+    "changed": [
+      "docs/exec-plans/active/F3.md",
+      "progress.md",
+      "session-handoff.md"
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "good-rename-in-scope",
+    "kind": "good",
+    "phase": "test",
+    "changed": [
+      "tests/visible/test_issues.py",
+      "tests/visible/test_issues_api.py"
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "good-space-in-path",
+    "kind": "good",
+    "phase": "build",
+    "allowed_paths": {
+      "build": [
+        "docs/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "changed": [
+      "docs/design notes/f3 retry.md"
+    ],
+    "state_layer": true
+  },
+  {
+    "id": "good-copy-from-out-of-scope",
+    "kind": "good",
+    "phase": "test",
+    "changed": [
+      "tests/visible/config_snapshot.py"
+    ],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  },
+  {
+    "id": "good-empty-diff",
+    "kind": "good",
+    "phase": "build",
+    "changed": [],
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": true
+  }
+]

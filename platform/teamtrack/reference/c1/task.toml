@@ -1,0 +1,23 @@
+# Control task C1 (M5 builder contract §3). Easy, low-trap: both arms should complete it.
+id = "C1"
+title = "Filter the user list by role"
+section = "control"
+start_checkpoint = "m1-s1-start"   # base product; needs no feature
+primary_measure = ""               # ruling R-5: controls have no primary measure
+mutant_set = "app.api.pagination,app.repositories.common"
+session_budget = [20]              # provisional (ruling R-6)
+canonical_ticket = """Add a role filter to the user list.
+
+GET /users should accept an optional `role` query parameter (admin, member, or viewer) and return
+only the users of the caller's org with that role. Any other value is a 422 validation_error. The
+filter must work with cursor and limit like every other list, and with no match the response is
+{"items": [], "next_cursor": null}. Without the parameter the list stays as it is.
+
+Spec: docs/features/c1.md. House rules: docs/HANDBOOK.md. Add tests in tests/visible/."""
+
+[allowed_paths]
+build = ["app/api/users.py", "app/services/users.py", "app/repositories/users.py", "tests/visible/**"]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/c1/test_c1_users_role_filter.py"]

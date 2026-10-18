@@ -1,0 +1,38 @@
+:root {
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #1b1f24;
+  --muted: #57606a;
+  --border: #d0d7de;
+  --accent: #0b5cad;
+  --acme: #0b5cad;
+  --globex: #9a3412;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 18px/1.45 system-ui, sans-serif; background: var(--bg); color: var(--text); }
+.topbar { display: flex; gap: 16px; align-items: center; padding: 12px 20px; background: var(--panel);
+  border-bottom: 1px solid var(--border); }
+.brand { font-weight: 700; color: var(--text); text-decoration: none; }
+.who { margin-left: auto; color: var(--muted); }
+main { padding: 16px 20px; }
+.projects { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.projects a { color: var(--accent); }
+.projects a.current { font-weight: 700; }
+.new-issue { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin: 12px 0; }
+.columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.column { background: #eef1f4; border-radius: 8px; padding: 10px; min-height: 200px; }
+.column h2 { font-size: 18px; text-transform: capitalize; margin: 4px 0 10px; }
+.count { color: var(--muted); font-weight: 400; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px;
+  margin-bottom: 10px; }
+.card header { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 15px; }
+.card .title { display: block; margin: 6px 0; color: var(--text); font-weight: 600; }
+.meta, .status-label, .issue-id { color: var(--muted); font-size: 15px; }
+.tenant-badge { display: inline-block; padding: 1px 8px; border-radius: 999px; color: #fff;
+  font-size: 14px; font-weight: 600; background: var(--muted); }
+.tenant-acme { background: var(--acme); }
+.tenant-globex { background: var(--globex); }
+.actions button, button { font: inherit; font-size: 15px; padding: 4px 10px; cursor: pointer; }
+.user-list { list-style: none; padding: 0; display: grid; gap: 8px; max-width: 360px; }
+.user-list button { width: 100%; text-align: left; }
+@media (max-width: 800px) { .columns { grid-template-columns: 1fr; } }

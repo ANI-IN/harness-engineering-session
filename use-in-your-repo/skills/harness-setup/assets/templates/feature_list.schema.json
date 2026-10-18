@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "feature_list.json",
+  "description": "The list of work for coding agents. Entries start with passes=false. Only passes, evidence, and testedAt change after creation, and only when the feature has been verified.",
+  "type": "object",
+  "required": ["features"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "category", "description", "steps", "passes", "evidence", "testedAt"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "category": { "type": "string", "minLength": 1 },
+          "description": { "type": "string", "minLength": 1 },
+          "steps": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+          "passes": { "type": "boolean" },
+          "evidence": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "required": ["gate_id", "commit", "visible", "existing", "checks"],
+                "additionalProperties": false,
+                "properties": {
+                  "gate_id": { "type": "string" },
+                  "commit": { "type": "string" },
+                  "visible": { "type": "string", "pattern": "^[0-9]+/[0-9]+$" },
+                  "existing": { "type": "string", "pattern": "^[0-9]+/[0-9]+$" },
+                  "checks": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            ]
+          },
+          "testedAt": {
+            "oneOf": [{ "type": "null" }, { "type": "string", "format": "date-time" }]
+          }
+        }
+      }
+    }
+  }
+}

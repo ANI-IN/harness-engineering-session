@@ -1,0 +1,22 @@
+# Control task C8 (M5 builder contract §3). Easy, low-trap: both arms should complete it.
+id = "C8"
+title = "Show the assignee on the board's issue page"
+section = "control"
+start_checkpoint = "m1-s1-start"   # base product; needs no feature
+primary_measure = ""               # ruling R-5: controls have no primary measure
+mutant_set = "app.services.auth"
+session_budget = [20]              # provisional (ruling R-6)
+canonical_ticket = """Show the assignee on the board's issue page.
+
+The issue detail page (/board/issues/{issue_id}) should show the current assignee's name as
+<dd class="assignee" data-user-id="ID">Name</dd>, or <dd class="assignee">Unassigned</dd> when
+nobody is assigned. Everyone who can see the page sees it.
+
+Spec: docs/features/c8.md. House rules: docs/HANDBOOK.md. Add tests in tests/visible/."""
+
+[allowed_paths]
+build = ["app/web/routes.py", "app/web/templates/issue.html", "tests/visible/**"]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/c8/test_c8_board_assignee.py"]

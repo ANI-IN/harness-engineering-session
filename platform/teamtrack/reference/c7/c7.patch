@@ -1,0 +1,113 @@
+diff --git a/app/api/schemas.py b/app/api/schemas.py
+--- a/app/api/schemas.py
++++ b/app/api/schemas.py
+@@ -46,6 +46,9 @@
+     project_id: int
+     user_id: int
+     added_at: datetime
++    email: str
++    name: str
++    role: Role
+ 
+ 
+ class IssueOut(_Out):
+diff --git a/app/services/members.py b/app/services/members.py
+--- a/app/services/members.py
++++ b/app/services/members.py
+@@ -1,4 +1,7 @@
+ from __future__ import annotations
++
++from dataclasses import dataclass
++from datetime import datetime
+ 
+ from sqlalchemy.orm import Session
+ 
+@@ -10,14 +13,41 @@
+ from app.services.errors import Conflict, Invalid, NotFound
+ 
+ 
++@dataclass(frozen=True)
++class MemberView:
++    """A project membership with the member's user details (C7)."""
++
++    project_id: int
++    user_id: int
++    added_at: datetime
++    email: str
++    name: str
++    role: str
++
++
++def _view(session: Session, actor: Actor, member: ProjectMember) -> MemberView:
++    user = users_repo.get(session, actor.org_id, member.user_id)
++    if user is None:
++        raise NotFound("user not found")
++    return MemberView(
++        project_id=member.project_id,
++        user_id=member.user_id,
++        added_at=member.added_at,
++        email=user.email,
++        name=user.name,
++        role=user.role,
++    )
++
++
+ def list_page(
+     session: Session, actor: Actor, project_id: int, after: int | None, limit: int
+-) -> tuple[list[ProjectMember], int | None]:
++) -> tuple[list[MemberView], int | None]:
+     project = projects.get(session, actor, project_id)
+-    return members_repo.list_page(session, project.id, after, limit)
++    rows, next_after = members_repo.list_page(session, project.id, after, limit)
++    return [_view(session, actor, row) for row in rows], next_after
+ 
+ 
+-def add(session: Session, actor: Actor, project_id: int, user_id: int) -> ProjectMember:
++def add(session: Session, actor: Actor, project_id: int, user_id: int) -> MemberView:
+     project = projects.get(session, actor, project_id)
+     if users_repo.get(session, actor.org_id, user_id) is None:
+         raise Invalid("user must belong to your organization", code="invalid_user")
+@@ -26,7 +56,7 @@
+     member = members_repo.add(session, project.id, user_id)
+     audit.record(session, actor, "member.add", "project", project.id)
+     session.commit()
+-    return member
++    return _view(session, actor, member)
+ 
+ 
+ def remove(session: Session, actor: Actor, project_id: int, user_id: int) -> None:
+diff --git a/tests/visible/test_c7_member_details.py b/tests/visible/test_c7_member_details.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_c7_member_details.py
+@@ -0,0 +1,30 @@
++"""C7: project members carry the user's email, name, and role."""
++
++from __future__ import annotations
++
++from conftest import auth
++
++
++def test_member_list_shows_user_details(client, acme) -> None:
++    body = client.get(f"/projects/{acme.projects[0]}/members", headers=auth(acme.viewer)).json()
++    assert [(m["user_id"], m["role"]) for m in body["items"]] == [
++        (acme.admin, "admin"),
++        (acme.member, "member"),
++    ]
++    assert body["items"][0]["email"] == "admin@acme.test"
++    assert body["items"][1]["name"] == "Acme Member"
++
++
++def test_added_member_shows_user_details(client, acme) -> None:
++    response = client.post(
++        f"/projects/{acme.projects[1]}/members",
++        json={"user_id": acme.viewer},
++        headers=auth(acme.admin),
++    )
++    assert response.status_code == 201
++    body = response.json()
++    assert (body["user_id"], body["email"], body["role"]) == (
++        acme.viewer,
++        "viewer@acme.test",
++        "viewer",
++    )

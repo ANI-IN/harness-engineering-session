@@ -1,0 +1,443 @@
+diff --git a/app/api/watchers.py b/app/api/watchers.py
+new file mode 100644
+--- /dev/null
++++ b/app/api/watchers.py
+@@ -0,0 +1,85 @@
++"""Issue watchers (F6): watch and unwatch, list an issue's watchers, list what I watch."""
++
++from __future__ import annotations
++
++from datetime import datetime
++
++from fastapi import APIRouter, Depends, Response
++from pydantic import BaseModel, ConfigDict
++from sqlalchemy.orm import Session
++
++from app.api.deps import Id, current_actor, get_db, require_admin, require_writer
++from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_page
++from app.api.schemas import IssueOut
++from app.services import watchers
++from app.services.context import Actor
++
++router = APIRouter(tags=["watchers"])
++
++
++class WatcherOut(BaseModel):
++    model_config = ConfigDict(from_attributes=True)
++
++    user_id: int
++    created_at: datetime
++
++
++@router.get("/issues/{issue_id}/watchers", response_model=Page[WatcherOut])
++def list_watchers(
++    issue_id: Id,
++    params: PageParams = Depends(page_params),
++    actor: Actor = Depends(current_actor),
++    db: Session = Depends(get_db),
++) -> Page[WatcherOut]:
++    rows, next_after = watchers.list_page(
++        db, actor, issue_id, decode_cursor(params.cursor), params.limit
++    )
++    return to_page(rows, next_after, WatcherOut.model_validate)
++
++
++@router.put("/issues/{issue_id}/watchers/me", status_code=204)
++def watch_issue(
++    issue_id: Id, actor: Actor = Depends(require_writer), db: Session = Depends(get_db)
++) -> Response:
++    watchers.watch(db, actor, issue_id)
++    return Response(status_code=204)
++
++
++@router.delete("/issues/{issue_id}/watchers/me", status_code=204)
++def unwatch_issue(
++    issue_id: Id, actor: Actor = Depends(require_writer), db: Session = Depends(get_db)
++) -> Response:
++    watchers.unwatch(db, actor, issue_id)
++    return Response(status_code=204)
++
++
++@router.put("/issues/{issue_id}/watchers/{user_id}", status_code=204)
++def add_watcher(
++    issue_id: Id,
++    user_id: Id,
++    actor: Actor = Depends(require_admin),
++    db: Session = Depends(get_db),
++) -> Response:
++    watchers.watch(db, actor, issue_id, user_id)
++    return Response(status_code=204)
++
++
++@router.delete("/issues/{issue_id}/watchers/{user_id}", status_code=204)
++def remove_watcher(
++    issue_id: Id,
++    user_id: Id,
++    actor: Actor = Depends(require_admin),
++    db: Session = Depends(get_db),
++) -> Response:
++    watchers.unwatch(db, actor, issue_id, user_id)
++    return Response(status_code=204)
++
++
++@router.get("/me/watching", response_model=Page[IssueOut])
++def my_watched_issues(
++    params: PageParams = Depends(page_params),
++    actor: Actor = Depends(current_actor),
++    db: Session = Depends(get_db),
++) -> Page[IssueOut]:
++    rows, next_after = watchers.watching(db, actor, decode_cursor(params.cursor), params.limit)
++    return to_page(rows, next_after, IssueOut.model_validate)
+diff --git a/app/db/models.py b/app/db/models.py
+--- a/app/db/models.py
++++ b/app/db/models.py
+@@ -79,6 +79,17 @@ class AuditEntry(Base):
+     at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+ 
+ 
++class Watcher(Base):
++    __tablename__ = "watchers"
++    __table_args__ = (UniqueConstraint("issue_id", "user_id", name="uq_watchers_issue_user"),)
++
++    id: Mapped[int] = mapped_column(Integer, primary_key=True)
++    org_id: Mapped[int] = mapped_column(ForeignKey("orgs.id"), index=True)
++    issue_id: Mapped[int] = mapped_column(ForeignKey("issues.id"), index=True)
++    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
++    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
++
++
+ class IdempotencyRecord(Base):
+     __tablename__ = "idempotency_keys"
+     __table_args__ = (
+diff --git a/app/main.py b/app/main.py
+--- a/app/main.py
++++ b/app/main.py
+@@ -5,7 +5,7 @@ from __future__ import annotations
+ from fastapi import FastAPI
+ from fastapi.staticfiles import StaticFiles
+ 
+-from app.api import audit, auth, health, issues, legacy_v1, members, projects, users
++from app.api import audit, auth, health, issues, legacy_v1, members, projects, users, watchers
+ from app.api.errors import install_error_handlers
+ from app.api.middleware import RequestIdMiddleware
+ from app.db.base import Base
+@@ -30,7 +30,7 @@ def create_app(settings: TeamTrackSettings | None = None) -> FastAPI:
+     app.state.settings = settings
+     app.add_middleware(RequestIdMiddleware)
+     install_error_handlers(app)
+-    for module in (auth, users, projects, members, issues, audit, health, legacy_v1):
++    for module in (auth, users, projects, members, issues, audit, health, legacy_v1, watchers):
+         app.include_router(module.router)
+     app.include_router(board.router)
+     app.mount("/board/static", StaticFiles(directory=board.STATIC_DIR), name="board-static")
+diff --git a/app/repositories/watchers.py b/app/repositories/watchers.py
+new file mode 100644
+--- /dev/null
++++ b/app/repositories/watchers.py
+@@ -0,0 +1,55 @@
++from __future__ import annotations
++
++from sqlalchemy import select
++from sqlalchemy.orm import Session
++
++from app.db.models import Issue, Project, Watcher
++from app.repositories.common import page, split_page
++
++
++def get(session: Session, org_id: int, issue_id: int, user_id: int) -> Watcher | None:
++    return session.scalar(
++        select(Watcher).where(
++            Watcher.org_id == org_id, Watcher.issue_id == issue_id, Watcher.user_id == user_id
++        )
++    )
++
++
++def list_for_issue(
++    session: Session, org_id: int, issue_id: int, after: int | None, limit: int
++) -> tuple[list[Watcher], int | None]:
++    base = select(Watcher).where(Watcher.org_id == org_id, Watcher.issue_id == issue_id)
++    stmt = page(base, Watcher.id, after, limit)
++    return split_page(list(session.scalars(stmt)), limit, lambda w: w.id)
++
++
++def watched_issues(
++    session: Session, org_id: int, user_id: int, after: int | None, limit: int
++) -> tuple[list[Issue], int | None]:
++    """Live issues in active projects that the user watches, by ascending issue id."""
++    base = (
++        select(Issue)
++        .join(Watcher, Watcher.issue_id == Issue.id)
++        .join(Project, Project.id == Issue.project_id)
++        .where(
++            Watcher.org_id == org_id,
++            Watcher.user_id == user_id,
++            Issue.org_id == org_id,
++            Issue.deleted_at.is_(None),
++            Project.archived_at.is_(None),
++        )
++    )
++    stmt = page(base, Issue.id, after, limit)
++    return split_page(list(session.scalars(stmt)), limit, lambda i: i.id)
++
++
++def add(session: Session, org_id: int, issue_id: int, user_id: int) -> Watcher:
++    watcher = Watcher(org_id=org_id, issue_id=issue_id, user_id=user_id)
++    session.add(watcher)
++    session.flush()
++    return watcher
++
++
++def remove(session: Session, watcher: Watcher) -> None:
++    session.delete(watcher)
++    session.flush()
+diff --git a/app/seed.py b/app/seed.py
+--- a/app/seed.py
++++ b/app/seed.py
+@@ -11,6 +11,7 @@ from app.repositories import members as members_repo
+ from app.repositories import orgs as orgs_repo
+ from app.repositories import projects as projects_repo
+ from app.repositories import users as users_repo
++from app.repositories import watchers as watchers_repo
+ 
+ 
+ @dataclass(frozen=True)
+@@ -54,6 +55,15 @@ _TITLES = [
+     "Broken link in footer",
+ ]
+ _PRIORITIES = ["low", "medium", "high"]
++# Each org's member watches the org's first two issues: watcher ids 1-2 (Acme), 3-4 (Globex).
++SEED_WATCHERS = {ACME.slug: (1, 2), GLOBEX.slug: (3, 4)}
++
++
++def _seed_watchers(session: Session) -> None:
++    for spec, _name, _projects in _ORGS:
++        for issue_id, watcher_id in zip(spec.issues[:2], SEED_WATCHERS[spec.slug], strict=True):
++            watcher = watchers_repo.add(session, spec.org_id, issue_id, spec.member)
++            assert watcher.id == watcher_id
+ 
+ 
+ def seed(session: Session) -> None:
+@@ -93,4 +103,5 @@ def seed(session: Session) -> None:
+                     spec.admin,
+                 )
+                 assert issue.id == next(issue_ids)
++    _seed_watchers(session)
+     session.commit()
+diff --git a/app/services/watchers.py b/app/services/watchers.py
+new file mode 100644
+--- /dev/null
++++ b/app/services/watchers.py
+@@ -0,0 +1,64 @@
++"""Issue watchers (F6). Every function works only inside actor.org_id."""
++
++from __future__ import annotations
++
++from sqlalchemy.orm import Session
++
++from app.db.models import Issue, Watcher
++from app.repositories import issues as issues_repo
++from app.repositories import projects as projects_repo
++from app.repositories import users as users_repo
++from app.repositories import watchers as watchers_repo
++from app.services import audit
++from app.services.context import Actor
++from app.services.errors import NotFound
++
++
++def _issue(session: Session, actor: Actor, issue_id: int) -> Issue:
++    """A live issue in an active project of the caller's org; anything else is a 404."""
++    issue = issues_repo.get(session, actor.org_id, issue_id)
++    if issue is None or projects_repo.get(session, actor.org_id, issue.project_id) is None:
++        raise NotFound("issue not found")
++    return issue
++
++
++def _user(session: Session, actor: Actor, user_id: int) -> int:
++    if users_repo.get(session, actor.org_id, user_id) is None:
++        raise NotFound("user not found")
++    return user_id
++
++
++def list_page(
++    session: Session, actor: Actor, issue_id: int, after: int | None, limit: int
++) -> tuple[list[Watcher], int | None]:
++    issue = _issue(session, actor, issue_id)
++    return watchers_repo.list_for_issue(session, actor.org_id, issue.id, after, limit)
++
++
++def watching(
++    session: Session, actor: Actor, after: int | None, limit: int
++) -> tuple[list[Issue], int | None]:
++    return watchers_repo.watched_issues(session, actor.org_id, actor.user_id, after, limit)
++
++
++def watch(session: Session, actor: Actor, issue_id: int, user_id: int | None = None) -> None:
++    """Add a watcher (the caller, or `user_id` for admins). Watching twice changes nothing."""
++    issue = _issue(session, actor, issue_id)
++    target = actor.user_id if user_id is None else _user(session, actor, user_id)
++    if watchers_repo.get(session, actor.org_id, issue.id, target) is not None:
++        return
++    watchers_repo.add(session, actor.org_id, issue.id, target)
++    audit.record(session, actor, "watcher.add", "issue", issue.id)
++    session.commit()
++
++
++def unwatch(session: Session, actor: Actor, issue_id: int, user_id: int | None = None) -> None:
++    """Remove a watcher. Removing someone who does not watch the issue changes nothing."""
++    issue = _issue(session, actor, issue_id)
++    target = actor.user_id if user_id is None else _user(session, actor, user_id)
++    watcher = watchers_repo.get(session, actor.org_id, issue.id, target)
++    if watcher is None:
++        return
++    watchers_repo.remove(session, watcher)
++    audit.record(session, actor, "watcher.remove", "issue", issue.id)
++    session.commit()
+diff --git a/migrations/versions/0003_watchers.py b/migrations/versions/0003_watchers.py
+new file mode 100644
+--- /dev/null
++++ b/migrations/versions/0003_watchers.py
+@@ -0,0 +1,32 @@
++"""issue watchers
++
++Revision ID: 0003_watchers
++Revises: 0001_initial
++Create Date: 2026-10-16
++"""
++
++from __future__ import annotations
++
++import sqlalchemy as sa
++from alembic import op
++
++revision = "0003_watchers"
++down_revision = "0001_initial"
++branch_labels = None
++depends_on = None
++
++
++def upgrade() -> None:
++    op.create_table(
++        "watchers",
++        sa.Column("id", sa.Integer(), primary_key=True),
++        sa.Column("org_id", sa.Integer(), sa.ForeignKey("orgs.id"), nullable=False, index=True),
++        sa.Column("issue_id", sa.Integer(), sa.ForeignKey("issues.id"), nullable=False, index=True),
++        sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id"), nullable=False, index=True),
++        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
++        sa.UniqueConstraint("issue_id", "user_id", name="uq_watchers_issue_user"),
++    )
++
++
++def downgrade() -> None:
++    op.drop_table("watchers")
+diff --git a/tests/visible/test_watchers.py b/tests/visible/test_watchers.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_watchers.py
+@@ -0,0 +1,107 @@
++"""F6: issue watchers."""
++
++from __future__ import annotations
++
++from conftest import auth, error_code
++
++
++def watchers(client, user_id: int, issue_id: int) -> list[int]:  # type: ignore[no-untyped-def]
++    response = client.get(f"/issues/{issue_id}/watchers?limit=100", headers=auth(user_id))
++    assert response.status_code == 200, response.text
++    return [w["user_id"] for w in response.json()["items"]]
++
++
++def watching(client, user_id: int) -> list[int]:  # type: ignore[no-untyped-def]
++    response = client.get("/me/watching?limit=100", headers=auth(user_id))
++    assert response.status_code == 200, response.text
++    return [i["id"] for i in response.json()["items"]]
++
++
++def audit_actions(client, o) -> list[str]:  # type: ignore[no-untyped-def]
++    items = client.get("/audit?limit=100", headers=auth(o.admin)).json()["items"]
++    return [item["action"] for item in items]
++
++
++def test_seeded_watchers(client, acme) -> None:
++    assert watchers(client, acme.viewer, acme.issues[0]) == [acme.member]
++    assert watching(client, acme.member) == [acme.issues[0], acme.issues[1]]
++
++
++def test_watch_and_unwatch_myself(client, acme) -> None:
++    issue = acme.issues[5]
++    assert client.put(f"/issues/{issue}/watchers/me", headers=auth(acme.admin)).status_code == 204
++    assert watchers(client, acme.admin, issue) == [acme.admin]
++    assert issue in watching(client, acme.admin)
++    response = client.delete(f"/issues/{issue}/watchers/me", headers=auth(acme.admin))
++    assert response.status_code == 204
++    assert watchers(client, acme.admin, issue) == []
++
++
++def test_watching_twice_changes_nothing_and_adds_no_audit_row(client, acme) -> None:
++    issue = acme.issues[5]
++    client.put(f"/issues/{issue}/watchers/me", headers=auth(acme.member))
++    before = audit_actions(client, acme)
++    assert client.put(f"/issues/{issue}/watchers/me", headers=auth(acme.member)).status_code == 204
++    assert audit_actions(client, acme) == before
++    assert watchers(client, acme.member, issue) == [acme.member]
++
++
++def test_watch_and_unwatch_each_add_one_audit_row(client, acme) -> None:
++    issue = acme.issues[5]
++    before = audit_actions(client, acme)
++    client.put(f"/issues/{issue}/watchers/me", headers=auth(acme.member))
++    client.delete(f"/issues/{issue}/watchers/me", headers=auth(acme.member))
++    assert audit_actions(client, acme)[len(before) :] == ["watcher.add", "watcher.remove"]
++
++
++def test_viewer_cannot_watch(client, acme) -> None:
++    response = client.put(f"/issues/{acme.issues[0]}/watchers/me", headers=auth(acme.viewer))
++    assert response.status_code == 403
++    assert error_code(response) == "forbidden"
++
++
++def test_other_orgs_issue_is_404(client, acme, globex) -> None:
++    issue = globex.issues[0]
++    assert client.put(f"/issues/{issue}/watchers/me", headers=auth(acme.member)).status_code == 404
++    assert client.get(f"/issues/{issue}/watchers", headers=auth(acme.member)).status_code == 404
++
++
++def test_deleted_issue_is_404_and_leaves_my_watching_list(client, acme) -> None:
++    client.delete(f"/issues/{acme.issues[0]}", headers=auth(acme.member))
++    response = client.get(f"/issues/{acme.issues[0]}/watchers", headers=auth(acme.member))
++    assert response.status_code == 404
++    assert watching(client, acme.member) == [acme.issues[1]]
++
++
++def test_admin_adds_and_removes_a_user_of_the_org(client, acme) -> None:
++    issue = acme.issues[6]
++    path = f"/issues/{issue}/watchers/{acme.viewer}"
++    assert client.put(path, headers=auth(acme.admin)).status_code == 204
++    assert watching(client, acme.viewer) == [issue]
++    assert client.delete(path, headers=auth(acme.admin)).status_code == 204
++    assert watching(client, acme.viewer) == []
++
++
++def test_admin_cannot_add_a_user_of_another_org(client, acme, globex) -> None:
++    response = client.put(
++        f"/issues/{acme.issues[0]}/watchers/{globex.member}", headers=auth(acme.admin)
++    )
++    assert response.status_code == 404
++    assert error_code(response) == "not_found"
++
++
++def test_member_cannot_manage_other_watchers(client, acme) -> None:
++    response = client.put(
++        f"/issues/{acme.issues[0]}/watchers/{acme.viewer}", headers=auth(acme.member)
++    )
++    assert response.status_code == 403
++
++
++def test_watching_list_uses_the_envelope_and_cursor(client, acme) -> None:
++    first = client.get("/me/watching?limit=1", headers=auth(acme.member)).json()
++    assert set(first) == {"items", "next_cursor"}
++    assert [i["id"] for i in first["items"]] == [acme.issues[0]]
++    rest = client.get(
++        f"/me/watching?limit=1&cursor={first['next_cursor']}", headers=auth(acme.member)
++    ).json()
++    assert [i["id"] for i in rest["items"]] == [acme.issues[1]]

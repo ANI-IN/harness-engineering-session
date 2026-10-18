@@ -1,0 +1,4 @@
+{
+  "_replace": "parameters for shipharness check --params harness/check-params.json. regression_targets: the pytest targets of your existing suite, run by the regression check (existing tests keep passing). TeamTrack's suite is tests/visible. The checks ignore this _replace key; delete it when the file is filled.",
+  "regression_targets": ["tests/visible"]
+}

@@ -1,0 +1,90 @@
+# captured on 2026-10-17 from `make check-assignment-4` at commit eba4c55 (no model calls); your output will differ; paths shortened for privacy.
+$ make check-assignment-4
+uv run python section-4-verification/assignment/check.py 
+A4 self-check for ~/wt/gaps/section-4-verification/assignment/starter
+
+[F6-interface]
+  PASS test_filter_has_number_6_and_a_name
+  FAIL test_filter_runs_inside_the_shipharness_pipeline: assert [False, False] == [False, True] At index 1 diff: False != True Use -v to get more diff
+
+[F6-visible]
+  FAIL test_renamed_and_reformatted_copy_is_discarded_with_the_original_named: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+  FAIL test_a_different_assertion_is_kept: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+  FAIL test_a_docstring_alone_does_not_make_a_test_new: NotImplementedError: TODO(A4-7): NoDuplicateTest.evaluate
+
+[R8-baseline]
+  FAIL test_baseline_counts_only_new_findings: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+
+[R8-interface]
+  PASS test_check_is_registered_through_the_shipharness_registry
+  FAIL test_result_has_probes_and_r8_findings_with_detail_keys: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+  FAIL test_cli_wrapper_exit_codes_with_and_without_baseline: AssertionError: assert 1 == 3 + where 1 = CompletedProcess(args=['~/wt/gaps/.venv/bin/python', '-m', 'a4_verification.run_r8', '--build', '/tmp/pytest-o...ey": "crashed", "baseline": false}], "duration_ms": 328, "seed": null, "artifacts": [], "metrics": {}}]}\n', stderr='').returncode
+
+[R8-no-false-positives]
+  FAIL test_clean_build_reports_only_the_legacy_list: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+  FAIL test_lookup_violation_is_reported_only_on_issue_endpoints: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+
+[R8-visible]
+  FAIL test_finds_a_deleted_issue_that_resolves_by_id: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+  FAIL test_finds_a_deleted_issue_in_the_project_issue_list: NotImplementedError: TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete
+
+[live-evidence]
+  FAIL test_live_testgen_run: AssertionError: live/testgen.txt: missing (the command line and its printed output) live/testgen-report.json: missing assert not ['live/testgen.txt: missing (the command line and its printed output)', 'live/testgen-report.json: missing']
+  FAIL test_live_testgen_report_shows_filter_6: AssertionError: live/testgen-report.json: missing assert not ['live/testgen-report.json: missing']
+  FAIL test_live_ab_command_and_cost: AssertionError: live/ab.txt: missing (the command line and its printed output) assert not ['live/ab.txt: missing (the command line and its printed output)']
+  FAIL test_live_ab_score_records: AssertionError: live/scores: expected 2 score records (bare and harness) from one A/B, found 0 assert not ['live/scores: expected 2 score records (bare and harness) from one A/B, found 0']
+
+[own-tests]
+  FAIL test_at_least_eight_own_tests: AssertionError: tests/ has 2 test functions: ['test_dedup_filter.py::test_the_function_name_is_ignored', 'test_r8_soft_delete.py::test_issue_id_parameter_addresses_an_issue'] assert 2 >= 8 + where 2 = len(['test_dedup_filter.py::test_the_function_name_is_ignored', 'test_r8_soft_delete.py::test_issue
+  FAIL test_own_tests_pass: AssertionError: tests/: 2 failed in 0.36s; FAILED section-4-verification/assignment/starter/tests/test_dedup_filter.py::test_the_function_name_is_ignored; FAILED section-4-verification/assignment/starter/tests/test_r8_soft_delete.py::test_issue_id_parameter_addresses_an_issue assert 1 == 0 + where 1
+
+[portfolio-case-study]
+  FAIL test_case_study_structure: AssertionError: portfolio/case-study.md: still contains TODO portfolio/case-study.md: 90 words; one page means 250 to 700 assert not ['portfolio/case-study.md: still contains TODO', 'portfolio/case-study.md: 90 words; one page means 250 to 700']
+
+[portfolio-evidence]
+  FAIL test_evidence_report_structure: AssertionError: portfolio/evidence-report.md: still contains TODO portfolio/evidence-report.md: section '## Results' has no Markdown table assert not ['portfolio/evidence-report.md: still contains TODO', "portfolio/evidence-report.md: section '## Results' has no Markdown table"]
+
+[portfolio-langsmith]
+  FAIL test_langsmith_page_structure: AssertionError: portfolio/langsmith.md: still contains TODO assert not ['portfolio/langsmith.md: still contains TODO']
+
+[skill]
+  FAIL test_own_skill_is_valid_and_not_the_template: AssertionError: skill/: expected exactly one folder with a SKILL.md, found [] assert not ['skill/: expected exactly one folder with a SKILL.md, found []']
+
+TODO markers left (32):
+  a4_verification/adapter.py:37: # TODO(A4-1): soft-delete the lowest-id live issue of each of `org`'s projects.
+  a4_verification/adapter.py:45: raise NotImplementedError("TODO(A4-1): TeamTrackSoftDeleteAdapter.soft_delete")
+  a4_verification/dedup_filter.py:30: # TODO(A4-5): parse with `ast`, find the function, apply the normalisation in the module
+  a4_verification/dedup_filter.py:32: raise NotImplementedError("TODO(A4-5): normalized")
+  a4_verification/dedup_filter.py:43: # TODO(A4-6): precompute the normalised form of every existing test, and keep a record
+  a4_verification/dedup_filter.py:47: # TODO(A4-7): discard (passed=False) when `cand` duplicates an existing test (other than
+  a4_verification/dedup_filter.py:51: raise NotImplementedError("TODO(A4-7): NoDuplicateTest.evaluate")
+  a4_verification/r8_soft_delete.py:48: # TODO(A4-2): walk `endpoint.path.split("/")` and return the parameter name, or None.
+  a4_verification/r8_soft_delete.py:49: raise NotImplementedError("TODO(A4-2): issue_param")
+  a4_verification/r8_soft_delete.py:63: # TODO(A4-3): build the probes in the order above.
+  a4_verification/r8_soft_delete.py:64: raise NotImplementedError("TODO(A4-3): plan")
+  a4_verification/r8_soft_delete.py:72: # TODO(A4-4): apply the rules in the module docstring. Use rule "R8", the endpoint's label,
+  a4_verification/r8_soft_delete.py:75: raise NotImplementedError("TODO(A4-4): judge")
+  tests/test_dedup_filter.py:19: # TODO(A4-9): add your own tests, for example:
+  tests/test_r8_soft_delete.py:32: # TODO(A4-8): add your own tests (at least 8 in tests/ in total), for example:
+  portfolio/case-study.md:3: <!-- One page: 250 to 700 words in total. Keep the five sections. Replace every TODO. -->
+  portfolio/case-study.md:7: TODO: the failure you set out to catch, in your own repository's or TeamTrack's terms.
+  portfolio/case-study.md:11: TODO: R8, filter 6, and your skill, in a few sentences each.
+  portfolio/case-study.md:15: TODO: the numbers from your evidence report and LangSmith page, with links to both files.
+  portfolio/case-study.md:19: TODO: what surprised you, and what you changed after the first run.
+  portfolio/case-study.md:23: TODO: what you would do with another day.
+  portfolio/evidence-report.md:4: output only. Replace every TODO. -->
+  portfolio/evidence-report.md:8: TODO: the repository and module you ran testgen on (`--target <id>` or `--repo` + `--module`),
+  portfolio/evidence-report.md:13: TODO: every command exactly as you ran it, in a code block: `shipharness testgen ...`,
+  portfolio/evidence-report.md:18: TODO: a Markdown table from `testgen-report.json` (proposed, kept, discarded per filter), the
+  portfolio/evidence-report.md:23: TODO: the `apply_filter` output: how many kept tests filter 6 kept, and which test each duplicate
+  portfolio/evidence-report.md:28: TODO: the `run_r8` result on `platform/teamtrack/` (probes, findings), and what happens with `--baseline`.
+  portfolio/evidence-report.md:32: TODO: what this evidence does not show.
+  portfolio/langsmith.md:3: <!-- Keep the three sections below. Replace every TODO. -->
+  portfolio/langsmith.md:7: TODO: the `trace_url` of each arm (https://smith.langchain.com/...), copied from your two files in
+  portfolio/langsmith.md:12: TODO: the exact `shipharness ab ...` command you ran (the first line of `live/ab.txt`), in a code
+  portfolio/langsmith.md:17: TODO: per arm, the counts from your score records (hidden tests passed, mutants killed, existing
+
+self-check: FAILED (2/23 visible tests pass)
+Cost: $0.000000 (no model calls)
+make: *** [Makefile:205: check-assignment-4] Error 1
+[exit code 2]

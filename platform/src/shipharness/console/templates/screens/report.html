@@ -1,0 +1,94 @@
+{% from "screens/_macros.html" import screen_head, referee_line %}
+{{ screen_head(key, title, state) }}
+{% if state.arms.values()|selectattr("run_start")|list or state.arms.values()|selectattr("primary_view")|list %}
+<div class="this-run" aria-label="This run">
+  <h2 class="this-run-head">This run{% if not state.finished %} (live){% endif %}</h2>
+  {% for arm in arms %}
+  {% set a = state.arm(arm) %}
+  <p class="referee"><span class="arm-name arm-{{ arm }}">{{ arm|upper }}</span> {% if state.not_run(arm) %}<span class="muted not-run">{{ state.not_run(arm) }}</span>{% else %}{{ referee_line(a) }}{% endif %}</p>
+  {% endfor %}
+</div>
+{% endif %}
+{% set comparison = safe_url(state.ab.traces.get("comparison")) %}
+{% if report.empty %}
+<div class="grid one">
+<article class="panel">
+  <h2>No results to compare yet</h2>
+  <p>This screen compares the two arms, one dot per run. There are no results yet. One is added when the referee finishes judging a run: start one with <code>make show-1</code> (the harness arm alone) or <code>make demo-1</code> (an A/B), with <code>PURPOSE=pilot</code> outside class.</p>
+  {% if comparison %}<p>LangSmith comparison for this run: <a href="{{ comparison }}">{{ breakable(comparison) }}</a></p>{% endif %}
+  {% if report.constructed %}<p class="muted">{{ report.constructed }} constructed example{{ "s" if report.constructed != 1 }} (scripted steps, no model) not counted.</p>{% endif %}
+</article>
+</div>
+{% else %}
+<div class="grid three">
+<article class="panel">
+  {% if report.before_class_runs %}
+  <h2>{{ report.before_label }}</h2>
+  <p class="muted">Primary measures, one dot per run: the runs measured before class{% if report.new_runs %}, then the new runs{% endif %}.</p>
+  {% else %}
+  <h2>Primary measures, one dot per run</h2>
+  {% endif %}
+  {% for g in report.groups %}
+  <div class="dot-row">
+    <span class="dot-label"><span class="arm-name arm-{{ g.arm }}">{{ feature_label(g.feature) }} · {{ g.variant }} · {{ g.arm }}</span> <span class="muted">{{ g.layers }}{% if g.measure %} · judged by {{ g.measure }}{% endif %}</span></span>
+    {% if not report.before_class_runs %}
+    <span class="dots">{% for d in g.dots %}<span class="dot {{ 'pass' if d.passed else 'fail' }}" title="{{ d.run_id }}: {{ 'passed' if d.passed else 'failed' }}">{{ "●" if d.passed else "○" }}</span>{% endfor %}</span>
+    <span class="count">{{ g.count_label }}</span>
+    {% else %}
+    <span class="dots">{% for d in g.before %}<span class="dot {{ 'pass' if d.passed else 'fail' }}" title="{{ d.run_id }}: measured before class, {{ 'passed' if d.passed else 'failed' }}">{{ "●" if d.passed else "○" }}</span>{% endfor %}{% if g.new %}<span class="new-runs">{% for d in g.new %}<span class="dot new {{ 'pass' if d.passed else 'fail' }}" title="{{ d.run_id }}: new run, {{ 'passed' if d.passed else 'failed' }}">{{ "◆" if d.passed else "◇" }}</span>{% endfor %}</span>{% endif %}</span>
+    <span class="count">{{ g.split_label }}</span>
+    {% endif %}
+  </div>
+  {% endfor %}
+  <p class="legend"><span class="dot pass-legend">●</span> passed · <span class="dot fail-legend">○</span> failed{% if report.before_class_runs %}, measured before class{% endif %}{% if report.new_runs and report.before_class_runs %} · <span class="dot pass-legend">◆</span> passed · <span class="dot fail-legend">◇</span> failed, new runs{% endif %}</p>
+  {% if report.unsandboxed %}<p class="tone-warn">{{ status("unknown", "unsandboxed") }} {{ report.unsandboxed }} runs unsandboxed: not official</p>{% endif %}
+  {% if report.recorded %}<p class="muted">{{ report.recorded }} runs are replays (recorded).</p>{% endif %}
+  {% if report.single_arm %}<p class="muted">{{ report.single_arm }} single-arm run{{ "s" if report.single_arm != 1 }} (harness in action) not compared: no bare run.</p>{% endif %}
+  {% if report.constructed %}<p class="muted">{{ report.constructed }} constructed example{{ "s" if report.constructed != 1 }} (scripted steps, no model) not counted.</p>{% endif %}
+</article>
+
+<article class="panel">
+  <h2>Ablation</h2>
+  {% for b in report.ablation %}
+  <div class="abl">
+    <span class="abl-label">{{ b.label }}</span>
+    <span class="track"><span class="fill {{ width_class(b.passed, b.total) }}"></span></span>
+    <span class="count">{{ b.count_label }}</span>
+  </div>
+  {% else %}
+  <p class="muted">No ablation runs yet.</p>
+  {% endfor %}
+  <h2>Cost per verified feature</h2>
+  <ul class="costs">
+  {% for c in report.costs %}
+    <li><span class="arm-name arm-{{ c.arm }}">{{ c.arm|upper }}</span>
+      {% if c.per_verified_usd is not none %}{{ usd(c.per_verified_usd, 2) }} per verified feature{% else %}no verified feature{% endif %}
+      <span class="muted">({{ c.verified }} verified, {{ usd(c.spent_usd, 2) }} spent)</span></li>
+  {% else %}
+    <li class="muted">No costs yet.</li>
+  {% endfor %}
+  </ul>
+</article>
+
+<article class="panel">
+  <h2>Reviewer agreement</h2>
+  <ul class="agreement">
+  {% for r in report.reviewer %}
+    <li><span class="arm-name arm-{{ r.arm }}">{{ r.arm|upper }}</span> reviewer agrees with the referee in {{ r.count_label }} runs</li>
+  {% else %}
+    <li class="muted">No reviewer verdicts yet.</li>
+  {% endfor %}
+  </ul>
+  <h2>LangSmith</h2>
+  <ul class="links">
+  {% for e in report.experiments %}
+    <li>{{ e.name }}{% if e.comparison_url %}: <a href="{{ e.comparison_url }}">{{ breakable(e.comparison_url) }}</a>{% elif e.url %}: <a href="{{ e.url }}">{{ breakable(e.url) }}</a>{% endif %}</li>
+  {% endfor %}
+  {% if comparison %}<li>this run: <a href="{{ comparison }}">{{ breakable(comparison) }}</a></li>{% endif %}
+  {% if not report.experiments and not comparison %}<li class="muted">No LangSmith experiments yet.</li>{% endif %}
+  </ul>
+  {% if report.older %}<p class="muted">{{ report.older }} older score records not shown (scored before the current referee version).</p>{% endif %}
+  {% if report.skipped %}<p class="tone-warn">{{ status("error", "skipped") }} {{ report.skipped }} export file{{ "s" if report.skipped != 1 }} skipped (unreadable)</p>{% endif %}
+</article>
+</div>
+{% endif %}

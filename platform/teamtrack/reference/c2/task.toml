@@ -1,0 +1,23 @@
+# Control task C2 (M5 builder contract §3). Easy, low-trap: both arms should complete it.
+id = "C2"
+title = "Search projects by name"
+section = "control"
+start_checkpoint = "m1-s1-start"   # base product; needs no feature
+primary_measure = ""               # ruling R-5: controls have no primary measure
+mutant_set = "app.api.pagination,app.repositories.common"
+session_budget = [20]              # provisional (ruling R-6)
+canonical_ticket = """Add a name search to the project list.
+
+GET /projects should accept an optional `q` query parameter (1 to 100 characters) and return only
+the caller's org's projects whose name contains it, ignoring case. `q` is plain text, so % and _
+match themselves. An empty or too long `q` is a 422 validation_error. The search must work with
+cursor and limit like every other list, and archived projects stay hidden.
+
+Spec: docs/features/c2.md. House rules: docs/HANDBOOK.md. Add tests in tests/visible/."""
+
+[allowed_paths]
+build = ["app/api/projects.py", "app/services/projects.py", "app/repositories/projects.py", "tests/visible/**"]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/c2/test_c2_project_search.py"]

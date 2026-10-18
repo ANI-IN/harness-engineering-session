@@ -1,0 +1,3 @@
+{
+  "regression_targets": ["--doctest-modules", "boltons", "tests"]
+}

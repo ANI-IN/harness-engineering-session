@@ -1,0 +1,17 @@
+<article class="card priority-{{ issue.priority }}" data-issue-id="{{ issue.id }}" data-org="{{ slugs.get(issue.org_id, 'unknown') }}">
+  <header>
+    <span class="tenant-badge tenant-{{ slugs.get(issue.org_id, 'unknown') }}">{{ slugs.get(issue.org_id, 'unknown')|title }}</span>
+    <span class="issue-id">#{{ issue.id }}</span>
+    <span class="status-label">Status: {{ issue.status.replace("_", " ") }}</span>
+  </header>
+  <a class="title" href="/board/issues/{{ issue.id }}">{{ issue.title }}</a>
+  <p class="meta">Priority: {{ issue.priority }}{% if issue.assignee_id %} · Assignee #{{ issue.assignee_id }}{% endif %}</p>
+  {% if actor and actor.can_write %}
+  <div class="actions">
+    {% for target in next_status.get(issue.status, []) %}
+    <button hx-post="/board/issues/{{ issue.id }}/transition" hx-vals='{"status": "{{ target }}"}'
+            hx-target="closest .card" hx-swap="outerHTML">Move to {{ target.replace("_", " ") }}</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+</article>

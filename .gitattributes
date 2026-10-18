@@ -1,0 +1,7 @@
+# Every text file uses LF: scripts, the Makefile, and Dockerfiles run in Linux containers and WSL2.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary
+*.pptx binary

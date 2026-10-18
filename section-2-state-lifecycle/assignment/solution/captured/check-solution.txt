@@ -1,0 +1,53 @@
+# Captured on 2026-10-17 at commit e7287f4 (offline: test stand-in agent, no model calls, no run id).
+# Your output will differ: commit hashes change on every run.
+$ make check-assignment-2 A2_IMPL=submodules/section-2-state-lifecycle/solution
+uv run python submodules/section-2-state-lifecycle/assignment/check.py --impl submodules/section-2-state-lifecycle/solution
+A2 self-check: 2 visible scenarios against submodules/section-2-state-lifecycle/solution
+Agent: the test stand-in agent (a2_scenario/literal_agent.py), deterministic, not a model.
+Each scenario: four sessions, three forced stops by the session turn budget.
+
+Scenario V1-boundary-stops: each stop lands just after a step is committed (budgets [6, 6, 6, 5])
+  session 1 (6 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a1_comments.py, write S1 app/comments/models.py, commit S1
+  session 2 (6 turns, ended by turn_budget): 3 reads, write S2 app/comments/service.py, write S2 app/comments/validation.py, commit S2
+  session 3 (6 turns, ended by turn_budget): 3 reads, write S3 migrations/versions/c3a3_comment_index.py, write S3 tests/visible/test_comments.py, commit S3
+  session 4 (5 turns, ended by claim_done): 3 reads, run visible tests, finish done
+  PASS finished: 3 forced stops, finished in session 4
+  PASS one_head: 1 heads: c3a3 (head)
+  PASS fresh_upgrade: fresh upgrade works
+  PASS no_duplicate_table: each table created once
+  PASS no_redone_lines: redone lines session 2: 0.0%, session 3: 0.0%, session 4: 0.0%
+  PASS steps_once: commits per step: one each
+  PASS progress_sections: sections in order
+  PASS session_log: entries [1, 2, 3, 4], sessions [1, 2, 3, 4]
+  PASS history_consistent: every entry matches
+  PASS plan_completed: moved, outcome recorded
+  PASS plan_ledger: every step ticked with its commit
+  PASS plan_sessions: every session recorded
+  PASS handoff: complete
+  PASS clean_tree: clean
+
+Scenario V2-mid-step-stops: each stop lands after a step's files are written but before its commit (budgets [5, 6, 6, 8])
+  session 1 (5 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a1_comments.py, write S1 app/comments/models.py
+  session 2 (6 turns, ended by turn_budget): 3 reads, commit S1, write S2 app/comments/service.py, write S2 app/comments/validation.py
+  session 3 (6 turns, ended by turn_budget): 3 reads, commit S2, write S3 migrations/versions/c3a3_comment_index.py, write S3 tests/visible/test_comments.py
+  session 4 (6 turns, ended by claim_done): 3 reads, commit S3, run visible tests, finish done
+  PASS finished: 3 forced stops, finished in session 4
+  PASS one_head: 1 heads: c3a3 (head)
+  PASS fresh_upgrade: fresh upgrade works
+  PASS no_duplicate_table: each table created once
+  PASS no_redone_lines: redone lines session 2: 0.0%, session 3: 0.0%, session 4: 0.0%
+  PASS steps_once: commits per step: one each
+  PASS progress_sections: sections in order
+  PASS session_log: entries [1, 2, 3, 4], sessions [1, 2, 3, 4]
+  PASS history_consistent: every entry matches
+  PASS plan_completed: moved, outcome recorded
+  PASS plan_ledger: every step ticked with its commit
+  PASS plan_sessions: every session recorded
+  PASS handoff: complete
+  PASS clean_tree: clean
+
+Self-check: 28 of 28 checks pass.
+Live evidence (graded, 10 points): 1 problem(s):
+  - live/: missing task.jsonl, command.txt, output.txt, summary.json, scores/
+All visible scenarios pass. The grader adds hidden scenarios of the same kinds.
+[exit code 0]

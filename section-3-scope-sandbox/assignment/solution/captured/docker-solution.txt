@@ -1,0 +1,5 @@
+# captured on 2026-10-17 from `uv run python -m pytest -q -p no:cacheprovider -m docker section-3-scope-sandbox/assignment/solution/tests` (needs Docker and the shipharness-agent:1 image; no model calls); details in docs/evidence.md
+$ uv run python -m pytest -q -p no:cacheprovider -m docker section-3-scope-sandbox/assignment/solution/tests
+..                                                                       [100%]
+2 passed, 9 deselected in 11.28s
+(exit code 0)

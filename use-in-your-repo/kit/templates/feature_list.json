@@ -1,0 +1,23 @@
+{
+  "_replace": "TeamTrack's feature list as the harness writes it for F1. One entry per feature; every entry starts with passes false, evidence null, and testedAt null. The schema rejects every _replace key on purpose, so an unfilled list fails validation: delete each one when the file is filled.",
+  "$schema": "./feature_list.schema.json",
+  "features": [
+    {
+      "_replace": "id: a short, stable id. category: a label (TeamTrack uses feature). description: one sentence a user would recognise. steps: observable checks a reviewer can run. Set passes to true only with evidence (gate_id, commit, visible and existing test counts such as 41/41, the house rules that passed) and the testedAt time.",
+      "id": "F1",
+      "category": "feature",
+      "description": "Org-wide issue search with filters and cursor pagination",
+      "steps": [
+        "GET /issues lists the caller's org's issues across its projects.",
+        "Filters are optional and combine with AND.",
+        "Deleted issues and issues of archived projects are never listed.",
+        "A project_id or assignee_id that is not in the caller's org gives 404 not_found.",
+        "An invalid value gives 422 validation_error.",
+        "Any role may read (admin, member, viewer). Without a token: 401."
+      ],
+      "passes": false,
+      "evidence": null,
+      "testedAt": null
+    }
+  ]
+}

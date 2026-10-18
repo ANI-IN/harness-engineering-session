@@ -1,0 +1,5 @@
+$ uv run shipharness ab --section demo-4 --feature F4 --purpose assignment --no-preview
+A/B ab-20261017-094339-3b29e3 (F4, layers=['instructions', 'scope', 'state', 'verify'], profile=standard)
+  bare     completed         claim=none     primary={"hidden_passed": 68, "mutants_killed": 4} passed=False hidden 68/69 mutants 4/4 reviewer=reject cost=$0.0185
+  harness  ABORTED: timeout  claim=none     primary={"hidden_passed": 43, "mutants_killed": 0} passed=False hidden 43/69 mutants 0/4 reviewer=reject cost=$0.0162
+Cost: $0.042138 (this command: gpt-5.6-luna $0.007424, gpt-6-luna $0.034714; session $0.063847 of $2.50; build $2.186817 of $15.00 ($12.813183 left))

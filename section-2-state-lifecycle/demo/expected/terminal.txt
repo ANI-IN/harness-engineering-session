@@ -1,0 +1,7 @@
+START 2026-10-18T16:27:43Z show-2 SESSION_BUDGET=12,38
+uv run shipharness ab --section demo-2 --feature comments --arms harness  --session-budget=12,38 --purpose pilot \
+  --profile class
+A/B ab-20261018-162745-ccba38 (Feature 2: Comments on issues, layers=['instructions', 'state'], profile=class, harness in action)
+  harness  completed         agent made no claim · continuity failure: no · primary measure passed · hidden tests 56 of 56 · mutants killed 1 of 4 · reviewer accept · cost $0.0402
+Cost: $0.043716 (this command: gpt-5.6-luna $0.003537, gpt-6-luna $0.040178; session $0.064018 of $2.50; build $0.064018 of $15.00 ($14.935982 left))
+END rc=0 wall=432s launch_epoch=1792340863

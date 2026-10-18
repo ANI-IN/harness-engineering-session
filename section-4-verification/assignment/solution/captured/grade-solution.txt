@@ -1,0 +1,25 @@
+# captured on 2026-10-17 from `make grade-assignment-4 SUBMISSION=section-4-verification/assignment/solution` at commit eba4c55 (no model calls); your output will differ; paths shortened for privacy.
+$ make grade-assignment-4 SUBMISSION=section-4-verification/assignment/solution
+uv run python platform/scripts/grade_assignment.py 4 "section-4-verification/assignment/solution"
+A4 grade for ~/wt/gaps/section-4-verification/assignment/solution
+
+Criterion                     Points  Tests
+R8-interface                     5/5  5/5
+R8-visible                       9/9  2/2
+R8-hidden                      17/17  6/6
+R8-no-false-positives            8/8  4/4
+R8-baseline                      7/7  4/4
+F6-interface                     4/4  2/2
+F6-visible                       6/6  3/3
+F6-hidden                      13/13  12/12
+own-tests                        5/5  2/2
+skill                            6/6  1/1
+portfolio-evidence               5/5  1/1
+portfolio-langsmith              2/2  1/1
+portfolio-case-study             3/3  1/1
+live-evidence                  10/10  4/4
+
+Score: 100/100
+Cost: $0.000000 (no model calls)
+grading assignment 4: section-4-verification/assignment/solution
+[exit code 0]

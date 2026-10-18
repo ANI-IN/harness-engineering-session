@@ -1,0 +1,492 @@
+diff --git a/app/api/issues.py b/app/api/issues.py
+--- a/app/api/issues.py
++++ b/app/api/issues.py
+@@ -1,12 +1,15 @@
+ from __future__ import annotations
+ 
+-from fastapi import APIRouter, Depends, Response
++from typing import Any
++
++from fastapi import APIRouter, Depends, Header, Response
+ from sqlalchemy.orm import Session
+ 
+ from app.api.deps import Id, current_actor, get_db, require_writer
+ from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_page
+ from app.api.schemas import (
+     AssignIn,
++    AuditOut,
+     BulkCloseIn,
+     BulkCloseOut,
+     BulkSkipped,
+@@ -61,41 +64,95 @@ def bulk_close_issues(
+     )
+ 
+ 
++# Optimistic concurrency (F4): a write may name the version it was based on.
++PRECONDITION_RESPONSES: dict[int | str, dict[str, Any]] = {
++    412: {"description": "Precondition failed: If-Match does not name the current version"},
++}
++
++
++def if_match_version(
++    issue_id: Id,
++    if_match: str | None = Header(
++        default=None,
++        alias="If-Match",
++        description='Optional. The ETag from GET /issues/{issue_id}, for example "3"',
++    ),
++    actor: Actor = Depends(require_writer),
++    db: Session = Depends(get_db),
++) -> int | None:
++    """Runs before the body is validated: 401, 403, 404, then 412, then 422. Without If-Match
++    the write is not conditional (None)."""
++    return issues.check_if_match(db, actor, issue_id, if_match)
++
++
++def _with_etag(response: Response, issue: Any) -> IssueOut:
++    response.headers["ETag"] = issues.etag(issue)
++    return IssueOut.model_validate(issue)
++
++
+ @router.get("/issues/{issue_id}", response_model=IssueOut)
+ def get_issue(
+-    issue_id: Id, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)
++    issue_id: Id,
++    response: Response,
++    actor: Actor = Depends(current_actor),
++    db: Session = Depends(get_db),
+ ) -> IssueOut:
+-    return IssueOut.model_validate(issues.get(db, actor, issue_id))
++    return _with_etag(response, issues.get(db, actor, issue_id))
+ 
+ 
+-@router.patch("/issues/{issue_id}", response_model=IssueOut)
++@router.patch("/issues/{issue_id}", response_model=IssueOut, responses=PRECONDITION_RESPONSES)
+ def update_issue(
+     issue_id: Id,
+     body: IssuePatch,
++    response: Response,
++    version: int | None = Depends(if_match_version),
+     actor: Actor = Depends(require_writer),
+     db: Session = Depends(get_db),
+ ) -> IssueOut:
+-    return IssueOut.model_validate(issues.update(db, actor, issue_id, body.model_dump()))
++    issue = issues.update(db, actor, issue_id, body.model_dump(), expected_version=version)
++    return _with_etag(response, issue)
+ 
+ 
+-@router.post("/issues/{issue_id}/assign", response_model=IssueOut)
++@router.post("/issues/{issue_id}/assign", response_model=IssueOut, responses=PRECONDITION_RESPONSES)
+ def assign_issue(
+     issue_id: Id,
+     body: AssignIn,
++    response: Response,
++    version: int | None = Depends(if_match_version),
+     actor: Actor = Depends(require_writer),
+     db: Session = Depends(get_db),
+ ) -> IssueOut:
+-    return IssueOut.model_validate(issues.assign(db, actor, issue_id, body.assignee_id))
++    issue = issues.assign(db, actor, issue_id, body.assignee_id, expected_version=version)
++    return _with_etag(response, issue)
+ 
+ 
+-@router.post("/issues/{issue_id}/transition", response_model=IssueOut)
++@router.post(
++    "/issues/{issue_id}/transition", response_model=IssueOut, responses=PRECONDITION_RESPONSES
++)
+ def transition_issue(
+     issue_id: Id,
+     body: TransitionIn,
++    response: Response,
++    version: int | None = Depends(if_match_version),
+     actor: Actor = Depends(require_writer),
+     db: Session = Depends(get_db),
+ ) -> IssueOut:
+-    return IssueOut.model_validate(issues.transition(db, actor, issue_id, body.status))
++    issue = issues.transition(db, actor, issue_id, body.status, expected_version=version)
++    return _with_etag(response, issue)
++
++
++@router.get("/issues/{issue_id}/history", response_model=Page[AuditOut])
++def issue_history(
++    issue_id: Id,
++    params: PageParams = Depends(page_params),
++    actor: Actor = Depends(current_actor),
++    db: Session = Depends(get_db),
++) -> Page[AuditOut]:
++    """The issue's audit entries, oldest first."""
++    rows, next_after = issues.history(
++        db, actor, issue_id, decode_cursor(params.cursor), params.limit
++    )
++    return to_page(rows, next_after, AuditOut.model_validate)
+ 
+ 
+ @router.delete("/issues/{issue_id}", status_code=204)
+diff --git a/app/repositories/audit.py b/app/repositories/audit.py
+--- a/app/repositories/audit.py
++++ b/app/repositories/audit.py
+@@ -23,3 +23,13 @@ def list_page(
+ ) -> tuple[list[AuditEntry], int | None]:
+     stmt = page(select(AuditEntry).where(AuditEntry.org_id == org_id), AuditEntry.id, after, limit)
+     return split_page(list(session.scalars(stmt)), limit, lambda a: a.id)
++
++
++def list_for_entity(
++    session: Session, org_id: int, entity: str, entity_id: int, after: int | None, limit: int
++) -> tuple[list[AuditEntry], int | None]:
++    base = select(AuditEntry).where(
++        AuditEntry.org_id == org_id, AuditEntry.entity == entity, AuditEntry.entity_id == entity_id
++    )
++    stmt = page(base, AuditEntry.id, after, limit)
++    return split_page(list(session.scalars(stmt)), limit, lambda entry: entry.id)
+diff --git a/app/services/audit.py b/app/services/audit.py
+--- a/app/services/audit.py
++++ b/app/services/audit.py
+@@ -16,3 +16,10 @@ def list_page(
+     session: Session, actor: Actor, after: int | None, limit: int
+ ) -> tuple[list[AuditEntry], int | None]:
+     return audit_repo.list_page(session, actor.org_id, after, limit)
++
++
++def list_for_entity(
++    session: Session, actor: Actor, entity: str, entity_id: int, after: int | None, limit: int
++) -> tuple[list[AuditEntry], int | None]:
++    """Audit entries about one entity of the caller's org, oldest first."""
++    return audit_repo.list_for_entity(session, actor.org_id, entity, entity_id, after, limit)
+diff --git a/app/services/issues.py b/app/services/issues.py
+--- a/app/services/issues.py
++++ b/app/services/issues.py
+@@ -3,12 +3,12 @@ from __future__ import annotations
+ from sqlalchemy.orm import Session
+ 
+ from app.db.base import utcnow
+-from app.db.models import Issue
++from app.db.models import AuditEntry, Issue
+ from app.repositories import issues as issues_repo
+ from app.repositories import users as users_repo
+ from app.services import audit, projects
+ from app.services.context import Actor
+-from app.services.errors import Invalid, NotFound
++from app.services.errors import Invalid, NotFound, ServiceError
+ 
+ PRIORITIES = frozenset({"low", "medium", "high"})
+ 
+@@ -75,8 +75,53 @@ def create(
+     return issue
+ 
+ 
+-def update(session: Session, actor: Actor, issue_id: int, changes: dict[str, object]) -> Issue:
++class PreconditionFailed(ServiceError):
++    status_code = 412
++    code = "precondition_failed"
++
++
++def etag(issue: Issue) -> str:
++    """The issue's entity tag: its version in double quotes."""
++    return f'"{issue.version}"'
++
++
++def check_if_match(
++    session: Session, actor: Actor, issue_id: int, if_match: str | None
++) -> int | None:
++    """Optimistic concurrency: 404 for an issue the caller cannot see. Without If-Match the write
++    is not conditional (None). Otherwise If-Match must be the current ETag; a stale, empty, or
++    malformed value is 412. Returns the version the write is based on."""
++    issue = get(session, actor, issue_id)
++    if if_match is None:
++        return None
++    if if_match.strip() != etag(issue):
++        raise PreconditionFailed(f"the issue has changed; current version is {issue.version}")
++    return issue.version
++
++
++def _get_at(session: Session, actor: Actor, issue_id: int, expected_version: int | None) -> Issue:
+     issue = get(session, actor, issue_id)
++    if expected_version is not None and expected_version != issue.version:
++        raise PreconditionFailed(f"the issue has changed; current version is {issue.version}")
++    return issue
++
++
++def history(
++    session: Session, actor: Actor, issue_id: int, after: int | None, limit: int
++) -> tuple[list[AuditEntry], int | None]:
++    """The issue's audit entries, oldest first."""
++    issue = get(session, actor, issue_id)
++    return audit.list_for_entity(session, actor, "issue", issue.id, after, limit)
++
++
++def update(
++    session: Session,
++    actor: Actor,
++    issue_id: int,
++    changes: dict[str, object],
++    expected_version: int | None = None,
++) -> Issue:
++    issue = _get_at(session, actor, issue_id, expected_version)
+     _validate(changes.get("title"), changes.get("description"), changes.get("priority"))
+     for field in ("title", "description", "priority"):
+         if changes.get(field) is not None:
+@@ -87,8 +132,14 @@ def update(session: Session, actor: Actor, issue_id: int, changes: dict[str, obj
+     return issue
+ 
+ 
+-def assign(session: Session, actor: Actor, issue_id: int, assignee_id: int | None) -> Issue:
+-    issue = get(session, actor, issue_id)
++def assign(
++    session: Session,
++    actor: Actor,
++    issue_id: int,
++    assignee_id: int | None,
++    expected_version: int | None = None,
++) -> Issue:
++    issue = _get_at(session, actor, issue_id, expected_version)
+     _check_assignee(session, actor, assignee_id)
+     issue.assignee_id = assignee_id
+     _touch(issue)
+@@ -97,8 +148,14 @@ def assign(session: Session, actor: Actor, issue_id: int, assignee_id: int | Non
+     return issue
+ 
+ 
+-def transition(session: Session, actor: Actor, issue_id: int, status: str) -> Issue:
+-    issue = get(session, actor, issue_id)
++def transition(
++    session: Session,
++    actor: Actor,
++    issue_id: int,
++    status: str,
++    expected_version: int | None = None,
++) -> Issue:
++    issue = _get_at(session, actor, issue_id, expected_version)
+     if status not in TRANSITIONS.get(issue.status, frozenset()):
+         raise Invalid(
+             f"cannot move an issue from {issue.status} to {status}", code="invalid_transition"
+diff --git a/app/web/routes.py b/app/web/routes.py
+--- a/app/web/routes.py
++++ b/app/web/routes.py
+@@ -157,6 +157,7 @@ def edit_issue(
+     request: Request,
+     title: str = Form(...),
+     priority: str = Form("medium"),
++    version: int | None = Form(None),
+     db: Session = Depends(get_db),
+ ) -> Response:
+     actor = _actor(request, db)
+@@ -164,5 +165,13 @@ def edit_issue(
+         return _to_login()
+     if not actor.can_write:
+         raise Forbidden("viewers cannot change data")
+-    issues.update(db, actor, issue_id, {"title": title, "priority": priority})
++    changes = {"title": title, "priority": priority}
++    try:
++        # A form without a version is treated as stale: versions start at 1.
++        issues.update(db, actor, issue_id, changes, expected_version=version or 0)
++    except issues.PreconditionFailed:
++        current = issues.get(db, actor, issue_id)
++        page = _render(request, "conflict.html", actor, db, issue=current, sent_version=version)
++        page.status_code = 409
++        return page
+     return RedirectResponse(f"/board/issues/{issue_id}", status_code=303)
+diff --git a/app/web/templates/conflict.html b/app/web/templates/conflict.html
+new file mode 100644
+--- /dev/null
++++ b/app/web/templates/conflict.html
+@@ -0,0 +1,9 @@
++{% extends "base.html" %}
++{% block title %}Edit conflict · #{{ issue.id }} · TeamTrack{% endblock %}
++{% block content %}
++<section class="conflict" role="alert" data-issue-id="{{ issue.id }}" data-org="{{ slugs.get(issue.org_id, 'unknown') }}">
++  <h1>This issue was changed by someone else</h1>
++  <p>Your form was based on version {{ sent_version if sent_version is not none else "(unknown)" }}, but the issue is now at version <span class="current-version">{{ issue.version }}</span>. Your changes were not saved.</p>
++  <p><a href="/board/issues/{{ issue.id }}">Reload the issue</a> and make your change again.</p>
++</section>
++{% endblock %}
+diff --git a/app/web/templates/issue.html b/app/web/templates/issue.html
+--- a/app/web/templates/issue.html
++++ b/app/web/templates/issue.html
+@@ -12,6 +12,7 @@
+   </dl>
+   {% if actor.can_write %}
+   <form class="edit-issue" method="post" action="/board/issues/{{ issue.id }}/edit">
++    <input type="hidden" name="version" value="{{ issue.version }}">
+     <label>Title <input name="title" value="{{ issue.title }}" required maxlength="200"></label>
+     <label>Priority
+       <select name="priority">
+diff --git a/tests/visible/test_issue_concurrency.py b/tests/visible/test_issue_concurrency.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_issue_concurrency.py
+@@ -0,0 +1,174 @@
++"""F4: ETag / If-Match on issue writes, issue history, and the board's edit conflict page."""
++
++from __future__ import annotations
++
++import re
++
++import pytest
++
++from conftest import auth, error_code
++
++WRITES = [
++    ("PATCH", "", {"title": "Renamed"}),
++    ("POST", "/assign", {"assignee_id": None}),
++    ("POST", "/transition", {"status": "in_progress"}),
++]
++
++
++def send(client, user_id: int, issue_id: int, index: int, if_match: str | None, body=None):  # type: ignore[no-untyped-def]
++    method, suffix, default = WRITES[index]
++    headers = {**auth(user_id), **({"If-Match": if_match} if if_match is not None else {})}
++    return client.request(
++        method, f"/issues/{issue_id}{suffix}", json=body or default, headers=headers
++    )
++
++
++def test_get_returns_the_version_as_etag(client, acme) -> None:
++    response = client.get(f"/issues/{acme.issues[0]}", headers=auth(acme.viewer))
++    assert response.headers["ETag"] == '"1"'
++
++
++@pytest.mark.parametrize("index", range(3))
++def test_write_without_if_match_works_and_returns_the_new_etag(client, acme, index: int) -> None:
++    response = send(client, acme.member, acme.issues[0], index, None)
++    assert response.status_code == 200
++    assert response.json()["version"] == 2
++    assert response.headers["ETag"] == '"2"'
++
++
++@pytest.mark.parametrize("if_match", ['"1', "1", 'W/"1"', '"one"', ""])
++def test_malformed_if_match_is_412(client, acme, if_match: str) -> None:
++    response = send(client, acme.member, acme.issues[0], 0, if_match)
++    assert response.status_code == 412
++    assert error_code(response) == "precondition_failed"
++
++
++@pytest.mark.parametrize("index", range(3))
++def test_stale_if_match_is_412_and_changes_nothing(client, acme, index: int) -> None:
++    response = send(client, acme.member, acme.issues[0], index, '"7"')
++    assert response.status_code == 412
++    assert error_code(response) == "precondition_failed"
++    issue = client.get(f"/issues/{acme.issues[0]}", headers=auth(acme.member)).json()
++    assert issue["version"] == 1
++    assert issue["title"] == "Login page times out"
++
++
++@pytest.mark.parametrize("index", range(3))
++def test_matching_if_match_succeeds_and_returns_the_new_etag(client, acme, index: int) -> None:
++    response = send(client, acme.member, acme.issues[0], index, '"1"')
++    assert response.status_code == 200
++    assert response.json()["version"] == 2
++    assert response.headers["ETag"] == '"2"'
++
++
++def test_second_writer_with_the_old_version_gets_412(client, acme) -> None:
++    assert send(client, acme.member, acme.issues[0], 0, '"1"').status_code == 200
++    response = send(client, acme.admin, acme.issues[0], 0, '"1"', {"title": "Lost update"})
++    assert response.status_code == 412
++    title = client.get(f"/issues/{acme.issues[0]}", headers=auth(acme.member)).json()["title"]
++    assert title == "Renamed"
++
++
++def test_check_order_403_then_404_then_412_then_422(client, acme, globex) -> None:
++    issue = acme.issues[0]
++    assert send(client, acme.viewer, issue, 0, '"9"').status_code == 403
++    assert send(client, acme.member, globex.issues[0], 0, '"9"').status_code == 404
++    bad = {"priority": "urgent"}
++    assert send(client, acme.member, issue, 0, '"9"', bad).status_code == 412
++    assert send(client, acme.member, issue, 0, '"1"', bad).status_code == 422
++    assert send(client, acme.member, issue, 0, None, bad).status_code == 422
++
++
++def test_deleted_issue_is_404_before_the_precondition(client, acme) -> None:
++    client.delete(f"/issues/{acme.issues[0]}", headers=auth(acme.member))
++    assert send(client, acme.member, acme.issues[0], 0, '"9"').status_code == 404
++
++
++def test_rejected_writes_add_no_audit_row(client, acme) -> None:
++    before = len(client.get("/audit?limit=100", headers=auth(acme.admin)).json()["items"])
++    send(client, acme.member, acme.issues[0], 0, "garbage")
++    send(client, acme.member, acme.issues[0], 1, '"5"')
++    after = len(client.get("/audit?limit=100", headers=auth(acme.admin)).json()["items"])
++    assert after == before
++
++
++def test_openapi_documents_412(client) -> None:
++    paths = client.get("/openapi.json").json()["paths"]
++    for path, method in [
++        ("/issues/{issue_id}", "patch"),
++        ("/issues/{issue_id}/assign", "post"),
++        ("/issues/{issue_id}/transition", "post"),
++    ]:
++        assert "412" in paths[path][method]["responses"], path
++
++
++def test_history_lists_the_issues_audit_entries_oldest_first(client, acme) -> None:
++    issue = acme.issues[0]
++    send(client, acme.member, issue, 0, '"1"')
++    send(client, acme.admin, issue, 2, '"2"')
++    send(client, acme.member, acme.issues[1], 0, '"1"')  # another issue: not in this history
++    body = client.get(f"/issues/{issue}/history", headers=auth(acme.viewer)).json()
++    assert set(body) == {"items", "next_cursor"}
++    assert [(e["action"], e["actor_id"]) for e in body["items"]] == [
++        ("issue.update", acme.member),
++        ("issue.transition", acme.admin),
++    ]
++    assert all(e["entity"] == "issue" and e["entity_id"] == issue for e in body["items"])
++
++
++def test_history_is_paginated(client, acme) -> None:
++    issue = acme.issues[0]
++    for version in (1, 2, 3):
++        send(client, acme.member, issue, 0, f'"{version}"', {"title": f"Title {version}"})
++    first = client.get(f"/issues/{issue}/history?limit=2", headers=auth(acme.member)).json()
++    assert len(first["items"]) == 2
++    rest = client.get(
++        f"/issues/{issue}/history?limit=2&cursor={first['next_cursor']}", headers=auth(acme.member)
++    ).json()
++    assert len(rest["items"]) == 1
++    assert rest["next_cursor"] is None
++
++
++def test_history_of_another_orgs_or_a_deleted_issue_is_404(client, acme, globex) -> None:
++    assert (
++        client.get(f"/issues/{globex.issues[0]}/history", headers=auth(acme.admin)).status_code
++        == 404
++    )
++    client.delete(f"/issues/{acme.issues[0]}", headers=auth(acme.member))
++    response = client.get(f"/issues/{acme.issues[0]}/history", headers=auth(acme.admin))
++    assert response.status_code == 404
++
++
++def login(client, email: str) -> None:  # type: ignore[no-untyped-def]
++    response = client.post("/board/login", data={"email": email}, follow_redirects=False)
++    assert response.status_code == 303
++
++
++def test_board_edit_form_carries_the_version(client, acme) -> None:
++    login(client, "member@acme.test")
++    html = client.get(f"/board/issues/{acme.issues[0]}").text
++    assert re.search(r'<input type="hidden" name="version" value="1">', html)
++
++
++def test_board_save_with_the_current_version_works(client, acme) -> None:
++    login(client, "member@acme.test")
++    response = client.post(
++        f"/board/issues/{acme.issues[0]}/edit",
++        data={"title": "Saved", "priority": "low", "version": "1"},
++        follow_redirects=False,
++    )
++    assert response.status_code == 303
++    issue = client.get(f"/issues/{acme.issues[0]}", headers=auth(acme.member)).json()
++    assert (issue["title"], issue["version"]) == ("Saved", 2)
++
++
++def test_board_stale_save_returns_a_409_page(client, acme) -> None:
++    login(client, "member@acme.test")
++    path = f"/board/issues/{acme.issues[0]}/edit"
++    client.post(path, data={"title": "Tab A", "priority": "low", "version": "1"})
++    response = client.post(path, data={"title": "Tab B", "priority": "low", "version": "1"})
++    assert response.status_code == 409
++    assert "text/html" in response.headers["content-type"]
++    assert 'class="conflict"' in response.text
++    title = client.get(f"/issues/{acme.issues[0]}", headers=auth(acme.member)).json()["title"]
++    assert title == "Tab A"

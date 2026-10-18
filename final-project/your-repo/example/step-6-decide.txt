@@ -1,0 +1,23 @@
+$ cd "$TARGET"
+[exit code 0]
+
+$ printf "\n## Layer decisions (%s)\n\n- Instructions: kept, smaller; six TeamTrack documents do not apply to a library.\n- State: kept; a feature can span sessions, and init.sh runs in seconds.\n- Scope: kept; one feature at a time in feature_list.json.\n- Verification: kept; the R6 check caught a planted import, and testgen kept only filtered tests.\n" "$(date +%Y-%m-%d)" >> docs/PLANS.md
+[exit code 0]
+
+$ tail -7 docs/PLANS.md
+
+## Layer decisions (2026-10-17)
+
+- Instructions: kept, smaller; six TeamTrack documents do not apply to a library.
+- State: kept; a feature can span sessions, and init.sh runs in seconds.
+- Scope: kept; one feature at a time in feature_list.json.
+- Verification: kept; the R6 check caught a planted import, and testgen kept only filtered tests.
+[exit code 0]
+
+$ git add docs/PLANS.md && git commit -q -m "plans: which layers we keep, and why" && git log --oneline | head -4
+417e117 plans: which layers we keep, and why
+703e276 kit: filled for boltons, house-rule baseline
+7436cf0 kit: shipharness init
+1069b5e boltons 26.2.0 (4332b35): typeutils, listutils, queueutils and their tests
+[exit code 0]
+

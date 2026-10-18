@@ -1,0 +1,59 @@
+{
+  "ab_id": "ab-20261017-092810-d5d31c",
+  "arm": "bare",
+  "diff": {
+    "path": "bare/diff.patch",
+    "sha256": "8acdc63c91087364871ead2ab2fc0dbceaac34c2cc7fc722b01f3a1113dc3fa5"
+  },
+  "feature_id": "F3",
+  "policy": {
+    "allowed_paths": {
+      "build": [
+        "app/api/issues.py",
+        "app/services/issues.py",
+        "docs/HANDBOOK.md",
+        "tests/visible/**"
+      ],
+      "test": [
+        "tests/visible/**"
+      ]
+    },
+    "state_layer": false
+  },
+  "referee": {
+    "claim": "done",
+    "out_of_scope_files": 0,
+    "passed_primary": true,
+    "status": "completed",
+    "test_phase_source_edits": 0
+  },
+  "run_id": "r-20261017-092810-03baf8",
+  "schema": "a3-live-verdict/1",
+  "scope": {
+    "build": {
+      "accepted": true,
+      "refusals": []
+    },
+    "test": {
+      "accepted": true,
+      "files": [
+        "tests/visible/test_issue_idempotency.py"
+      ],
+      "refusals": []
+    }
+  },
+  "status": {
+    "commands": [
+      "python -m pytest tests/visible -q -rfE --no-header -p no:cacheprovider"
+    ],
+    "evidence": {
+      "checks": [],
+      "commit": "d7716025e3e556d2b8fc5c7f7f80857fce3b6afb",
+      "existing": "not run (verify layer off)",
+      "gate_id": "visible-tests",
+      "visible": "188/188"
+    },
+    "kind": "status_set",
+    "message": "F3 passes: visible-tests at d771602"
+  }
+}

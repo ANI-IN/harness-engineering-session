@@ -1,0 +1,80 @@
+# Captured on 2026-10-17 at commit e7287f4 (offline: test stand-in agent, no model calls, no run id).
+# Your output will differ: commit hashes change on every run.
+$ make check-assignment-2
+uv run python submodules/section-2-state-lifecycle/assignment/check.py 
+A2 self-check: 2 visible scenarios against submodules/section-2-state-lifecycle/assignment/starter
+Agent: the test stand-in agent (a2_scenario/literal_agent.py), deterministic, not a model.
+Each scenario: four sessions, three forced stops by the session turn budget.
+
+Scenario V1-boundary-stops: each stop lands just after a step is committed (budgets [6, 6, 6, 5])
+  session 1 (6 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a1_comments.py, write S1 app/comments/models.py, commit S1
+  session 2 (6 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a2_comments.py [REDO: S1 was committed in session 1], write S1 app/comments/models.py [REDO: S1 was committed in session 1], commit S1 [REDO: S1 was committed in session 1]
+  session 3 (6 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a3_comments.py [REDO: S1 was committed in session 1], write S1 app/comments/models.py [REDO: S1 was committed in session 1], commit S1 [REDO: S1 was committed in session 1]
+  session 4 (5 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a4_comments.py [REDO: S1 was committed in session 1], write S1 app/comments/models.py [REDO: S1 was committed in session 1]
+  FAIL finished: last session ended by turn_budget, not claim_done; S2 file missing: app/comments/service.py; S2 file missing: app/comments/validation.py; S3 file missing: migrations/versions/<rev>_comment_index.py; S3 file missing: tests/visible/test_comments.py
+       hint: three session_stop events, the last session ends with finish(done), the visible tests pass, and every step's files exist. Usually fails because a session redid earlier work and ran out of turns: fix the ledger and resume text (TODO 1, 2, 6).
+  FAIL one_head: 4 heads: c1a2 (head) | c1a3 (head) | c1a4 (head)
+       hint: a session that does not see the current head in a `Migration heads: 1 (<rev>)` line writes its migration on the ticket's base revision (TODO 3, 6).
+  FAIL fresh_upgrade: FAILED: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads
+       hint: two migrations that create the same table, or two heads, break a fresh upgrade.
+  FAIL no_duplicate_table: comments created by c1a1_comments.py, c1a2_comments.py, c1a3_comments.py, c1a4_comments.py
+       hint: the step that creates a table was done again: the next session did not see it as done (TODO 1, 2).
+  FAIL no_redone_lines: redone lines session 2: 37.5%, session 3: 23.7%, session 4: 17.3%
+       hint: 0% earns all points, under 30% (the continuity threshold) earns half. A step whose files were written but not committed needs a `written` line naming them (TODO 1).
+  FAIL steps_once: commits per step: S1 x3, S2 x0, S3 x0
+       hint: a second `S<n>:` commit means a session did a step again.
+  PASS progress_sections: sections in order
+  FAIL session_log: entries [], sessions [1, 2, 3, 4]
+       hint: one `- Session <n> ...` entry per session under `## Session log`; keep the entries when the agent rewrites the file (TODO 4).
+  FAIL history_consistent: session 1: None != ('c345ad4', 'bff33a9', 'turn_budget'); session 2: None != ('bff33a9', 'b88c7d2', 'turn_budget'); session 3: None != ('b88c7d2', '022ef02', 'turn_budget'); session 4: None != ('022ef02', '022ef02', 'turn_budget')
+       hint: use the SessionResult's start_sha, end_sha, and ended_by; the format is `shipharness.harness.state.progress.session_entry` (TODO 4).
+  FAIL plan_completed: completed=False, active=True, outcome=no
+       hint: move it when the last claim is done and git shows every step committed; replace 'Not finished yet.' in Outcomes & Retrospective (TODO 7).
+  FAIL plan_ledger: no [x] line with a matching commit for ['S1', 'S2', 'S3']
+       hint: a `[x]` line per step id with a commit hash whose subject starts with `S<n>:`; derive it from git, never from what the agent wrote (TODO 1, 2).
+  FAIL plan_sessions: missing: ['session 1', 'session 2', 'session 3', 'session 4']
+       hint: one line per session containing `Session <n>` and `ended by <reason>` (TODO 2).
+  FAIL handoff: no 'end of session 4'; no 'Migration heads: 1 ('
+       hint: `end of session <N>` for the last session, `Migration heads: 1 (`, and the `## Notes from the agent` section with the agent's notes as written (TODO 3).
+  FAIL clean_tree: uncommitted: app/comments/models.py, migrations/versions/c1a4_comments.py
+       hint: commit progress.md, session-handoff.md, and the exec plan at every stop and after the move (TODO 5, 7).
+
+Scenario V2-mid-step-stops: each stop lands after a step's files are written but before its commit (budgets [5, 6, 6, 8])
+  session 1 (5 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a1_comments.py, write S1 app/comments/models.py
+  session 2 (6 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a2_comments.py [REDO: written in session 1], write S1 app/comments/models.py [REDO: written in session 1], commit S1
+  session 3 (6 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a3_comments.py [REDO: S1 was committed in session 2], write S1 app/comments/models.py [REDO: S1 was committed in session 2], commit S1 [REDO: S1 was committed in session 2]
+  session 4 (8 turns, ended by turn_budget): 3 reads, write S1 migrations/versions/c1a4_comments.py [REDO: S1 was committed in session 2], write S1 app/comments/models.py [REDO: S1 was committed in session 2], commit S1 [REDO: S1 was committed in session 2], write S2 app/comments/service.py, write S2 app/comments/validation.py
+  FAIL finished: last session ended by turn_budget, not claim_done; S3 file missing: migrations/versions/<rev>_comment_index.py; S3 file missing: tests/visible/test_comments.py
+       hint: three session_stop events, the last session ends with finish(done), the visible tests pass, and every step's files exist. Usually fails because a session redid earlier work and ran out of turns: fix the ledger and resume text (TODO 1, 2, 6).
+  FAIL one_head: 4 heads: c1a2 (head) | c1a3 (head) | c1a4 (head)
+       hint: a session that does not see the current head in a `Migration heads: 1 (<rev>)` line writes its migration on the ticket's base revision (TODO 3, 6).
+  FAIL fresh_upgrade: FAILED: Multiple head revisions are present for given argument 'head'; please specify a specific target revision, '<branchname>@head' to narrow to a specific head, or 'heads' for all heads
+       hint: two migrations that create the same table, or two heads, break a fresh upgrade.
+  FAIL no_duplicate_table: comments created by c1a1_comments.py, c1a2_comments.py, c1a3_comments.py, c1a4_comments.py
+       hint: the step that creates a table was done again: the next session did not see it as done (TODO 1, 2).
+  FAIL no_redone_lines: redone lines session 2: 37.5%, session 3: 23.7%, session 4: 17.3%
+       hint: 0% earns all points, under 30% (the continuity threshold) earns half. A step whose files were written but not committed needs a `written` line naming them (TODO 1).
+  FAIL steps_once: commits per step: S1 x3, S2 x0, S3 x0
+       hint: a second `S<n>:` commit means a session did a step again.
+  PASS progress_sections: sections in order
+  FAIL session_log: entries [], sessions [1, 2, 3, 4]
+       hint: one `- Session <n> ...` entry per session under `## Session log`; keep the entries when the agent rewrites the file (TODO 4).
+  FAIL history_consistent: session 1: None != ('f238cb2', 'f238cb2', 'turn_budget'); session 2: None != ('f238cb2', 'c225904', 'turn_budget'); session 3: None != ('c225904', '9e73fed', 'turn_budget'); session 4: None != ('9e73fed', 'ca49586', 'turn_budget')
+       hint: use the SessionResult's start_sha, end_sha, and ended_by; the format is `shipharness.harness.state.progress.session_entry` (TODO 4).
+  FAIL plan_completed: completed=False, active=True, outcome=no
+       hint: move it when the last claim is done and git shows every step committed; replace 'Not finished yet.' in Outcomes & Retrospective (TODO 7).
+  FAIL plan_ledger: no [x] line with a matching commit for ['S1', 'S2', 'S3']
+       hint: a `[x]` line per step id with a commit hash whose subject starts with `S<n>:`; derive it from git, never from what the agent wrote (TODO 1, 2).
+  FAIL plan_sessions: missing: ['session 1', 'session 2', 'session 3', 'session 4']
+       hint: one line per session containing `Session <n>` and `ended by <reason>` (TODO 2).
+  FAIL handoff: no 'end of session 4'; no 'Migration heads: 1 ('
+       hint: `end of session <N>` for the last session, `Migration heads: 1 (`, and the `## Notes from the agent` section with the agent's notes as written (TODO 3).
+  FAIL clean_tree: uncommitted: app/comments/service.py, app/comments/validation.py
+       hint: commit progress.md, session-handoff.md, and the exec plan at every stop and after the move (TODO 5, 7).
+
+Self-check: 2 of 28 checks pass.
+Live evidence (graded, 10 points): not found in submodules/section-2-state-lifecycle/assignment/starter/live.
+  Run the required live step once your layer is final (README).
+Fix the FAIL and HALF lines (the hints name the TODOs in a2_state), then run again.
+make: *** [Makefile:130: check-assignment-2] Error 1
+[exit code 2]

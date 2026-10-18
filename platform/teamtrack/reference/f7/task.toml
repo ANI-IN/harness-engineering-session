@@ -1,0 +1,46 @@
+id = "F7"
+title = "Labels on issues"
+section = "final"
+start_checkpoint = "m1-final-start"
+primary_measure = ""
+mutant_set = "features/f7"
+session_budget = [25, 35]
+canonical_ticket = """
+Add labels.
+
+Teams want their own labels on issues. Add GET /labels, POST /labels ({"name": 1 to 50 characters,
+"color": "#rrggbb"}; names are unique per org ignoring case, otherwise 409 label_exists),
+PATCH /labels/{label_id} and DELETE /labels/{label_id} (which also takes the label off every issue).
+Put labels on issues with POST /issues/{issue_id}/labels ({"label_id"}; returns the issue) and
+DELETE /issues/{issue_id}/labels/{label_id}. IssueOut gains labels: [{id, name, color}], and
+GET /projects/{project_id}/issues and GET /issues accept label_id. Members and admins write; viewers
+get 403. New tables with one migration, and seeded labels with stable ids.
+
+The full spec is in docs/features/f7.md. Follow the house rules in docs/HANDBOOK.md and add tests.
+This task runs over two sessions.
+"""
+
+[allowed_paths]
+build = [
+    "app/api/labels.py",
+    "app/api/issues.py",
+    "app/api/schemas.py",
+    "app/main.py",
+    "app/services/labels.py",
+    "app/services/issues.py",
+    "app/repositories/labels.py",
+    "app/repositories/issues.py",
+    "app/db/models.py",
+    "app/seed.py",
+    "migrations/versions/**",
+    "tests/visible/**",
+]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-final-start" = [
+    "tests/hidden/f7/test_f7_labels.py",
+    "tests/hidden/f7/test_f7_guards.py",
+    "tests/hidden/f7/test_f7_with_f1.py",
+    "tests/hidden/f7/test_f7_with_f4.py",
+]

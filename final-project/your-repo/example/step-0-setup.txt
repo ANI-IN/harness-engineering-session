@@ -1,0 +1,29 @@
+$ export SHIPHARNESS="$(pwd)"
+[exit code 0]
+
+$ uv run python platform/scripts/fetch_testgen_libs.py boltons
+ok boltons 26.2.0 4332b35a278d694f30c99881faa61cde695c7a96 -> $SHIPHARNESS/.shipharness/libs/boltons/src
+[exit code 0]
+
+$ bash use-in-your-repo/kit/examples/boltons-queueutils/make_repo.sh /tmp/fp-example
+created /tmp/fp-example from boltons 4332b35
+.gitignore
+LICENSE
+boltons/__init__.py
+boltons/listutils.py
+boltons/queueutils.py
+boltons/typeutils.py
+tests/__init__.py
+tests/conftest.py
+tests/test_listutils.py
+tests/test_queueutils.py
+tests/test_typeutils.py
+[exit code 0]
+
+$ export TARGET=/tmp/fp-example
+[exit code 0]
+
+$ uv run shipharness --version
+shipharness 0.1.0
+[exit code 0]
+

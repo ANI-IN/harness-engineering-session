@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920">
+  <title>{{ run_id }} · shipharness console</title>
+  <link rel="stylesheet" href="/static/console.css?v={{ static_version }}">
+  <script src="/static/stream.js?v={{ static_version }}" defer></script>
+</head>
+<body data-run="{{ run_id }}" data-screen="1" data-full="" data-recorded="{{ 'true' if state.recorded else 'false' }}" data-seq="{{ state.seq }}" data-finished="{{ 'true' if finished else 'false' }}">
+<div class="frame">
+  <header class="bar">
+    <a class="all-runs" href="/" title="Back to the run list (H or Esc)">← All runs</a>
+    <nav class="tabs" aria-label="Screens">
+      {% for key, name, title in screens %}
+      <button type="button" class="tab" data-key="{{ key }}"><kbd>{{ key }}</kbd> {{ title.split(" ")[0] }}</button>
+      {% endfor %}
+    </nav>
+    <span class="hint"><kbd>F</kbd> one arm: <span id="full-label">both</span></span>
+    <span class="run-id">{{ breakable(run_id) }}</span>
+    <span id="conn" class="conn">{{ "finished" if finished else "connecting" }}</span>
+  </header>
+  {% for key, name, title in screens %}
+  <section class="screen" id="screen-{{ key }}" data-screen="{{ key }}">{{ rendered[key]|safe }}</section>
+  {% endfor %}
+</div>
+</body>
+</html>

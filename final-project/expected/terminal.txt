@@ -1,0 +1,7 @@
+START 2026-10-18T16:49:49Z final FEATURES=bulk-close
+Final A/B: Feature 5: Bulk close
+A/B ab-20261018-164951-bd677b (Feature 5: Bulk close, layers=['instructions', 'scope', 'state', 'verify'], profile=class)
+  bare     completed         agent said done · no primary measure · hidden tests 46 of 46 · mutants killed 1 of 3 · reviewer accept · cost $0.0173
+  harness  completed         agent said done · no primary measure · hidden tests 46 of 46 · mutants killed 0 of 3 · reviewer accept · cost $0.0166
+Cost: $0.037714 (this command: gpt-5.6-luna $0.003787, gpt-6-luna $0.033927; session $0.183679 of $2.50; build $0.183679 of $15.00 ($14.816321 left))
+END rc=0 wall=551s launch_epoch=1792342189

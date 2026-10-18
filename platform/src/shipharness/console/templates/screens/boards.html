@@ -1,0 +1,43 @@
+{% from "screens/_macros.html" import screen_head, arm_label, not_run %}
+{{ screen_head(key, title, state) }}
+{% set ns = namespace(conflict=false) %}
+{% for arm in arms %}{% if state.arm(arm).screenshots.get("conflict") %}{% set ns.conflict = true %}{% endif %}{% endfor %}
+<div class="grid two boards{% if ns.conflict %} with-conflict{% endif %}">
+{% for arm in arms %}
+{% set a = state.arm(arm) %}
+{% set shot = a.screenshots.get("board") %}
+<article class="panel arm-panel" data-arm="{{ arm }}">
+  <h2>{{ arm_label(arm, a) }} board{% if shot %} <span class="muted">as {{ shot.as_user }}</span>{% endif %}</h2>
+  {% if state.not_run(arm) %}
+  {{ not_run(state.not_run(arm)) }}
+  {% elif shot %}
+  <ul class="marks">
+    {% for o in shot.overlays %}
+    <li>{{ status(o.mark) }} card #{{ o.issue_id }}</li>
+    {% else %}
+    <li>{{ status("pass", "only own-org cards, no duplicates") }}</li>
+    {% endfor %}
+  </ul>
+  <img class="shot" src="{{ file_url(run_id, shot.path) }}" alt="{{ arm }} board screenshot">
+  {% else %}
+  <p class="muted">No board screenshot yet (the preview container takes one every 5 s).</p>
+  {% endif %}
+</article>
+{% endfor %}
+{% if ns.conflict %}
+<article class="panel conflict-panel">
+  <h2>Two-tab edit conflict</h2>
+  <div class="conflict-row">
+  {% for arm in arms %}
+    {% set c = state.arm(arm).screenshots.get("conflict") %}
+    {% if c %}
+    <figure class="arm-block" data-arm="{{ arm }}">
+      <img class="shot small" src="{{ file_url(run_id, c.path) }}" alt="{{ arm }} two-tab conflict screenshot">
+      <figcaption><span class="arm-name arm-{{ arm }}">{{ arm|upper }}</span> {% for o in c.overlays %}{{ status(o.mark) }} #{{ o.issue_id }} {% endfor %}</figcaption>
+    </figure>
+    {% endif %}
+  {% endfor %}
+  </div>
+</article>
+{% endif %}
+</div>

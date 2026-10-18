@@ -1,0 +1,5 @@
+state layer: a2_state.layer.ResumableStateLayer from section-2-state-lifecycle/assignment/solution
+A/B ab-20261017-213435-e50a89 (F2, layers=['instructions', 'state'], profile=standard)
+  bare     completed         claim=none     primary={"continuity_failure": false} passed=True hidden 3/56 mutants 0/4 reviewer=None cost=$0.0134
+  harness  completed         claim=not_done primary={"continuity_failure": false} passed=True hidden 3/56 mutants 0/4 reviewer=None cost=$0.0136
+Cost: $0.027010 (this command: gpt-6-luna $0.027010; session $0.183655 of $2.50; build $2.651233 of $15.00 ($12.348767 left))

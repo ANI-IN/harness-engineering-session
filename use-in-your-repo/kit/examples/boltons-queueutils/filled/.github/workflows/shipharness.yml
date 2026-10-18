@@ -1,0 +1,79 @@
+# CI for boltons-queueutils, filled in from the kit template.
+#
+# check:   `shipharness check` (BQ1 layering and existing tests) on every push and pull request.
+#          No model calls, no secrets, costs $0. Exit 3 on a new violation fails the job.
+# testgen: `shipharness testgen` on boltons/queueutils.py, only when started by hand. It calls
+#          OpenAI with the OPENAI_API_KEY repository secret and costs money: one run is capped at
+#          MAX_RUN_COST_USD = $0.20 (src/shipharness/config/settings.py in shipharness); prices
+#          are in shipharness's config/prices.toml.
+
+name: shipharness
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: "Module to generate tests for"
+        default: "boltons/queueutils.py"
+      tests:
+        description: "Existing tests of that module"
+        default: "tests/test_queueutils.py"
+      max_tests:
+        description: "Proposed tests to evaluate"
+        default: "3"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ANI-IN/harness-engineering-session
+          path: shipharness
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen --project shipharness
+      - name: house rules (shipharness check)
+        env:
+          PYTHONPATH: harness
+        run: >-
+          uv run --project shipharness shipharness check --app .
+          --adapter shipharness_adapter:HouseRulesAdapter
+          --rules R6,regression --params harness/check-params.json
+          --baseline harness/check-baseline.json
+
+  testgen:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      LANGSMITH_TRACING: "false"
+      MAX_RUN_COST_USD: "0.20"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ANI-IN/harness-engineering-session
+          path: shipharness
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen --project shipharness
+      - name: generate tests (shipharness testgen; costs money)
+        run: >-
+          uv run --project shipharness shipharness testgen --repo .
+          --module "${{ inputs.module }}" --tests "${{ inputs.tests }}"
+          --layers verify --max-tests "${{ inputs.max_tests }}" --sandbox local
+          --python "$GITHUB_WORKSPACE/shipharness/.venv/bin/python" --out testgen-out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: testgen-out
+          path: testgen-out

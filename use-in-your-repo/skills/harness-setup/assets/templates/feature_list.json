@@ -1,0 +1,17 @@
+{
+  "$schema": "./feature_list.schema.json",
+  "features": [
+    {
+      "id": "F1",
+      "category": "api",
+      "description": "<one sentence a user would recognise as the feature>",
+      "steps": [
+        "<observable step 1, for example: POST /items with a valid body returns 201>",
+        "<observable step 2, for example: GET /items lists the new item>"
+      ],
+      "passes": false,
+      "evidence": null,
+      "testedAt": null
+    }
+  ]
+}

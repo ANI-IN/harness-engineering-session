@@ -1,0 +1,126 @@
+{
+  "run_id": "r-20261017-093940-52dde8",
+  "status": "completed",
+  "unsandboxed": true,
+  "baseline_includes_doctests": false,
+  "kept": [
+    "tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages"
+  ],
+  "not_evaluated": [],
+  "results": [
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_add_flushes_issue_with_requested_fields_and_database_defaults",
+      "filter": 1,
+      "passed": true,
+      "reason": "collected 1 test"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_add_flushes_issue_with_requested_fields_and_database_defaults",
+      "filter": 2,
+      "passed": true,
+      "reason": "passed 5 of 5 runs"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_add_flushes_issue_with_requested_fields_and_database_defaults",
+      "filter": 3,
+      "passed": false,
+      "reason": "adds no line coverage over the existing suite and kills no filter-set mutant that the existing tests miss (0 checked)"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_get_returns_only_live_issues_for_the_requested_organization",
+      "filter": 1,
+      "passed": true,
+      "reason": "collected 1 test"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_get_returns_only_live_issues_for_the_requested_organization",
+      "filter": 2,
+      "passed": true,
+      "reason": "passed 5 of 5 runs"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_get_returns_only_live_issues_for_the_requested_organization",
+      "filter": 3,
+      "passed": false,
+      "reason": "adds no line coverage over the existing suite and kills no filter-set mutant that the existing tests miss (0 checked)"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_filters_tenant_project_and_soft_deleted_rows",
+      "filter": 1,
+      "passed": true,
+      "reason": "collected 1 test"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_filters_tenant_project_and_soft_deleted_rows",
+      "filter": 2,
+      "passed": true,
+      "reason": "passed 5 of 5 runs"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_filters_tenant_project_and_soft_deleted_rows",
+      "filter": 3,
+      "passed": false,
+      "reason": "adds no line coverage over the existing suite and kills no filter-set mutant that the existing tests miss (0 checked)"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages",
+      "filter": 1,
+      "passed": true,
+      "reason": "collected 1 test"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages",
+      "filter": 2,
+      "passed": true,
+      "reason": "passed 5 of 5 runs"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages",
+      "filter": 3,
+      "passed": true,
+      "reason": "adds 3 covered lines: app/repositories/common.py:11,17-18"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages",
+      "filter": 4,
+      "passed": true,
+      "reason": "has real assertions and does not mock app.repositories.issues"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages",
+      "filter": 5,
+      "passed": true,
+      "reason": "no source file changed during the test phase"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_all_legacy_orders_and_pages_across_tenants_including_deleted",
+      "filter": 1,
+      "passed": true,
+      "reason": "collected 1 test"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_all_legacy_orders_and_pages_across_tenants_including_deleted",
+      "filter": 2,
+      "passed": true,
+      "reason": "passed 5 of 5 runs"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_all_legacy_orders_and_pages_across_tenants_including_deleted",
+      "filter": 3,
+      "passed": false,
+      "reason": "adds no line coverage over the existing suite and kills no filter-set mutant that the existing tests miss (0 checked)"
+    },
+    {
+      "test_id": "tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages",
+      "filter": 6,
+      "passed": true,
+      "reason": "no duplicate among 23 existing tests and 0 earlier kept candidates"
+    }
+  ],
+  "filter6": {
+    "kept": [
+      "tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages"
+    ],
+    "existing_tests": 23
+  }
+}

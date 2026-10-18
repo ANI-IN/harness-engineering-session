@@ -1,0 +1,41 @@
+$ cd "$TARGET"
+[exit code 0]
+
+$ PYTHONPATH=harness uv run --project "$SHIPHARNESS" shipharness check --app . --adapter shipharness_adapter:HouseRulesAdapter --rules R6,regression --params harness/check-params.json --json > harness/check-baseline.json
+UNSANDBOXED: the checks import and run this app's code on this machine.
+  R6 import-linter
+  existing tests
+Cost: $0.000000 (no model calls)
+[exit code 0]
+
+$ PYTHONPATH=harness uv run --project "$SHIPHARNESS" shipharness check --app . --adapter shipharness_adapter:HouseRulesAdapter --rules R6,regression --params harness/check-params.json --baseline harness/check-baseline.json
+UNSANDBOXED: the checks import and run this app's code on this machine.
+  R6 import-linter
+  existing tests
+PASS  r6_layering      new=0 baseline=0 probes=1 364 ms
+PASS  regression       new=0 baseline=0 probes=21 3351 ms
+Cost: $0.000000 (no model calls)
+[exit code 0]
+
+$ echo "from .queueutils import PriorityQueue" >> boltons/typeutils.py
+[exit code 0]
+
+$ PYTHONPATH=harness uv run --project "$SHIPHARNESS" shipharness check --app . --adapter shipharness_adapter:HouseRulesAdapter --rules R6,regression --params harness/check-params.json --baseline harness/check-baseline.json
+UNSANDBOXED: the checks import and run this app's code on this machine.
+  R6 import-linter
+  existing tests
+FAIL  r6_layering      new=1 baseline=0 probes=1 444 ms
+      [violation] forbidden import: boltons.typeutils -> boltons.queueutils
+PASS  regression       new=0 baseline=0 probes=21 3256 ms
+Cost: $0.000000 (no model calls)
+[exit code 3]
+
+$ git checkout -- boltons/typeutils.py
+[exit code 0]
+
+$ git add -A && git commit -q -m "kit: filled for boltons, house-rule baseline" && git log --oneline | head -3
+703e276 kit: filled for boltons, house-rule baseline
+7436cf0 kit: shipharness init
+1069b5e boltons 26.2.0 (4332b35): typeutils, listutils, queueutils and their tests
+[exit code 0]
+

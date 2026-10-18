@@ -1,0 +1,112 @@
+diff --git a/app/api/schemas.py b/app/api/schemas.py
+--- a/app/api/schemas.py
++++ b/app/api/schemas.py
+@@ -3,13 +3,15 @@
+ from __future__ import annotations
+ 
+ from datetime import datetime
+-from typing import Literal
++from typing import Annotated, Literal
+ 
+-from pydantic import BaseModel, ConfigDict, Field
++from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+ 
+ Role = Literal["admin", "member", "viewer"]
+ Status = Literal["open", "in_progress", "done"]
+ Priority = Literal["low", "medium", "high"]
++# Titles are trimmed before the length check (C4).
++Title = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
+ 
+ 
+ class _Out(BaseModel):
+@@ -107,14 +109,14 @@
+ 
+ 
+ class IssueCreate(_In):
+-    title: str = Field(min_length=1, max_length=200)
++    title: Title
+     description: str = Field(default="", max_length=10_000)
+     priority: Priority = "medium"
+     assignee_id: int | None = Field(default=None, ge=1, le=2**63 - 1)
+ 
+ 
+ class IssuePatch(_In):
+-    title: str | None = Field(default=None, min_length=1, max_length=200)
++    title: Title | None = None
+     description: str | None = Field(default=None, max_length=10_000)
+     priority: Priority | None = None
+ 
+diff --git a/app/services/issues.py b/app/services/issues.py
+--- a/app/services/issues.py
++++ b/app/services/issues.py
+@@ -65,6 +65,7 @@
+     assignee_id: int | None,
+ ) -> Issue:
+     project = projects.get(session, actor, project_id)
++    title = title.strip() if isinstance(title, str) else title
+     _validate(title, description, priority)
+     _check_assignee(session, actor, assignee_id)
+     issue = issues_repo.add(
+@@ -77,6 +78,8 @@
+ 
+ def update(session: Session, actor: Actor, issue_id: int, changes: dict[str, object]) -> Issue:
+     issue = get(session, actor, issue_id)
++    if isinstance(changes.get("title"), str):
++        changes = {**changes, "title": str(changes["title"]).strip()}
+     _validate(changes.get("title"), changes.get("description"), changes.get("priority"))
+     for field in ("title", "description", "priority"):
+         if changes.get(field) is not None:
+diff --git a/tests/visible/test_c4_trim_titles.py b/tests/visible/test_c4_trim_titles.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_c4_trim_titles.py
+@@ -0,0 +1,49 @@
++"""C4: issue titles are stored without surrounding whitespace."""
++
++from __future__ import annotations
++
++from conftest import auth, error_code
++
++
++def test_member_create_trims_the_title(client, acme) -> None:
++    response = client.post(
++        f"/projects/{acme.projects[0]}/issues",
++        json={"title": "  Cache misses  "},
++        headers=auth(acme.member),
++    )
++    assert response.status_code == 201
++    assert response.json()["title"] == "Cache misses"
++
++
++def test_member_patch_trims_the_title(client, acme) -> None:
++    response = client.patch(
++        f"/issues/{acme.issues[0]}", json={"title": "\tNew title  "}, headers=auth(acme.member)
++    )
++    assert response.status_code == 200
++    assert response.json()["title"] == "New title"
++
++
++def test_limit_counts_the_trimmed_title(client, acme) -> None:
++    response = client.post(
++        f"/projects/{acme.projects[0]}/issues",
++        json={"title": " " + "y" * 200 + " "},
++        headers=auth(acme.admin),
++    )
++    assert response.status_code == 201
++    assert response.json()["title"] == "y" * 200
++
++
++def test_blank_title_is_still_rejected(client, acme) -> None:
++    response = client.post(
++        f"/projects/{acme.projects[0]}/issues", json={"title": "   "}, headers=auth(acme.member)
++    )
++    assert response.status_code == 422
++    assert error_code(response) == "validation_error"
++
++
++def test_viewer_still_cannot_create(client, acme) -> None:
++    response = client.post(
++        f"/projects/{acme.projects[0]}/issues", json={"title": " Nope "}, headers=auth(acme.viewer)
++    )
++    assert response.status_code == 403
++    assert error_code(response) == "forbidden"

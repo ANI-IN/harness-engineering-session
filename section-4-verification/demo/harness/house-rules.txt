@@ -1,0 +1,7 @@
+- House rule 1: Tenant isolation. Another org's resource is 404, never 403. See `docs/SECURITY.md`.
+- House rule 2: Roles. Viewers get 403 on every write; some writes are admin-only. See `docs/SECURITY.md`.
+- House rule 3: API conventions. List envelope, error envelope, status codes. See `docs/design-docs/api-conventions.md`.
+- House rule 4: Safe retries. Creates honour `Idempotency-Key`. See `docs/RELIABILITY.md`.
+- House rule 5: Audit log. One audit row per write. See `docs/RELIABILITY.md`.
+- House rule 6: Layering. `app/api` never imports `app/db`. See `ARCHITECTURE.md`.
+- House rule 7: Migrations. One Alembic head; upgrade works on an empty database. See `docs/RELIABILITY.md`.

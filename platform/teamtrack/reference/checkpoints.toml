@@ -1,0 +1,36 @@
+# Checkpoints (M5 ruling R-3): each one is the base product (main's teamtrack/) plus an ordered
+# list of reference tasks, applied with `git apply` from teamtrack/reference/<task>/.
+# the course build turns each entry into one commit (parent: the current main commit)
+# and the integrator tags it. `m1-base` is not listed: it stays where it is.
+
+[checkpoints."m1-s1-start"]
+tasks = []
+description = "Base product (S1 demo, F1)"
+
+[checkpoints."m1-s2-start"]
+tasks = ["f1"]
+description = "Base + F1 (S2 demo, F2)"
+
+[checkpoints."m1-s3-start"]
+tasks = ["f1", "f2"]
+description = "Base + F1, F2 (S3 demo, F3)"
+
+[checkpoints."m1-s4-start"]
+tasks = ["f1", "f2", "f3"]
+description = "Base + F1-F3 (S4 demo, F4)"
+
+[checkpoints."m1-final-start"]
+tasks = ["f1", "f2", "f3", "f4"]
+description = "Base + F1-F4 (final project, F5-F7)"
+
+[checkpoints."m1-complete"]
+tasks = ["f1", "f2", "f3", "f4", "f5", "f6", "f7"]
+description = "Course complete: base + F1-F7"
+
+[checkpoints."m1-alt-a"]
+tasks = ["f5", "f6"]
+description = "Alternate repository state A for F1-F4: base + F5, F6"
+
+[checkpoints."m1-alt-b"]
+tasks = ["f7"]
+description = "Alternate repository state B for F1-F4: base + F7"

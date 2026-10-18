@@ -1,0 +1,67 @@
+diff --git a/app/web/routes.py b/app/web/routes.py
+--- a/app/web/routes.py
++++ b/app/web/routes.py
+@@ -12,7 +12,7 @@
+ 
+ from app.api.deps import Id, get_db
+ from app.seed import ACME, GLOBEX
+-from app.services import auth, issues, orgs, projects
++from app.services import auth, issues, orgs, projects, users
+ from app.services.context import Actor
+ from app.services.errors import Forbidden, Unauthorized
+ 
+@@ -133,7 +133,8 @@
+     if actor is None:
+         return _to_login()
+     issue = issues.get(db, actor, issue_id)
+-    return _render(request, "issue.html", actor, db, issue=issue)
++    assignee = users.get(db, actor, issue.assignee_id) if issue.assignee_id is not None else None
++    return _render(request, "issue.html", actor, db, issue=issue, assignee=assignee)
+ 
+ 
+ @router.post("/issues/{issue_id}/transition")
+diff --git a/app/web/templates/issue.html b/app/web/templates/issue.html
+--- a/app/web/templates/issue.html
++++ b/app/web/templates/issue.html
+@@ -7,6 +7,9 @@
+   <dl>
+     <dt>Status</dt><dd>{{ issue.status.replace("_", " ") }}</dd>
+     <dt>Priority</dt><dd>{{ issue.priority }}</dd>
++    <dt>Assignee</dt>
++    {% if assignee %}<dd class="assignee" data-user-id="{{ assignee.id }}">{{ assignee.name }}</dd>
++    {% else %}<dd class="assignee">Unassigned</dd>{% endif %}
+     <dt>Version</dt><dd>{{ issue.version }}</dd>
+     <dt>Description</dt><dd>{{ issue.description or "(none)" }}</dd>
+   </dl>
+diff --git a/tests/visible/test_c8_board_assignee.py b/tests/visible/test_c8_board_assignee.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_c8_board_assignee.py
+@@ -0,0 +1,27 @@
++"""C8: the board's issue detail page shows the assignee."""
++
++from __future__ import annotations
++
++
++def login(client, email: str) -> None:  # type: ignore[no-untyped-def]
++    response = client.post("/board/login", data={"email": email}, follow_redirects=False)
++    assert response.status_code == 303
++
++
++def test_detail_page_names_the_assignee(client, globex) -> None:
++    login(client, "member@globex.test")
++    html = client.get(f"/board/issues/{globex.issues[0]}").text
++    assert f'<dd class="assignee" data-user-id="{globex.member}">Globex Member</dd>' in html
++
++
++def test_detail_page_says_unassigned(client, acme) -> None:
++    login(client, "admin@acme.test")
++    html = client.get(f"/board/issues/{acme.issues[1]}").text
++    assert '<dd class="assignee">Unassigned</dd>' in html
++
++
++def test_bad_session_cookie_goes_to_login(client, acme) -> None:
++    client.cookies.set("tt_session", "tt-abc")
++    response = client.get(f"/board/issues/{acme.issues[0]}", follow_redirects=False)
++    assert response.status_code == 303
++    assert response.headers["location"] == "/board/login"

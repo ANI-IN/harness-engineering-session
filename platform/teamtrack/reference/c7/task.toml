@@ -1,0 +1,22 @@
+# Control task C7 (M5 builder contract §3). Easy, low-trap: both arms should complete it.
+id = "C7"
+title = "Show user details in project member lists"
+section = "control"
+start_checkpoint = "m1-s1-start"   # base product; needs no feature
+primary_measure = ""               # ruling R-5: controls have no primary measure
+mutant_set = "app.repositories.members"
+session_budget = [20]              # provisional (ruling R-6)
+canonical_ticket = """Show who project members are.
+
+Project member items (GET /projects/{project_id}/members and the response of POST
+/projects/{project_id}/members) should also carry the member's email, name, and role, with their
+current values. Keep the existing fields and everything else as it is.
+
+Spec: docs/features/c7.md. House rules: docs/HANDBOOK.md. Add tests in tests/visible/."""
+
+[allowed_paths]
+build = ["app/api/schemas.py", "app/api/members.py", "app/services/members.py", "tests/visible/**"]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/c7/test_c7_member_details.py"]

@@ -1,0 +1,46 @@
+# captured on 2026-10-17 from `make grade-assignment-3 SUBMISSION=section-3-scope-sandbox/assignment/starter` (offline: no model calls, no containers); details in docs/evidence.md
+$ make grade-assignment-3 SUBMISSION=section-3-scope-sandbox/assignment/starter
+uv run python platform/scripts/grade_assignment.py 3 "section-3-scope-sandbox/assignment/starter"
+A3 grade: section-3-scope-sandbox/assignment/starter
+  criterion                                              tests         points
+  1 Diff parsing and path matching                                0.0 / 15
+      diff parsing and path matching                    0/75
+  2 Diff-scope policy                                             0.0 / 40
+      out-of-scope diffs rejected                       0/35
+      legitimate diffs accepted                         0/24
+  3 Evidence-gated status                                         0.0 / 15
+      passes set with evidence                          0/9
+      passes kept false without evidence                0/38
+  4 Sandbox history rule                                          0.0 / 10
+      history rule denies                               0/37
+      history rule allows (no false positives)         52/52
+  5 Denial test proves the denial                                 0.0 / 10
+      passes with the rule (4)                              no
+      fails with the rule removed (4)                       no
+      uses check_command or PolicySandbox (2)               no
+  6 Live A/B evidence (live/)                                     0.0 / 10
+      evidence valid (6)                                    no
+      verdicts reproduced by your policy (4)                no
+        - no live/ folder at section-3-scope-sandbox/assignment/starter/live
+  Total                                                           0.0 / 100
+  Every out-of-scope diff rejected: no; zero false positives: no; live evidence valid: no
+  Failed tests (218; first 15):
+    - test_parse_changed_paths[bad-middleware-file]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-feature-list-edit]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-test-phase-source-edit]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-parent-traversal]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-rename-out-of-scope]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[bad-binary-out-of-scope]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-in-scope-build]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-state-files]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-rename-in-scope]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-space-in-path]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-copy-from-out-of-scope]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_parse_changed_paths[good-empty-diff]: NotImplementedError: TODO(A3 Part A1): parse_diff
+    - test_bad_diff_rejected[bad-middleware-file]: NotImplementedError: TODO(A3 Part A2): check_diff
+    - test_bad_diff_rejected[bad-feature-list-edit]: NotImplementedError: TODO(A3 Part A2): check_diff
+    - test_bad_diff_rejected[bad-test-phase-source-edit]: NotImplementedError: TODO(A3 Part A2): check_diff
+Result: FAIL (needs >= 80 points, every out-of-scope diff rejected, zero false positives, and valid live evidence)
+grading assignment 3: section-3-scope-sandbox/assignment/starter
+make: *** [Makefile:199: grade-assignment-3] Error 1
+(exit code 2)

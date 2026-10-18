@@ -1,0 +1,8 @@
+## Scope
+This task has one feature: Feature 4: Version checks on issue edits (Optimistic concurrency (ETag, If-Match) and issue history). Work on only this one feature in this session.
+The feature list is feature_list.json (read it with read_file). feature_list.json is written only by the harness: it sets the passes field itself, with evidence, after you call finish with claim="done" and the checks pass. It is unacceptable to remove or edit tests because this could lead to missing or buggy functionality.
+Files you may change in each phase:
+- build: app/api/issues.py, app/api/schemas.py, app/services/issues.py, app/repositories/issues.py, app/services/audit.py, app/repositories/audit.py, app/web/**, tests/visible/**
+- test: tests/visible/**
+- any phase: progress.md, session-handoff.md, docs/exec-plans/**
+A patch that touches any other file is rejected before it is applied. Changes that a command makes to any other file are reverted after it runs.

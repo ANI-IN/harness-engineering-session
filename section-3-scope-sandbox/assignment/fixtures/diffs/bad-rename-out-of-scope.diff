@@ -1,0 +1,4 @@
+diff --git a/app/api/issues.py b/app/api/issues_v2.py
+similarity index 100%
+rename from app/api/issues.py
+rename to app/api/issues_v2.py

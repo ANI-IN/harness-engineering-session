@@ -1,0 +1,53 @@
+id = "F2"
+title = "Comments on issues, with a comments panel on the board"
+section = "S2"
+start_checkpoint = "m1-s2-start"
+primary_measure = "continuity_failure"
+mutant_set = "features/f2"
+session_budget = [20, 30]
+canonical_ticket = """
+Add comments to issues.
+
+People want to discuss an issue on the issue itself. Add POST /issues/{issue_id}/comments
+({"body": 1 to 5000 characters}, returns 201 and the comment), GET /issues/{issue_id}/comments
+(oldest first) and DELETE /comments/{comment_id} (the author or an admin; 204). Comments live in a
+new comments table with one migration, and the demo seed gets two comments on each org's first
+issue. On the board, the issue page shows a comments panel with a form to add a comment for users
+who can write.
+
+The full spec is in docs/features/f2.md. Follow the house rules in docs/HANDBOOK.md and add tests.
+This task runs over two sessions.
+"""
+
+[allowed_paths]
+build = [
+    "app/api/comments.py",
+    "app/api/schemas.py",
+    "app/main.py",
+    "app/services/comments.py",
+    "app/repositories/comments.py",
+    "app/db/models.py",
+    "app/seed.py",
+    "migrations/versions/**",
+    "app/web/**",
+    "tests/visible/**",
+]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s2-start" = [
+    "tests/hidden/f2/test_f2_comments.py",
+    "tests/hidden/f2/test_f2_board.py",
+    "tests/hidden/f2/test_f2_guards.py",
+    "tests/hidden/f2/test_f2_with_f1.py",
+]
+"m1-alt-a" = [
+    "tests/hidden/f2/test_f2_comments.py",
+    "tests/hidden/f2/test_f2_board.py",
+    "tests/hidden/f2/test_f2_guards.py",
+]
+"m1-alt-b" = [
+    "tests/hidden/f2/test_f2_comments.py",
+    "tests/hidden/f2/test_f2_board.py",
+    "tests/hidden/f2/test_f2_guards.py",
+]

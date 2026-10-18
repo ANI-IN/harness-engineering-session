@@ -1,0 +1,83 @@
+# Sandbox policy of every container `make demo-3` starts: both arms, the referee, and the
+# board previews (SandboxPolicy and default_policy in platform/src/shipharness/sandbox/
+# policy.py, with the class profile's values). Each agent container starts with:
+#   docker run -d --rm --name <name> --init --network none --memory 1024m --memory-swap 1024m --cpus 2.0 --pids-limit 256 --read-only --tmpfs /tmp:rw,nosuid,size=256m --user 1000:1000 --cap-drop ALL --security-opt no-new-privileges -e HOME=/tmp/home -e PYTHONDONTWRITEBYTECODE=1 -e PYTHONUNBUFFERED=1 -v <workspace>:/work -w /work <image> sleep infinity
+
+version = 1
+network = "none"
+cpus = 2.0
+memory_mb = 1024
+swap_mb = 0
+pids_limit = 256
+user = "1000:1000"
+read_only_root = true
+cap_drop = ["ALL"]
+no_new_privileges = true
+workspace_mount = "/work"
+tool_timeout_s = 120
+run_timeout_s = 420
+
+[tmpfs]
+"/tmp" = "rw,nosuid,size=256m"
+
+[[deny]]
+pattern = '\bpip3?\s+install\b'
+reason_code = "network"
+message = "the sandbox has no network; dependencies are already installed in the image"
+
+[[deny]]
+pattern = '\buv\s+(add|pip\s+install)\b'
+reason_code = "network"
+message = "the sandbox has no network; dependencies are already installed in the image"
+
+[[deny]]
+pattern = '\b(curl|wget)\b'
+reason_code = "network"
+message = "the sandbox has no network; dependencies are already installed in the image"
+
+[[deny]]
+pattern = '\bgit\s+(clone|fetch|pull|push)\b'
+reason_code = "network"
+message = "the sandbox has no network; dependencies are already installed in the image"
+
+[[deny]]
+pattern = '\b(npm|yarn|pnpm)\s+(install|add)\b'
+reason_code = "network"
+message = "the sandbox has no network; dependencies are already installed in the image"
+
+[[deny]]
+pattern = '\bapt(-get)?\s+install\b'
+reason_code = "network"
+message = "the sandbox has no network; dependencies are already installed in the image"
+
+[[detect]]
+pattern = "Temporary failure in name resolution"
+reason_code = "network"
+
+[[detect]]
+pattern = "Name or service not known"
+reason_code = "network"
+
+[[detect]]
+pattern = "Network is unreachable"
+reason_code = "network"
+
+[[detect]]
+pattern = "Could not resolve host"
+reason_code = "network"
+
+[[detect]]
+pattern = "Read-only file system"
+reason_code = "write_outside_workspace"
+
+[[detect]]
+pattern = "fork: Resource temporarily unavailable"
+reason_code = "pids"
+
+[[detect]]
+pattern = "can't start new thread"
+reason_code = "pids"
+
+[[detect]]
+pattern = '\bMemoryError\b'
+reason_code = "memory"

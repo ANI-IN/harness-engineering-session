@@ -1,0 +1,4 @@
+diff --git a/app/core/config.py b/tests/visible/config_snapshot.py
+similarity index 100%
+copy from app/core/config.py
+copy to tests/visible/config_snapshot.py

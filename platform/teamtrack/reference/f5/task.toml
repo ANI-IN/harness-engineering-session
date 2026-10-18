@@ -1,0 +1,36 @@
+id = "F5"
+title = "Bulk close of in-progress issues"
+section = "final"
+start_checkpoint = "m1-final-start"
+primary_measure = ""
+mutant_set = "features/f5"
+session_budget = [30]
+canonical_ticket = """
+Add bulk close for the end of a sprint.
+
+Add POST /projects/{project_id}/issues/bulk-close with {"issue_ids": [1 to 100 distinct ids]}. It
+returns 200 with {"closed": [ids], "skipped": [{"id", "reason"}]}: in-progress issues are closed,
+issues that are already done are skipped with "already_done", and open issues are skipped with
+"invalid_transition". The request is atomic: if any id is not an issue of that project in the
+caller's org, answer 404 and change nothing. Write exactly one audit row per request
+(issue.bulk_close on the project).
+
+The full spec is in docs/features/f5.md. Follow the house rules in docs/HANDBOOK.md and add tests.
+"""
+
+[allowed_paths]
+build = [
+    "app/api/issues.py",
+    "app/api/schemas.py",
+    "app/services/issues.py",
+    "app/repositories/issues.py",
+    "tests/visible/**",
+]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-final-start" = [
+    "tests/hidden/f5/test_f5_bulk_close.py",
+    "tests/hidden/f5/test_f5_guards.py",
+    "tests/hidden/f5/test_f5_with_f4.py",
+]

@@ -1,0 +1,117 @@
+diff --git a/app/api/users.py b/app/api/users.py
+--- a/app/api/users.py
++++ b/app/api/users.py
+@@ -1,12 +1,12 @@
+ from __future__ import annotations
+ 
+-from fastapi import APIRouter, Depends, Header
++from fastapi import APIRouter, Depends, Header, Query
+ from fastapi.responses import JSONResponse
+ from sqlalchemy.orm import Session
+ 
+ from app.api.deps import Id, current_actor, get_db, require_admin
+ from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_page
+-from app.api.schemas import UserCreate, UserOut, UserPatch
++from app.api.schemas import Role, UserCreate, UserOut, UserPatch
+ from app.services import idempotency, users
+ from app.services.context import Actor
+ 
+@@ -16,10 +16,13 @@
+ @router.get("", response_model=Page[UserOut])
+ def list_users(
+     params: PageParams = Depends(page_params),
++    role: Role | None = Query(default=None, description="Only users with this role."),
+     actor: Actor = Depends(current_actor),
+     db: Session = Depends(get_db),
+ ) -> Page[UserOut]:
+-    rows, next_after = users.list_page(db, actor, decode_cursor(params.cursor), params.limit)
++    rows, next_after = users.list_page(
++        db, actor, decode_cursor(params.cursor), params.limit, role=role
++    )
+     return to_page(rows, next_after, UserOut.model_validate)
+ 
+ 
+diff --git a/app/repositories/users.py b/app/repositories/users.py
+--- a/app/repositories/users.py
++++ b/app/repositories/users.py
+@@ -21,9 +21,12 @@
+ 
+ 
+ def list_page(
+-    session: Session, org_id: int, after: int | None, limit: int
++    session: Session, org_id: int, after: int | None, limit: int, role: str | None = None
+ ) -> tuple[list[User], int | None]:
+-    stmt = page(select(User).where(User.org_id == org_id), User.id, after, limit)
++    base = select(User).where(User.org_id == org_id)
++    if role is not None:
++        base = base.where(User.role == role)
++    stmt = page(base, User.id, after, limit)
+     return split_page(list(session.scalars(stmt)), limit, lambda u: u.id)
+ 
+ 
+diff --git a/app/services/users.py b/app/services/users.py
+--- a/app/services/users.py
++++ b/app/services/users.py
+@@ -17,9 +17,9 @@
+ 
+ 
+ def list_page(
+-    session: Session, actor: Actor, after: int | None, limit: int
++    session: Session, actor: Actor, after: int | None, limit: int, role: str | None = None
+ ) -> tuple[list[User], int | None]:
+-    return users_repo.list_page(session, actor.org_id, after, limit)
++    return users_repo.list_page(session, actor.org_id, after, limit, role=role)
+ 
+ 
+ def create(
+diff --git a/tests/visible/test_c1_users_role_filter.py b/tests/visible/test_c1_users_role_filter.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_c1_users_role_filter.py
+@@ -0,0 +1,46 @@
++"""C1: the user list filters by role."""
++
++from __future__ import annotations
++
++from conftest import auth, error_code
++
++
++def add_member(client, admin: int, email: str) -> int:  # type: ignore[no-untyped-def]
++    body = {"email": email, "name": "Extra Member", "role": "member"}
++    response = client.post("/users", json=body, headers=auth(admin))
++    assert response.status_code == 201
++    return int(response.json()["id"])
++
++
++def test_role_filter_lists_only_that_role(client, acme) -> None:
++    body = client.get("/users?role=viewer", headers=auth(acme.member)).json()
++    assert [user["id"] for user in body["items"]] == [acme.viewer]
++    assert body["next_cursor"] is None
++
++
++def test_role_filter_stays_in_the_callers_org(client, globex) -> None:
++    body = client.get("/users?role=admin", headers=auth(globex.viewer)).json()
++    assert [user["id"] for user in body["items"]] == [globex.admin]
++
++
++def test_unknown_role_is_rejected(client, acme) -> None:
++    response = client.get("/users?role=owner", headers=auth(acme.admin))
++    assert response.status_code == 422
++    assert error_code(response) == "validation_error"
++
++
++def test_role_filter_pages_without_gaps_or_repeats(client, acme) -> None:
++    extra = [add_member(client, acme.admin, f"extra{n}@acme.test") for n in range(3)]
++    expected = [acme.member, *extra]
++    page1 = client.get("/users?role=member&limit=3", headers=auth(acme.admin)).json()
++    assert [user["id"] for user in page1["items"]] == expected[:3]
++    cursor = page1["next_cursor"]
++    page2 = client.get(f"/users?role=member&limit=3&cursor={cursor}", headers=auth(acme.admin))
++    assert [user["id"] for user in page2.json()["items"]] == expected[3:]
++    assert page2.json()["next_cursor"] is None
++
++
++def test_role_filter_rejects_a_bad_cursor(client, acme) -> None:
++    response = client.get("/users?role=member&cursor=not-a-cursor", headers=auth(acme.admin))
++    assert response.status_code == 400
++    assert error_code(response) == "invalid_cursor"

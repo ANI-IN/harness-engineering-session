@@ -1,0 +1,24 @@
+# import-linter in boltons-queueutils
+
+> Short reference for the tool behind the BQ1 check. The rule itself is in ARCHITECTURE.md; this
+> file only explains the tool.
+
+## Command
+
+You do not run import-linter yourself. shipharness runs it with the contract in
+harness/shipharness_adapter.py:
+
+    PYTHONPATH=harness uv run --project ~/shipharness shipharness check --app . \
+      --adapter shipharness_adapter:HouseRulesAdapter --rules R6
+
+## The contract
+
+A layers contract, listed from top to bottom: boltons.queueutils, boltons.listutils,
+boltons.typeutils. A module may import from layers below its own, never from layers above. An
+import inside try/except ImportError counts as an import.
+
+## When it fails
+
+The FAIL line for r6_layering is followed by one line per broken import chain, for example
+"forbidden import: boltons.typeutils -> boltons.queueutils". Remove that import, or move the code
+it needs into a lower module, and run the command again.

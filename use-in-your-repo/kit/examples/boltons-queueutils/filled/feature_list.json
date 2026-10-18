@@ -1,0 +1,19 @@
+{
+  "$schema": "./feature_list.schema.json",
+  "features": [
+    {
+      "id": "F1",
+      "category": "docs",
+      "description": "The docstrings of peek and pop name the error an empty queue raises",
+      "steps": [
+        "HeapPriorityQueue().peek() and pop() on an empty queue raise IndexError.",
+        "SortedPriorityQueue().peek() and pop() on an empty queue raise IndexError.",
+        "peek(None) and pop(None) on an empty queue return None.",
+        "The docstrings of peek and pop name IndexError."
+      ],
+      "passes": false,
+      "evidence": null,
+      "testedAt": null
+    }
+  ]
+}

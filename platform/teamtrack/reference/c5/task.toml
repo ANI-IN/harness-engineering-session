@@ -1,0 +1,22 @@
+# Control task C5 (M5 builder contract §3). Easy, low-trap: both arms should complete it.
+id = "C5"
+title = "Admins cannot change their own role"
+section = "control"
+start_checkpoint = "m1-s1-start"   # base product; needs no feature
+primary_measure = ""               # ruling R-5: controls have no primary measure
+mutant_set = "app.services.errors"
+session_budget = [20]              # provisional (ruling R-6)
+canonical_ticket = """Stop admins from changing their own role.
+
+PATCH /users/{user_id} on your own user with a role different from your current one should fail
+with 422 and the error code cannot_change_own_role, change nothing, and add no audit row. Renaming
+yourself, or sending your current role, still works. Admins can still change other users' roles.
+
+Spec: docs/features/c5.md. House rules: docs/HANDBOOK.md. Add tests in tests/visible/."""
+
+[allowed_paths]
+build = ["app/services/users.py", "tests/visible/**"]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/c5/test_c5_own_role.py"]

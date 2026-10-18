@@ -1,0 +1,17 @@
+$ uv run shipharness experiments --split section-1 --k 3 --layers instructions --batch a1-reference
+Using CPython 3.12.15
+Creating virtual environment at: .venv
+   Building shipharness @ ~/wt/a1ref2
+      Built shipharness @ ~/wt/a1ref2
+Installed 83 packages in 62ms
+View the evaluation results for experiment: 'shipharness-a1-reference-harness-2026-10-17-59ee85f3' at:
+https://smith.langchain.com/o/10fe45d9-7a3d-4f39-92ad-8c5dc97653d4/datasets/c8c46487-1d0a-406b-bf4a-11a19b2c405b/compare?selectedSessions=33ae45f5-c9bb-41fb-9a18-684a1ee97f98
+
+
+View the evaluation results for experiment: 'shipharness-a1-reference-bare-2026-10-17-9164d92e' at:
+https://smith.langchain.com/o/10fe45d9-7a3d-4f39-92ad-8c5dc97653d4/datasets/c8c46487-1d0a-406b-bf4a-11a19b2c405b/compare?selectedSessions=a0b770c7-c675-4ebc-9861-f7ae1fc718d8
+
+
+bare: shipharness-a1-reference-bare-2026-10-17-9164d92e {'runs': 24, 'passed_primary': '24/24', 'aborted': 2, 'errors': 0, 'cost_usd': 0.247025} https://smith.langchain.com/o/10fe45d9-7a3d-4f39-92ad-8c5dc97653d4/datasets/c8c46487-1d0a-406b-bf4a-11a19b2c405b/compare?selectedSessions=a0b770c7-c675-4ebc-9861-f7ae1fc718d8
+harness: shipharness-a1-reference-harness-2026-10-17-59ee85f3 {'runs': 24, 'passed_primary': '24/24', 'aborted': 0, 'errors': 0, 'cost_usd': 0.298285} https://smith.langchain.com/o/10fe45d9-7a3d-4f39-92ad-8c5dc97653d4/datasets/c8c46487-1d0a-406b-bf4a-11a19b2c405b/compare?selectedSessions=33ae45f5-c9bb-41fb-9a18-684a1ee97f98
+Cost: $0.545313 (this command: gpt-6-luna $0.545313; experiment $0.545313 of $25.00; build $0.545313 of $15.00 ($14.454687 left))

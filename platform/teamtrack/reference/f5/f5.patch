@@ -1,0 +1,260 @@
+diff --git a/app/api/issues.py b/app/api/issues.py
+--- a/app/api/issues.py
++++ b/app/api/issues.py
+@@ -11,6 +11,9 @@ from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_
+ from app.api.schemas import (
+     AssignIn,
+     AuditOut,
++    BulkCloseIn,
++    BulkCloseOut,
++    BulkSkipped,
+     IssueCreate,
+     IssueOut,
+     IssuePatch,
+@@ -94,6 +97,20 @@ def create_issue(
+     return JSONResponse(payload, status_code=status)
+ 
+ 
++@router.post("/projects/{project_id}/issues/bulk-close", response_model=BulkCloseOut)
++def bulk_close_issues(
++    project_id: Id,
++    body: BulkCloseIn,
++    actor: Actor = Depends(require_writer),
++    db: Session = Depends(get_db),
++) -> BulkCloseOut:
++    """Close in-progress issues of one project in one atomic request."""
++    closed, skipped = issues.bulk_close(db, actor, project_id, body.issue_ids)
++    return BulkCloseOut(
++        closed=closed, skipped=[BulkSkipped(id=i, reason=reason) for i, reason in skipped]
++    )
++
++
+ # Optimistic concurrency (F4): a write may name the version it was based on.
+ PRECONDITION_RESPONSES: dict[int | str, dict[str, Any]] = {
+     412: {"description": "Precondition failed: If-Match does not name the current version"},
+diff --git a/app/api/schemas.py b/app/api/schemas.py
+--- a/app/api/schemas.py
++++ b/app/api/schemas.py
+@@ -3,9 +3,9 @@
+ from __future__ import annotations
+ 
+ from datetime import datetime
+-from typing import Literal
++from typing import Annotated, Literal
+ 
+-from pydantic import BaseModel, ConfigDict, Field
++from pydantic import BaseModel, ConfigDict, Field, field_validator
+ 
+ Role = Literal["admin", "member", "viewer"]
+ Status = Literal["open", "in_progress", "done"]
+@@ -127,5 +127,26 @@ class TransitionIn(_In):
+     status: Status
+ 
+ 
++class BulkCloseIn(_In):
++    issue_ids: list[Annotated[int, Field(ge=1, le=2**63 - 1)]] = Field(min_length=1, max_length=100)
++
++    @field_validator("issue_ids")
++    @classmethod
++    def _distinct(cls, value: list[int]) -> list[int]:
++        if len(set(value)) != len(value):
++            raise ValueError("issue_ids must be distinct")
++        return value
++
++
++class BulkSkipped(BaseModel):
++    id: int
++    reason: Literal["already_done", "invalid_transition"]
++
++
++class BulkCloseOut(BaseModel):
++    closed: list[int]
++    skipped: list[BulkSkipped]
++
++
+ class HealthOut(BaseModel):
+     status: str
+diff --git a/app/repositories/issues.py b/app/repositories/issues.py
+--- a/app/repositories/issues.py
++++ b/app/repositories/issues.py
+@@ -91,3 +91,17 @@ def search(
+         base = base.where(func.lower(Issue.title).contains(q.lower(), autoescape=True))
+     stmt = page(base, Issue.id, after, limit)
+     return split_page(list(session.scalars(stmt)), limit, lambda i: i.id)
++
++
++def get_many(session: Session, org_id: int, project_id: int, issue_ids: list[int]) -> list[Issue]:
++    """Live issues of one project in the org among `issue_ids` (missing ids are left out)."""
++    return list(
++        session.scalars(
++            select(Issue).where(
++                Issue.org_id == org_id,
++                Issue.project_id == project_id,
++                Issue.id.in_(issue_ids),
++                Issue.deleted_at.is_(None),
++            )
++        )
++    )
+diff --git a/app/services/issues.py b/app/services/issues.py
+--- a/app/services/issues.py
++++ b/app/services/issues.py
+@@ -209,3 +209,34 @@ def search(
+         after=after,
+         limit=limit,
+     )
++
++
++def bulk_close(
++    session: Session, actor: Actor, project_id: int, issue_ids: list[int]
++) -> tuple[list[int], list[tuple[int, str]]]:
++    """Close every in-progress issue in `issue_ids` (all of one project) in one transaction.
++
++    Atomic: if any id is not a live issue of that project in the caller's org, nothing changes
++    (404). Issues that are already done or cannot move to done are skipped with a reason. One
++    audit row per request."""
++    if len(set(issue_ids)) != len(issue_ids):
++        raise Invalid("issue_ids must be distinct")
++    project = projects.get(session, actor, project_id)
++    found = {i.id: i for i in issues_repo.get_many(session, actor.org_id, project.id, issue_ids)}
++    if len(found) != len(issue_ids):
++        raise NotFound("issue not found in this project")
++    closed: list[int] = []
++    skipped: list[tuple[int, str]] = []
++    for issue_id in issue_ids:
++        issue = found[issue_id]
++        if issue.status == "done":
++            skipped.append((issue_id, "already_done"))
++        elif "done" not in TRANSITIONS.get(issue.status, frozenset()):
++            skipped.append((issue_id, "invalid_transition"))
++        else:
++            issue.status = "done"
++            _touch(issue)
++            closed.append(issue_id)
++    audit.record(session, actor, "issue.bulk_close", "project", project.id)
++    session.commit()
++    return closed, skipped
+diff --git a/tests/visible/test_bulk_close.py b/tests/visible/test_bulk_close.py
+new file mode 100644
+--- /dev/null
++++ b/tests/visible/test_bulk_close.py
+@@ -0,0 +1,120 @@
++"""F5: POST /projects/{project_id}/issues/bulk-close."""
++
++from __future__ import annotations
++
++from conftest import auth, error_code
++
++
++def move(client, o, issue_id: int, status: str) -> None:  # type: ignore[no-untyped-def]
++    version = client.get(f"/issues/{issue_id}", headers=auth(o.member)).json()["version"]
++    response = client.post(
++        f"/issues/{issue_id}/transition",
++        json={"status": status},
++        headers={**auth(o.member), "If-Match": f'"{version}"'},
++    )
++    assert response.status_code == 200, response.text
++
++
++def bulk(client, user_id: int, project_id: int, issue_ids: list[int]):  # type: ignore[no-untyped-def]
++    return client.post(
++        f"/projects/{project_id}/issues/bulk-close",
++        json={"issue_ids": issue_ids},
++        headers=auth(user_id),
++    )
++
++
++def issue(client, o, issue_id: int) -> dict:  # type: ignore[no-untyped-def]
++    return client.get(f"/issues/{issue_id}", headers=auth(o.member)).json()
++
++
++def audit_actions(client, o) -> list[str]:  # type: ignore[no-untyped-def]
++    items = client.get("/audit?limit=100", headers=auth(o.admin)).json()["items"]
++    return [item["action"] for item in items]
++
++
++def test_in_progress_issues_are_closed(client, acme) -> None:
++    a, b = acme.issues[0], acme.issues[1]
++    move(client, acme, a, "in_progress")
++    move(client, acme, b, "in_progress")
++    response = bulk(client, acme.member, acme.projects[0], [a, b])
++    assert response.status_code == 200
++    assert response.json() == {"closed": [a, b], "skipped": []}
++    assert issue(client, acme, a)["status"] == "done"
++
++
++def test_open_and_done_issues_are_skipped_with_reasons(client, acme) -> None:
++    started, done, still_open = acme.issues[0], acme.issues[1], acme.issues[2]
++    move(client, acme, started, "in_progress")
++    move(client, acme, done, "in_progress")
++    move(client, acme, done, "done")
++    body = bulk(client, acme.member, acme.projects[0], [still_open, done, started]).json()
++    assert body["closed"] == [started]
++    assert body["skipped"] == [
++        {"id": still_open, "reason": "invalid_transition"},
++        {"id": done, "reason": "already_done"},
++    ]
++    assert issue(client, acme, still_open)["status"] == "open"
++
++
++def test_closing_increments_the_version(client, acme) -> None:
++    move(client, acme, acme.issues[0], "in_progress")
++    before = issue(client, acme, acme.issues[0])["version"]
++    bulk(client, acme.member, acme.projects[0], [acme.issues[0]])
++    assert issue(client, acme, acme.issues[0])["version"] == before + 1
++
++
++def test_an_issue_of_another_project_rejects_the_whole_request(client, acme) -> None:
++    move(client, acme, acme.issues[0], "in_progress")
++    response = bulk(client, acme.member, acme.projects[0], [acme.issues[0], acme.issues[10]])
++    assert response.status_code == 404
++    assert error_code(response) == "not_found"
++    assert issue(client, acme, acme.issues[0])["status"] == "in_progress"
++
++
++def test_an_issue_of_another_org_rejects_the_whole_request(client, acme, globex) -> None:
++    move(client, acme, acme.issues[0], "in_progress")
++    response = bulk(client, acme.member, acme.projects[0], [acme.issues[0], globex.issues[0]])
++    assert response.status_code == 404
++    assert issue(client, acme, acme.issues[0])["status"] == "in_progress"
++
++
++def test_deleted_issue_rejects_the_whole_request(client, acme) -> None:
++    client.delete(f"/issues/{acme.issues[1]}", headers=auth(acme.member))
++    response = bulk(client, acme.member, acme.projects[0], [acme.issues[0], acme.issues[1]])
++    assert response.status_code == 404
++
++
++def test_project_of_another_org_or_archived_is_404(client, acme, globex) -> None:
++    assert bulk(client, acme.admin, globex.projects[0], [globex.issues[0]]).status_code == 404
++    client.delete(f"/projects/{acme.projects[1]}", headers=auth(acme.admin))
++    assert bulk(client, acme.admin, acme.projects[1], [acme.issues[10]]).status_code == 404
++
++
++def test_viewer_is_403(client, acme) -> None:
++    response = bulk(client, acme.viewer, acme.projects[0], [acme.issues[0]])
++    assert response.status_code == 403
++    assert error_code(response) == "forbidden"
++
++
++def test_invalid_id_lists_are_422(client, acme) -> None:
++    for ids in ([], [acme.issues[0], acme.issues[0]], list(range(1, 102))):
++        response = bulk(client, acme.member, acme.projects[0], ids)
++        assert response.status_code == 422, ids
++        assert error_code(response) == "validation_error"
++
++
++def test_one_audit_row_per_request(client, acme) -> None:
++    move(client, acme, acme.issues[0], "in_progress")
++    move(client, acme, acme.issues[1], "in_progress")
++    before = audit_actions(client, acme)
++    bulk(client, acme.member, acme.projects[0], [acme.issues[0], acme.issues[1]])
++    assert audit_actions(client, acme)[len(before) :] == ["issue.bulk_close"]
++    items = client.get("/audit?limit=100", headers=auth(acme.admin)).json()["items"]
++    assert (items[-1]["entity"], items[-1]["entity_id"]) == ("project", acme.projects[0])
++
++
++def test_a_rejected_request_adds_no_audit_row(client, acme, globex) -> None:
++    before = audit_actions(client, acme)
++    bulk(client, acme.member, acme.projects[0], [globex.issues[0]])
++    bulk(client, acme.viewer, acme.projects[0], [acme.issues[0]])
++    assert audit_actions(client, acme) == before

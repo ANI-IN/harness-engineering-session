@@ -1,0 +1,12 @@
+$ uv run shipharness testgen --target TG-teamtrack-app-repositories-issues --max-tests 10 --out .shipharness/a4/testgen
+target TG-teamtrack-app-repositories-issues: app/repositories/issues.py in ~/shipharness/teamtrack
+! UNSANDBOXED — results not official: generated tests run on this machine
+Baseline: existing suite without doctests
+testgen r-20261017-093940-52dde8: completed; kept 1 of 5 proposed tests
++ tests/visible/test_issue_repository.py::test_list_for_project_uses_ascending_keyset_pages
+- tests/visible/test_issue_repository.py::test_add_flushes_issue_with_requested_fields_and_database_defaults: filter 3: adds no line coverage over the existing suite and kills no filter-set mutant that the existing tests miss (0 checked)
+- tests/visible/test_issue_repository.py::test_get_returns_only_live_issues_for_the_requested_organization: filter 3: adds no line coverage over the existing suite and kills no filter-set mutant that the existing tests miss (0 checked)
+- tests/visible/test_issue_repository.py::test_list_for_project_filters_tenant_project_and_soft_deleted_rows: filter 3: adds no line coverage over the existing suite and kills no filter-set mutant that the existing tests miss (0 checked)
+- tests/visible/test_issue_repository.py::test_list_all_legacy_orders_and_pages_across_tenants_including_deleted: filter 3: adds no line coverage over the existing suite and kills no filter-set mutant that the existing tests miss (0 checked)
+Kept tests and report: .shipharness/a4/testgen
+Cost: $0.003287 (testgen, model gpt-6-luna)

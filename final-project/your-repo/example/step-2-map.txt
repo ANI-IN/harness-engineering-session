@@ -1,0 +1,33 @@
+$ cd "$TARGET"
+[exit code 0]
+
+$ uv run --project "$SHIPHARNESS" shipharness init --check . | tail -3
+session-handoff.md:14: nothing to fill now: the agent writes these notes at the end of each session. Delete this line.
+x 103 REPLACE markers left in 27 files
+Cost: $0.000000 (no model calls)
+[exit code 1]
+
+$ cp -r "$SHIPHARNESS/use-in-your-repo/kit/examples/boltons-queueutils/filled/." .
+[exit code 0]
+
+$ git rm -q docs/SECURITY.md docs/RELIABILITY.md docs/design-docs/api-conventions.md docs/design-docs/cursor-pagination.md docs/product-specs/teamtrack-base.md docs/references/alembic-llms.txt
+[exit code 0]
+
+$ uv run --project "$SHIPHARNESS" shipharness init --check .
+- docs/RELIABILITY.md: not present (deleted, or never installed)
+- docs/SECURITY.md: not present (deleted, or never installed)
+- docs/design-docs/api-conventions.md: not present (deleted, or never installed)
+- docs/design-docs/cursor-pagination.md: not present (deleted, or never installed)
+- docs/product-specs/teamtrack-base.md: not present (deleted, or never installed)
+- docs/references/alembic-llms.txt: not present (deleted, or never installed)
++ no REPLACE markers left in the kit files
+Cost: $0.000000 (no model calls)
+[exit code 0]
+
+$ uv run --project "$SHIPHARNESS" bash init.sh
+== imports: the three modules load
+== basic end-to-end test: queueutils, stop at the first failure (full suite: see AGENTS.md)
+...                                                                      [100%]
+3 passed in 0.26s
+[exit code 0]
+

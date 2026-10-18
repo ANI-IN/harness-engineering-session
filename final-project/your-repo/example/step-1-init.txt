@@ -1,0 +1,112 @@
+$ cd "$SHIPHARNESS"
+[exit code 0]
+
+$ uv run shipharness init --target "$TARGET"
+Kit: $SHIPHARNESS/use-in-your-repo/kit/templates -> /tmp/fp-example
++ .agents/skills/assured-tests/README.md
++ .agents/skills/assured-tests/SKILL.md
++ .agents/skills/assured-tests/references/ach.md
++ .agents/skills/assured-tests/references/filters.md
++ .agents/skills/assured-tests/references/testgen-llm.md
++ .agents/skills/assured-tests/scripts/run_testgen.py
++ .agents/skills/harness-setup/README.md
++ .agents/skills/harness-setup/SKILL.md
++ .agents/skills/harness-setup/assets/templates/AGENTS.md
++ .agents/skills/harness-setup/assets/templates/ARCHITECTURE.md
++ .agents/skills/harness-setup/assets/templates/SECURITY.md
++ .agents/skills/harness-setup/assets/templates/clean-state-checklist.md
++ .agents/skills/harness-setup/assets/templates/exec-plan.md
++ .agents/skills/harness-setup/assets/templates/feature_list.json
++ .agents/skills/harness-setup/assets/templates/feature_list.schema.json
++ .agents/skills/harness-setup/assets/templates/init.sh
++ .agents/skills/harness-setup/assets/templates/progress.md
++ .agents/skills/harness-setup/assets/templates/session-handoff.md
++ .agents/skills/harness-setup/references/docs-layout.md
++ .agents/skills/harness-setup/references/failure-modes.md
++ .agents/skills/harness-setup/references/instructions.md
++ .agents/skills/harness-setup/references/scope.md
++ .agents/skills/harness-setup/references/session-lifecycle.md
++ .agents/skills/harness-setup/references/state.md
++ .agents/skills/harness-setup/references/verification.md
++ .agents/skills/harness-setup/scripts/assess.py
++ .agents/skills/house-rules/README.md
++ .agents/skills/house-rules/SKILL.md
++ .agents/skills/house-rules/assets/rule-template.md
++ .agents/skills/house-rules/scripts/new_rule.py
++ .agents/skills/skill-template/README.md
++ .agents/skills/skill-template/SKILL.md
++ .agents/skills/skill-template/assets/.gitkeep
++ .agents/skills/skill-template/references/.gitkeep
++ .agents/skills/skill-template/scripts/.gitkeep
++ .claude/skills/assured-tests/README.md
++ .claude/skills/assured-tests/SKILL.md
++ .claude/skills/assured-tests/references/ach.md
++ .claude/skills/assured-tests/references/filters.md
++ .claude/skills/assured-tests/references/testgen-llm.md
++ .claude/skills/assured-tests/scripts/run_testgen.py
++ .claude/skills/harness-setup/README.md
++ .claude/skills/harness-setup/SKILL.md
++ .claude/skills/harness-setup/assets/templates/AGENTS.md
++ .claude/skills/harness-setup/assets/templates/ARCHITECTURE.md
++ .claude/skills/harness-setup/assets/templates/SECURITY.md
++ .claude/skills/harness-setup/assets/templates/clean-state-checklist.md
++ .claude/skills/harness-setup/assets/templates/exec-plan.md
++ .claude/skills/harness-setup/assets/templates/feature_list.json
++ .claude/skills/harness-setup/assets/templates/feature_list.schema.json
++ .claude/skills/harness-setup/assets/templates/init.sh
++ .claude/skills/harness-setup/assets/templates/progress.md
++ .claude/skills/harness-setup/assets/templates/session-handoff.md
++ .claude/skills/harness-setup/references/docs-layout.md
++ .claude/skills/harness-setup/references/failure-modes.md
++ .claude/skills/harness-setup/references/instructions.md
++ .claude/skills/harness-setup/references/scope.md
++ .claude/skills/harness-setup/references/session-lifecycle.md
++ .claude/skills/harness-setup/references/state.md
++ .claude/skills/harness-setup/references/verification.md
++ .claude/skills/harness-setup/scripts/assess.py
++ .claude/skills/house-rules/README.md
++ .claude/skills/house-rules/SKILL.md
++ .claude/skills/house-rules/assets/rule-template.md
++ .claude/skills/house-rules/scripts/new_rule.py
++ .claude/skills/skill-template/README.md
++ .claude/skills/skill-template/SKILL.md
++ .claude/skills/skill-template/assets/.gitkeep
++ .claude/skills/skill-template/references/.gitkeep
++ .claude/skills/skill-template/scripts/.gitkeep
++ .github/workflows/shipharness.yml
++ AGENTS.md
++ ARCHITECTURE.md
++ docs/PLANS.md
++ docs/QUALITY_SCORE.md
++ docs/RELIABILITY.md
++ docs/SECURITY.md
++ docs/clean-state-checklist.md
++ docs/design-docs/api-conventions.md
++ docs/design-docs/core-beliefs.md
++ docs/design-docs/cursor-pagination.md
++ docs/design-docs/index.md
++ docs/exec-plans/active/F1.md
++ docs/house-rules.md
++ docs/product-specs/f1.md
++ docs/product-specs/index.md
++ docs/product-specs/teamtrack-base.md
++ docs/references/alembic-llms.txt
++ docs/references/import-linter-llms.txt
++ feature_list.json
++ feature_list.schema.json
++ harness/check-params.json
++ harness/sandbox-policy.toml
++ harness/shipharness_adapter.py
++ init.sh
++ progress.md
++ session-handoff.md
+wrote 97 files, 0 overwritten, 0 skipped, 0 unchanged
+Next: fill the REPLACE markers, then run: shipharness init --check /tmp/fp-example
+Cost: $0.000000 (no model calls)
+[exit code 0]
+
+$ cd "$TARGET" && git add -A && git commit -q -m "kit: shipharness init" && git log --oneline | head -2
+7436cf0 kit: shipharness init
+1069b5e boltons 26.2.0 (4332b35): typeutils, listutils, queueutils and their tests
+[exit code 0]
+

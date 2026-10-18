@@ -1,0 +1,7 @@
+START 2026-10-18T16:22:40Z show-1
+uv run shipharness ab --section demo-1 --feature org-search --arms harness   --purpose pilot \
+  --profile class
+A/B ab-20261018-162244-860638 (Feature 1: Org-wide issue search, layers=['instructions'], profile=class, harness in action)
+  harness  completed         agent said done · House rule 1: Tenant isolation, new violations: 0 · primary measure passed · hidden tests 52 of 52 · mutants killed 3 of 4 · reviewer accept · cost $0.0178
+Cost: $0.020302 (this command: gpt-5.6-luna $0.002464, gpt-6-luna $0.017838; session $0.020302 of $2.50; build $0.020302 of $15.00 ($14.979698 left))
+END rc=0 wall=285s launch_epoch=1792340560

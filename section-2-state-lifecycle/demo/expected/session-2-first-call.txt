@@ -1,0 +1,23 @@
+The first tool call of session 2 (turn 2.1) and the start of its output, as the run log recorded
+them. The run log keeps only the start of a long output; it ends where the log cut it.
+
+$ pwd; cat progress.md; git log --oneline -20; cat session-handoff.md; cat docs/exec-plans/active/F2.md; bash init.sh
+exit=0
+/work
+# Progress
+
+A log of what agents have done on this ticket. Read it with the git log at the start of every
+session. Edit every section except "Session log": the harness appends one entry there at the end of
+each session.
+
+## Current feature
+
+Feature 2: Comments on issues. Comments on issues, with a comments panel on the board
+
+## Done
+
+- Read feature spec and handbook; initialization and existing test suite verified.
+
+## In progress
+
+- Implement comments API, persistence, migration, 

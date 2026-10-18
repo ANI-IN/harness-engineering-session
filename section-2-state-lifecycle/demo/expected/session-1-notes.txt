@@ -1,0 +1,9 @@
+What the agent wrote under "Notes from the agent" in session-handoff.md during its wrap-up turns,
+before the session 1 stop. Taken from the run's session 1 patch, as the agent wrote it.
+
+## Notes from the agent
+
+- What I was doing: Began F2 comments feature; read `docs/features/f2.md`, `docs/HANDBOOK.md`, `app/api/issues.py`, `app/services/issues.py`, and `app/services/idempotency.py`. No application code changed yet.
+- What is left: Implement table/model and exactly one migration; org-scoped repository and service; POST/GET issue comments and DELETE comment API; idempotency and audit semantics; seed comments; board display/create form; tests. Validate full suite, import-linter, and one migration head. Continue updating progress and exec plan.
+- What to watch out for: Spec is `docs/features/f2.md`. Preserve hidden issue/project behavior on all three endpoints; comment delete requires author or admin and writer role; only an org admin can delete others' comments. Validate deleted/archived issue before permitting deletion. POST idempotency replay creates no audit row. Lists need `items` / `next_cursor`, ascending id cursor pagination. Escape comment text in Jinja.
+- House rules and useful locations: `docs/HANDBOOK.md` has all house rules: org isolation/404, viewer 403, list and error envelopes, idempotent create, exactly one audit row, layering (API/web must not import `app.db`), one Alembic head. `ARCHITECTURE.md` describes layers. `app/api/issues.py` is a router pattern; `app/services/issues.py` is service pattern; `app/services/idempotency.py` demonstrates create replay; models in `app/db/models.py`; seed in `app/seed.py`; board routes/templates in `app/web/routes.py` and `app/web/templates/issue.html`; migrations under `migrations/versions/`; tests under `tests/visible/`. Baseline `bash init.sh` passed; visible suite had 162 passed.

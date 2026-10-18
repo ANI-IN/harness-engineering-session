@@ -1,0 +1,73 @@
+name: ci
+
+# Private repository: CI minutes are limited. Push and pull requests run lint and the fast suite;
+# the full suite (slow validations) and the real-container job run on manual dispatch and nightly.
+# Live tests (OpenAI, LangSmith) never run in CI: no API keys are stored as GitHub secrets; run
+# them locally with `make test-live`.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 2 * * *"  # nightly, 02:30 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run python platform/scripts/lint_prose.py
+      - name: course style check (warn-only while the pages are rewritten)
+        run: uv run python platform/scripts/check_style.py --strict
+      - run: uv run python platform/scripts/anchors.py check
+      - name: import-linter (house rule R6)
+        working-directory: platform/teamtrack
+        run: uv run lint-imports --config .importlinter
+
+  fast:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen
+      - run: uv run pytest -n auto -m "not slow and not live and not docker"
+
+  full:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # the checkpoint tags (m1-*) the full suite reads
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen
+      - run: uv run pytest -n auto -m "not live and not docker"
+
+  docker:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen
+      - run: docker build -f platform/sandbox/Dockerfile --target agent -t shipharness-agent:1 .
+      - run: docker build -f platform/sandbox/Dockerfile --target referee -t shipharness-referee:1 .
+      - run: uv run pytest -m docker platform/tests/unit/test_sandbox_docker.py

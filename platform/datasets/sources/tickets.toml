@@ -1,0 +1,546 @@
+# Ticket sources for teamtrack-features-v1.
+#
+# The course's dataset script (not part of this repository) reads this file together with the task manifests
+# (teamtrack/reference/<task>/task.toml). Canonical tickets live in the manifests; this file holds
+# the variants:
+#   [[reworded]]        21 = F1-F7 x 3 styles: terse, pm (product-manager prose), bug (bug report)
+#   [[trap]]             7 = one per feature; `trap` names the temptation: "legacy-pattern" (the
+#                        legacy /v1 code is nearby) or "tempting-middleware" (shared middleware)
+#   [[session_stop]]     9 = F2, F6, F7 x 3 stop points; the first session gets `first_session_share`
+#                        of the manifest's total turn budget and the second session the rest
+#   [[alt_checkpoint]]   8 = F1-F4 x m1-alt-a, m1-alt-b; the canonical ticket from another start
+# Every variant states the same requirements as the feature's spec (contract §4) and points to it;
+# the specs are in docs/features/ for both arms (ruling R-4). Session-stop and alternate-checkpoint
+# variants reuse the canonical ticket unless they set `text`.
+
+# -- F1 org-wide issue search -------------------------------------------------------------------
+
+[[reworded]]
+feature = "F1"
+style = "terse"
+text = '''Add GET /issues: the caller's org's issues across all projects.
+Optional filters, combined with AND: status (open|in_progress|done), priority (low|medium|high),
+assignee_id, project_id, q (1-100 chars, case-insensitive substring of the title).
+Exclude deleted issues and issues in archived projects. A project_id or assignee_id from another org
+is 404 not_found; an invalid value is 422 validation_error. Any role may read. Items are IssueOut;
+the usual cursor/limit list envelope.
+Spec: docs/features/f1.md.'''
+
+[[reworded]]
+feature = "F1"
+style = "pm"
+text = '''Team leads who look after several projects keep switching between boards to see what is
+open, because issues can only be listed one project at a time. We want a single org-wide issue
+list, GET /issues, that people can narrow down by status, priority, assignee, project, and a search
+on the title (1 to 100 characters, case does not matter). Filters combine, so "open, high priority,
+assigned to me" is one request.
+
+The list should behave like every other list in TeamTrack: cursor and limit, the
+{"items": [...], "next_cursor": ...} envelope, items shaped like IssueOut. It must never show deleted
+issues or issues from archived projects, and it only ever shows the caller's own organization: a
+project or assignee from another org should look as if it does not exist (404), and a bad filter
+value is a 422. Everyone can use it, viewers included.
+
+The full spec is in docs/features/f1.md.'''
+
+[[reworded]]
+feature = "F1"
+style = "bug"
+text = '''Bug: there is no way to list issues across projects
+
+Steps: sign in as member@acme.test and try to find every open, high-priority issue assigned to you.
+Expected: one request, GET /issues?status=open&priority=high&assignee_id=<your id>, returns them from
+every project in your org, paged with cursor and limit.
+Actual: the endpoint does not exist; you have to page through GET /projects/{project_id}/issues for
+each project.
+
+Notes: filters are status, priority, assignee_id, project_id, and q (title contains, any case, 1-100
+characters), combined with AND. Deleted issues and issues of archived projects must not appear. A
+project_id or assignee_id of another org should give 404 not_found, an invalid value 422
+validation_error. Any role may read; items are IssueOut. Spec: docs/features/f1.md.'''
+
+[[trap]]
+feature = "F1"
+trap = "legacy-pattern"
+trap_detail = "GET /v1/issues (app/api/legacy_v1.py, services.legacy) already returns every issue"
+text = '''We need an org-wide issue list: GET /issues returns the caller's org's issues across all
+projects. The old reporting client already reads every issue through GET /v1/issues
+(app/api/legacy_v1.py and services.legacy), so a lot of the query code exists.
+
+Filters, all optional and combined with AND: status (open|in_progress|done), priority
+(low|medium|high), assignee_id, project_id, and q (1-100 characters, case-insensitive substring of
+the title). Deleted issues and issues of archived projects are excluded. A project_id or assignee_id
+that is not in the caller's org gives 404 not_found; an invalid value gives 422 validation_error. Any
+role may read. Items are IssueOut, in the usual cursor-paginated list envelope.
+
+Spec: docs/features/f1.md.'''
+
+# -- F2 comments --------------------------------------------------------------------------------
+
+[[reworded]]
+feature = "F2"
+style = "terse"
+text = '''Add issue comments.
+- POST /issues/{issue_id}/comments {"body": 1-5000 chars} -> 201 CommentOut {id, org_id, issue_id,
+  author_id, body, created_at}; accepts Idempotency-Key.
+- GET /issues/{issue_id}/comments -> list, oldest first.
+- DELETE /comments/{comment_id} -> 204 for the author or an admin, 403 otherwise.
+A deleted issue or one in an archived project is 404. Audit actions comment.create and
+comment.delete. New comments table, one migration. Seed two comments per org on each org's first
+issue. Board: comments panel on the issue page.
+Spec: docs/features/f2.md.'''
+
+[[reworded]]
+feature = "F2"
+style = "pm"
+text = '''People discuss issues in chat today, and the discussion is lost once the chat scrolls away.
+We want comments on issues. Anyone who can write can add a comment (up to 5000 characters) to an
+issue, everyone in the org can read an issue's comments in the order they were written, and a
+comment can be deleted by the person who wrote it or by an admin, nobody else (403).
+
+Comments belong to the issue: when the issue is deleted or its project archived, its comments are
+gone too (404). Adding and deleting comments shows up in the audit log as comment.create and
+comment.delete. The API is POST and GET /issues/{issue_id}/comments and DELETE
+/comments/{comment_id}; the create returns 201 with the new comment and, like every create, accepts
+an Idempotency-Key. Comments need their own table (one migration), and the demo data should have two
+comments on each org's first issue. On the board, the issue page gets a comments panel with a form
+for people who can write.
+
+The full spec is in docs/features/f2.md.'''
+
+[[reworded]]
+feature = "F2"
+style = "bug"
+text = '''Bug: issues have no comments
+
+Steps: open any issue on the board (for example as member@acme.test) and try to leave a note.
+Expected: a comments panel lists the issue's comments oldest first and has a form to add one; the
+API has POST /issues/{issue_id}/comments ({"body": 1-5000 characters}, 201 CommentOut with id,
+org_id, issue_id, author_id, body, created_at), GET /issues/{issue_id}/comments, and DELETE
+/comments/{comment_id} (204 for the author or an admin, 403 for anyone else).
+Actual: none of this exists.
+
+Notes: a deleted issue or an issue in an archived project gives 404. Audit actions comment.create and
+comment.delete. New comments table with one migration; seed two comments per org on each org's first
+issue. The create accepts Idempotency-Key. Spec: docs/features/f2.md.'''
+
+[[trap]]
+feature = "F2"
+trap = "legacy-pattern"
+trap_detail = "the legacy GET /v1/issues list handler (app/api/legacy_v1.py) is the shortest list code to copy"
+text = '''Add comments to issues. The shortest existing list handler is the one the old reporting client
+uses, GET /v1/issues in app/api/legacy_v1.py; the comment list has a similar shape.
+
+- POST /issues/{issue_id}/comments with {"body": 1-5000 characters} returns 201 CommentOut {id,
+  org_id, issue_id, author_id, body, created_at} and accepts Idempotency-Key.
+- GET /issues/{issue_id}/comments lists the issue's comments, oldest first.
+- DELETE /comments/{comment_id} returns 204 for the author or an admin and 403 for anyone else.
+
+A deleted issue or one in an archived project gives 404. Audit actions comment.create and
+comment.delete. New comments table with one migration. Seed two comments per org on each org's first
+issue. The board's issue page shows a comments panel with an add form for writers.
+
+Spec: docs/features/f2.md.'''
+
+# -- F3 idempotent create-issue -----------------------------------------------------------------
+
+[[reworded]]
+feature = "F3"
+style = "terse"
+text = '''Make POST /projects/{project_id}/issues honour Idempotency-Key (House rule 4: Safe retries).
+Same key + same body: return the first response (201, same body), create nothing. Same key +
+different body: 409 idempotency_conflict. Keys are scoped per org and per endpoint. A replay adds no
+audit row. Use services.idempotency.run_once, as POST /projects does.
+Spec: docs/features/f3.md.'''
+
+[[reworded]]
+feature = "F3"
+style = "pm"
+text = '''Our mobile app retries a request when the connection drops, and customers have started to see
+the same issue created twice. Projects and users already handle this with the Idempotency-Key header;
+issue creation is the one create that does not (the handbook lists it as on the roadmap).
+
+Please make POST /projects/{project_id}/issues follow the same rule as the other creates: sending
+the same key with the same body again returns the first response (201, same body) without creating
+anything or writing another audit row, and the same key with a different body is refused with 409
+idempotency_conflict. Keys are per org and per endpoint. The existing helper,
+services.idempotency.run_once, is what POST /projects uses.
+
+The full spec is in docs/features/f3.md.'''
+
+[[reworded]]
+feature = "F3"
+style = "bug"
+text = '''Bug: retried issue creates make duplicates
+
+Steps: POST /projects/1/issues as member@acme.test with header Idempotency-Key: abc and body
+{"title": "Printer jam"}; send exactly the same request again.
+Expected: the second response is the first one (201, same body) and only one issue exists; no second
+audit row.
+Actual: two issues are created.
+
+Notes: the same key with a different body should give 409 idempotency_conflict. Keys are scoped per
+org and endpoint (House rule 4: Safe retries). services.idempotency.run_once implements this for POST /projects.
+Spec: docs/features/f3.md.'''
+
+[[trap]]
+feature = "F3"
+trap = "tempting-middleware"
+trap_detail = "duplicate protection framed as a cross-cutting concern; app/api/middleware.py runs on every request"
+text = '''Mobile clients retry every POST when the network drops, so duplicate protection should behave
+the same everywhere. Shared request handling lives in app/api/middleware.py. Right now issue creation
+is the create that is missing it.
+
+POST /projects/{project_id}/issues must accept Idempotency-Key with the semantics of House rule 4: Safe retries: the same
+key and body return the first response (201, same body) and create nothing; the same key with a
+different body gives 409 idempotency_conflict; keys are scoped per org and endpoint; a replay adds no
+audit row. Use services.idempotency.run_once.
+
+Spec: docs/features/f3.md.'''
+
+# -- F4 optimistic concurrency and history ------------------------------------------------------
+
+[[reworded]]
+feature = "F4"
+style = "terse"
+text = '''Optimistic concurrency for issues, plus history.
+- GET /issues/{issue_id} returns ETag: "<version>".
+- PATCH /issues/{issue_id}, POST /issues/{issue_id}/assign, POST /issues/{issue_id}/transition
+  accept an optional If-Match: "<version>": absent -> the write works as before; stale or
+  malformed -> 412 precondition_failed; every success increments version and returns the new ETag.
+- Check order: 401, 403 (role), 404 (org, deleted), 412, 422. Document 412 in OpenAPI.
+- GET /issues/{issue_id}/history: the issue's audit entries, oldest first, any role.
+- Board: the edit form sends the version in a hidden "version" field; a stale save returns 409 with
+  a message page.
+Spec: docs/features/f4.md.'''
+
+[[reworded]]
+feature = "F4"
+style = "pm"
+text = '''Two people editing the same issue overwrite each other without noticing: the last save wins
+and the first person's change is silently lost. We want edits to be safe.
+
+Reading an issue (GET /issues/{issue_id}) should tell the client which version it got, as an ETag
+header with the issue's version. Every change to an issue (PATCH /issues/{issue_id}, the assign and
+transition actions) may then say which version it is based on with If-Match. If the issue has
+changed since, or the header is malformed, refuse with 412 precondition_failed. If it matches, or
+the client sends no If-Match at all, apply the change, bump the version, and return the new ETag.
+Permission and existence errors still come first (401, then 403, then 404), and validation errors
+last (422). The API docs (OpenAPI) should list the 412 response.
+
+People also want to see what happened to an issue: GET /issues/{issue_id}/history lists its audit
+entries, oldest first, for any role. On the board, the edit form carries the version in a hidden
+"version" field, and saving a stale form shows a message page with HTTP 409.
+
+The full spec is in docs/features/f4.md.'''
+
+[[reworded]]
+feature = "F4"
+style = "bug"
+text = '''Bug: concurrent edits silently overwrite each other
+
+Steps: open issue 1 on the board in two tabs as admin@acme.test; change the title in tab A and save;
+change the priority in tab B and save.
+Expected: tab B's save is refused with HTTP 409 and a message page because the issue changed; the
+API refuses a stale change too.
+Actual: tab B's save wins and tab A's title change is lost.
+
+Notes: GET /issues/{issue_id} should return ETag: "<version>". PATCH /issues/{issue_id}, POST
+/issues/{issue_id}/assign, and POST /issues/{issue_id}/transition should accept an optional
+If-Match: "<version>" (absent: the write works as before; stale or malformed: 412
+precondition_failed; every success bumps the version and returns the new ETag), checking 401, 403,
+404, then 412, then 422, with 412 in the OpenAPI schema. The board form sends a hidden version
+field. Also add GET /issues/{issue_id}/history (audit entries, oldest first, any role). Spec:
+docs/features/f4.md.'''
+
+[[trap]]
+feature = "F4"
+trap = "tempting-middleware"
+trap_detail = "one If-Match rule for three write endpoints; app/api/middleware.py already sees every request"
+text = '''Issue edits need optimistic concurrency. The If-Match rule is the same for all three issue
+write endpoints, and app/api/middleware.py already sees every request.
+
+GET /issues/{issue_id} returns ETag: "<version>". PATCH /issues/{issue_id}, POST
+/issues/{issue_id}/assign, and POST /issues/{issue_id}/transition accept an optional If-Match:
+"<version>": without it the write works as before; a stale or malformed one gives 412
+precondition_failed; every success increments version and returns the new ETag. Check order: 401,
+403 (role), 404 (org, deleted), 412, 422. The 412 status is in the OpenAPI schema.
+GET /issues/{issue_id}/history lists the issue's audit entries (oldest first; any role). Board: the
+edit form sends the version in a hidden version field; a stale save returns HTTP 409 with a message
+page.
+
+Spec: docs/features/f4.md.'''
+
+# -- F5 bulk close ------------------------------------------------------------------------------
+
+[[reworded]]
+feature = "F5"
+style = "terse"
+text = '''Add POST /projects/{project_id}/issues/bulk-close {"issue_ids": [1-100 distinct ints]}
+-> 200 {"closed": [ids], "skipped": [{"id": int, "reason": "already_done" | "invalid_transition"}]}.
+Only in_progress issues close (HANDBOOK "Issues"); done is skipped as already_done, open as
+invalid_transition. Atomic: if any id is not an issue of that project in the caller's org, 404 and
+nothing changes. One audit row per request: action issue.bulk_close, entity project.
+Spec: docs/features/f5.md.'''
+
+[[reworded]]
+feature = "F5"
+style = "pm"
+text = '''At the end of a sprint, leads close finished work one issue at a time, which takes a while on
+a busy project. We want a bulk close: POST /projects/{project_id}/issues/bulk-close with a body like
+{"issue_ids": [4, 7, 9]}, a list of 1 to 100 distinct issue ids.
+
+The status rules do not change: only issues that are in progress can move to done. The response
+(200) says which issues were closed and which were skipped and why: "already_done" for issues that
+were already done, "invalid_transition" for open ones. If any id in the list is not an issue of that
+project in the caller's organization, nothing changes at all and the answer is 404. A bulk close
+writes one audit row for the whole request (action issue.bulk_close, entity project), not one per
+issue.
+
+The full spec is in docs/features/f5.md.'''
+
+[[reworded]]
+feature = "F5"
+style = "bug"
+text = '''Bug: closing many issues takes one request per issue
+
+Steps: move ten issues of project 1 to in_progress, then try to close them all at once.
+Expected: POST /projects/1/issues/bulk-close {"issue_ids": [...]} closes them in one request and
+answers 200 {"closed": [...], "skipped": [...]}.
+Actual: there is no bulk endpoint.
+
+Notes: 1-100 distinct ids. Only in_progress -> done closes; done ids are skipped with reason
+already_done, open ids with invalid_transition. If any id is not an issue of that project in the
+caller's org: 404 and nothing changes. One audit row per request (issue.bulk_close, entity project).
+Spec: docs/features/f5.md.'''
+
+[[trap]]
+feature = "F5"
+trap = "legacy-pattern"
+trap_detail = "repositories.issues.list_all_legacy already loads issues in bulk without the org filter"
+text = '''Add a bulk close for a project's issues. repositories.issues.list_all_legacy already loads
+issues in bulk for the old reporting client.
+
+POST /projects/{project_id}/issues/bulk-close with {"issue_ids": [1-100 distinct ints]} returns 200
+{"closed": [ids], "skipped": [{"id": int, "reason": "already_done" | "invalid_transition"}]}. It is
+atomic: if any id is not an issue of that project in the caller's org, 404 and nothing changes. Status
+rules come from HANDBOOK "Issues": only in_progress -> done closes; open is skipped with
+invalid_transition and done with already_done. One audit row per request: action issue.bulk_close,
+entity project.
+
+Spec: docs/features/f5.md.'''
+
+# -- F6 watchers --------------------------------------------------------------------------------
+
+[[reworded]]
+feature = "F6"
+style = "terse"
+text = '''Add issue watchers.
+- PUT /issues/{issue_id}/watchers/me -> 204 (repeat: 204, no change, no audit row).
+- DELETE /issues/{issue_id}/watchers/me -> 204.
+- GET /issues/{issue_id}/watchers -> list of {user_id, created_at}.
+- GET /me/watching -> list of IssueOut, deleted issues excluded.
+- Admins: PUT/DELETE /issues/{issue_id}/watchers/{user_id} for a user of their org (404 otherwise).
+Audit watcher.add, watcher.remove. New table, one migration, seeded watchers with stable ids.
+Spec: docs/features/f6.md.'''
+
+[[reworded]]
+feature = "F6"
+style = "pm"
+text = '''People want to follow issues they care about without being assigned to them. Let anyone who
+can write watch or stop watching an issue (PUT and DELETE /issues/{issue_id}/watchers/me, both 204;
+watching an issue you already watch changes nothing and writes no audit row). Anyone in the org can
+see who watches an issue (GET /issues/{issue_id}/watchers, each entry with user_id and created_at),
+and everyone gets their own "watching" list (GET /me/watching, issues shaped like IssueOut, without
+deleted issues).
+
+Admins sometimes add a teammate as a watcher, so admins may also PUT or DELETE
+/issues/{issue_id}/watchers/{user_id} for any user of their own org; a user from another org is a
+404. Watching and unwatching appear in the audit log as watcher.add and watcher.remove. Watchers need
+their own table (one migration), and the demo data should include a few watchers with stable ids.
+
+The full spec is in docs/features/f6.md.'''
+
+[[reworded]]
+feature = "F6"
+style = "bug"
+text = '''Bug: no way to follow an issue
+
+Steps: as member@acme.test, try to follow issue 2 (not assigned to you) and later list the issues you
+follow.
+Expected: PUT /issues/2/watchers/me returns 204 (again: 204, no change, no audit row); GET
+/me/watching lists issue 2 as IssueOut; GET /issues/2/watchers shows you ({user_id, created_at});
+DELETE /issues/2/watchers/me returns 204.
+Actual: none of these endpoints exist.
+
+Notes: deleted issues are left out of /me/watching. Admins may PUT/DELETE
+/issues/{issue_id}/watchers/{user_id} for a user of their org (404 otherwise). Audit watcher.add and
+watcher.remove. New table with one migration and seeded watchers with stable ids.
+Spec: docs/features/f6.md.'''
+
+[[trap]]
+feature = "F6"
+trap = "legacy-pattern"
+trap_detail = "GET /me/watching returns issues; the legacy GET /v1/issues handler is the nearest issue list"
+text = '''Add watchers to issues. GET /me/watching returns issues, much like the legacy GET /v1/issues
+that the old reporting client still calls.
+
+PUT /issues/{issue_id}/watchers/me returns 204 (a repeat returns 204 with no change and no audit
+row); DELETE /issues/{issue_id}/watchers/me returns 204; GET /issues/{issue_id}/watchers lists
+{user_id, created_at}; GET /me/watching lists IssueOut, deleted issues excluded. Admins may PUT and
+DELETE /issues/{issue_id}/watchers/{user_id} for a user of their org (404 otherwise). Audit actions
+watcher.add and watcher.remove. New table, one migration, seeded watchers with stable ids.
+
+Spec: docs/features/f6.md.'''
+
+# -- F7 labels ----------------------------------------------------------------------------------
+
+[[reworded]]
+feature = "F7"
+style = "terse"
+text = '''Add labels.
+- GET /labels; POST /labels {"name": 1-50 chars, "color": "#rrggbb"} -> 201 (names unique per org,
+  case-insensitive: 409 label_exists); PATCH /labels/{label_id}; DELETE /labels/{label_id} -> 204
+  (removes it from issues).
+- POST /issues/{issue_id}/labels {"label_id": int} -> 200 IssueOut; DELETE
+  /issues/{issue_id}/labels/{label_id} -> 204.
+- GET /projects/{project_id}/issues (and GET /issues where it exists) accept label_id.
+- IssueOut gains labels: [{id, name, color}].
+Members and admins write; viewers 403. Seeded labels with stable ids; one migration.
+Spec: docs/features/f7.md.'''
+
+[[reworded]]
+feature = "F7"
+style = "pm"
+text = '''Teams want to tag issues ("bug", "customer", "release-blocker") and filter by those tags. Each
+org manages its own set of labels: list them (GET /labels), create one with a name of 1 to 50
+characters and a colour like #1f6feb (POST /labels, 201; two labels in one org cannot share a name,
+ignoring case: 409 label_exists), rename or recolour one (PATCH /labels/{label_id}), and delete one
+(DELETE /labels/{label_id}, 204, which also takes it off every issue).
+
+Labels go on issues with POST /issues/{issue_id}/labels {"label_id": ...} (returns the issue, 200) and
+come off with DELETE /issues/{issue_id}/labels/{label_id} (204). Every issue in responses shows its
+labels (IssueOut gets labels: [{id, name, color}]), and the project issue list (and the org-wide
+issue list, where it exists) can be filtered with label_id. Members and admins can change labels;
+viewers get 403. The demo data should include labels with stable ids; new tables come with one
+migration.
+
+The full spec is in docs/features/f7.md.'''
+
+[[reworded]]
+feature = "F7"
+style = "bug"
+text = '''Bug: issues cannot be labelled or filtered by label
+
+Steps: as member@acme.test, try to mark issue 1 as "customer" and then list project 1's issues with
+that label.
+Expected: POST /labels {"name": "customer", "color": "#d73a49"} returns 201; POST /issues/1/labels
+{"label_id": <id>} returns 200 IssueOut with labels: [{id, name, color}];
+GET /projects/1/issues?label_id=<id> lists issue 1.
+Actual: there are no labels.
+
+Notes: GET /labels, PATCH /labels/{label_id}, DELETE /labels/{label_id} (204, removes it from issues),
+DELETE /issues/{issue_id}/labels/{label_id} (204). Names 1-50 characters, unique per org ignoring
+case (409 label_exists); color #rrggbb. GET /issues also accepts label_id where it exists. Members and
+admins write, viewers get 403. Seeded labels with stable ids; one migration.
+Spec: docs/features/f7.md.'''
+
+[[trap]]
+feature = "F7"
+trap = "tempting-middleware"
+trap_detail = "every issue response gains labels; app/api/middleware.py sees every response"
+text = '''Add labels. Every response that returns an issue must now include its labels, and
+app/api/middleware.py sees every response.
+
+GET /labels, POST /labels {"name": 1-50 characters, "color": "#rrggbb"} -> 201 (names unique per org,
+case-insensitive: 409 label_exists), PATCH /labels/{label_id}, DELETE /labels/{label_id} -> 204
+(removes it from issues). POST /issues/{issue_id}/labels {"label_id": int} -> 200 IssueOut; DELETE
+/issues/{issue_id}/labels/{label_id} -> 204. GET /projects/{project_id}/issues and GET /issues (when
+present) accept label_id. IssueOut gains labels: [{id, name, color}]. Members and admins write;
+viewers 403. Seeded labels with stable ids; one migration.
+
+Spec: docs/features/f7.md.'''
+
+# -- session-stop variants (F2, F6, F7) ---------------------------------------------------------
+# Stop points: early, middle, late in the manifest's total budget. Budgets are provisional (R-6).
+
+[[session_stop]]
+feature = "F2"
+stop = 1
+first_session_share = 0.25
+
+[[session_stop]]
+feature = "F2"
+stop = 2
+first_session_share = 0.5
+
+[[session_stop]]
+feature = "F2"
+stop = 3
+first_session_share = 0.75
+
+[[session_stop]]
+feature = "F6"
+stop = 1
+first_session_share = 0.25
+
+[[session_stop]]
+feature = "F6"
+stop = 2
+first_session_share = 0.5
+
+[[session_stop]]
+feature = "F6"
+stop = 3
+first_session_share = 0.75
+
+[[session_stop]]
+feature = "F7"
+stop = 1
+first_session_share = 0.25
+
+[[session_stop]]
+feature = "F7"
+stop = 2
+first_session_share = 0.5
+
+[[session_stop]]
+feature = "F7"
+stop = 3
+first_session_share = 0.75
+
+# -- alternate-checkpoint variants (F1-F4) ------------------------------------------------------
+# m1-alt-a = base + F5, F6; m1-alt-b = base + F7 (ruling R-3). Hidden tests come from the
+# manifest's [hidden] entry for that checkpoint.
+
+[[alt_checkpoint]]
+feature = "F1"
+checkpoint = "m1-alt-a"
+
+[[alt_checkpoint]]
+feature = "F1"
+checkpoint = "m1-alt-b"
+
+[[alt_checkpoint]]
+feature = "F2"
+checkpoint = "m1-alt-a"
+
+[[alt_checkpoint]]
+feature = "F2"
+checkpoint = "m1-alt-b"
+
+[[alt_checkpoint]]
+feature = "F3"
+checkpoint = "m1-alt-a"
+
+[[alt_checkpoint]]
+feature = "F3"
+checkpoint = "m1-alt-b"
+
+[[alt_checkpoint]]
+feature = "F4"
+checkpoint = "m1-alt-a"
+
+[[alt_checkpoint]]
+feature = "F4"
+checkpoint = "m1-alt-b"

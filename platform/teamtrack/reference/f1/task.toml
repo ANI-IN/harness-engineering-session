@@ -1,0 +1,38 @@
+id = "F1"
+title = "Org-wide issue search with filters and cursor pagination"
+section = "S1"
+start_checkpoint = "m1-s1-start"
+primary_measure = "r1_new_violations>=1"
+mutant_set = "features/f1"
+session_budget = [30]
+canonical_ticket = """
+Add org-wide issue search: GET /issues.
+
+Users want one list of all issues in their organization instead of opening every project. Return
+the caller's org's issues across its projects, filtered by any combination of status, priority,
+assignee_id, project_id, and q (a case-insensitive substring of the title, 1 to 100 characters).
+Leave out deleted issues and issues of archived projects. A project_id or assignee_id from another
+org is a 404; an invalid value is a 422. Every role may read. Use the standard list envelope with
+cursor pagination.
+
+The full spec is in docs/features/f1.md. Follow the house rules in docs/HANDBOOK.md and add tests.
+"""
+
+[allowed_paths]
+build = [
+    "app/api/issues.py",
+    "app/api/schemas.py",
+    "app/services/issues.py",
+    "app/repositories/issues.py",
+    "tests/visible/**",
+]
+test = ["tests/visible/**"]
+
+[hidden]
+"m1-s1-start" = ["tests/hidden/f1/test_f1_search.py", "tests/hidden/f1/test_f1_guards.py"]
+"m1-alt-a" = ["tests/hidden/f1/test_f1_search.py", "tests/hidden/f1/test_f1_guards.py"]
+"m1-alt-b" = [
+    "tests/hidden/f1/test_f1_search.py",
+    "tests/hidden/f1/test_f1_guards.py",
+    "tests/hidden/f1/test_f1_with_f7.py",
+]

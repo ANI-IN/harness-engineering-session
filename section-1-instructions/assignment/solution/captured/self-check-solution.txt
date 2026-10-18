@@ -1,0 +1,30 @@
+# captured on 2026-10-18 from `make --no-print-directory check-assignment-1 A1_WORK=section-1-instructions/assignment/solution/work` (offline command, no model calls); your output will differ
+$ make --no-print-directory check-assignment-1 A1_WORK=section-1-instructions/assignment/solution/work
+uv run python section-1-instructions/assignment/check.py --work section-1-instructions/assignment/solution/work
+A1 self-check: section-1-instructions/assignment/solution/work
+PASS layout
+PASS map-length
+PASS map-reach
+PASS no-overwrite
+PASS no-new-facts
+PASS skill-valid
+PASS skill-frontmatter
+PASS skill-sections
+PASS skill-linked
+PASS skill-cites
+PASS checker-tests
+PASS checker-clean
+PASS report-sections
+PASS report-command
+PASS report-results
+PASS report-links
+PASS report-cost
+PASS report-reading
+PASS live-files
+PASS live-command
+PASS live-caps
+PASS live-tree
+PASS live-report
+PASS todo
+self-check: 24 of 24 checks pass
+(exit 0)
