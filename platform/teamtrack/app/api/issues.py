@@ -5,7 +5,16 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import Id, current_actor, get_db, require_writer
 from app.api.pagination import Page, PageParams, decode_cursor, page_params, to_page
-from app.api.schemas import AssignIn, IssueCreate, IssueOut, IssuePatch, TransitionIn
+from app.api.schemas import (
+    AssignIn,
+    BulkCloseIn,
+    BulkCloseOut,
+    BulkSkipped,
+    IssueCreate,
+    IssueOut,
+    IssuePatch,
+    TransitionIn,
+)
 from app.services import issues
 from app.services.context import Actor
 
@@ -36,6 +45,20 @@ def create_issue(
         db, actor, project_id, body.title, body.description, body.priority, body.assignee_id
     )
     return IssueOut.model_validate(issue)
+
+
+@router.post("/projects/{project_id}/issues/bulk-close", response_model=BulkCloseOut)
+def bulk_close_issues(
+    project_id: Id,
+    body: BulkCloseIn,
+    actor: Actor = Depends(require_writer),
+    db: Session = Depends(get_db),
+) -> BulkCloseOut:
+    """Close in-progress issues of one project in one atomic request."""
+    closed, skipped = issues.bulk_close(db, actor, project_id, body.issue_ids)
+    return BulkCloseOut(
+        closed=closed, skipped=[BulkSkipped(id=i, reason=reason) for i, reason in skipped]
+    )
 
 
 @router.get("/issues/{issue_id}", response_model=IssueOut)

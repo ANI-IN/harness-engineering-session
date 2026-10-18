@@ -79,6 +79,17 @@ class AuditEntry(Base):
     at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class Watcher(Base):
+    __tablename__ = "watchers"
+    __table_args__ = (UniqueConstraint("issue_id", "user_id", name="uq_watchers_issue_user"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    org_id: Mapped[int] = mapped_column(ForeignKey("orgs.id"), index=True)
+    issue_id: Mapped[int] = mapped_column(ForeignKey("issues.id"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class IdempotencyRecord(Base):
     __tablename__ = "idempotency_keys"
     __table_args__ = (

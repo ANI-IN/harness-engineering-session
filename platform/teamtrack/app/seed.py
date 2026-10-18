@@ -11,6 +11,7 @@ from app.repositories import members as members_repo
 from app.repositories import orgs as orgs_repo
 from app.repositories import projects as projects_repo
 from app.repositories import users as users_repo
+from app.repositories import watchers as watchers_repo
 
 
 @dataclass(frozen=True)
@@ -54,6 +55,15 @@ _TITLES = [
     "Broken link in footer",
 ]
 _PRIORITIES = ["low", "medium", "high"]
+# Each org's member watches the org's first two issues: watcher ids 1-2 (Acme), 3-4 (Globex).
+SEED_WATCHERS = {ACME.slug: (1, 2), GLOBEX.slug: (3, 4)}
+
+
+def _seed_watchers(session: Session) -> None:
+    for spec, _name, _projects in _ORGS:
+        for issue_id, watcher_id in zip(spec.issues[:2], SEED_WATCHERS[spec.slug], strict=True):
+            watcher = watchers_repo.add(session, spec.org_id, issue_id, spec.member)
+            assert watcher.id == watcher_id
 
 
 def seed(session: Session) -> None:
@@ -93,4 +103,5 @@ def seed(session: Session) -> None:
                     spec.admin,
                 )
                 assert issue.id == next(issue_ids)
+    _seed_watchers(session)
     session.commit()

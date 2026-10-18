@@ -53,3 +53,17 @@ def add(
 def list_all_legacy(session: Session, offset: int, limit: int) -> list[Issue]:
     """LEGACY (used only by /v1/issues). Not tenant-scoped: do not use or copy this function."""
     return list(session.scalars(select(Issue).order_by(Issue.id).offset(offset).limit(limit)))
+
+
+def get_many(session: Session, org_id: int, project_id: int, issue_ids: list[int]) -> list[Issue]:
+    """Live issues of one project in the org among `issue_ids` (missing ids are left out)."""
+    return list(
+        session.scalars(
+            select(Issue).where(
+                Issue.org_id == org_id,
+                Issue.project_id == project_id,
+                Issue.id.in_(issue_ids),
+                Issue.deleted_at.is_(None),
+            )
+        )
+    )

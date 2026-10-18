@@ -116,3 +116,34 @@ def delete(session: Session, actor: Actor, issue_id: int) -> None:
     _touch(issue)
     audit.record(session, actor, "issue.delete", "issue", issue.id)
     session.commit()
+
+
+def bulk_close(
+    session: Session, actor: Actor, project_id: int, issue_ids: list[int]
+) -> tuple[list[int], list[tuple[int, str]]]:
+    """Close every in-progress issue in `issue_ids` (all of one project) in one transaction.
+
+    Atomic: if any id is not a live issue of that project in the caller's org, nothing changes
+    (404). Issues that are already done or cannot move to done are skipped with a reason. One
+    audit row per request."""
+    if len(set(issue_ids)) != len(issue_ids):
+        raise Invalid("issue_ids must be distinct")
+    project = projects.get(session, actor, project_id)
+    found = {i.id: i for i in issues_repo.get_many(session, actor.org_id, project.id, issue_ids)}
+    if len(found) != len(issue_ids):
+        raise NotFound("issue not found in this project")
+    closed: list[int] = []
+    skipped: list[tuple[int, str]] = []
+    for issue_id in issue_ids:
+        issue = found[issue_id]
+        if issue.status == "done":
+            skipped.append((issue_id, "already_done"))
+        elif "done" not in TRANSITIONS.get(issue.status, frozenset()):
+            skipped.append((issue_id, "invalid_transition"))
+        else:
+            issue.status = "done"
+            _touch(issue)
+            closed.append(issue_id)
+    audit.record(session, actor, "issue.bulk_close", "project", project.id)
+    session.commit()
+    return closed, skipped

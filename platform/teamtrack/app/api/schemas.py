@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 Role = Literal["admin", "member", "viewer"]
 Status = Literal["open", "in_progress", "done"]
@@ -125,6 +125,27 @@ class AssignIn(_In):
 
 class TransitionIn(_In):
     status: Status
+
+
+class BulkCloseIn(_In):
+    issue_ids: list[Annotated[int, Field(ge=1, le=2**63 - 1)]] = Field(min_length=1, max_length=100)
+
+    @field_validator("issue_ids")
+    @classmethod
+    def _distinct(cls, value: list[int]) -> list[int]:
+        if len(set(value)) != len(value):
+            raise ValueError("issue_ids must be distinct")
+        return value
+
+
+class BulkSkipped(BaseModel):
+    id: int
+    reason: Literal["already_done", "invalid_transition"]
+
+
+class BulkCloseOut(BaseModel):
+    closed: list[int]
+    skipped: list[BulkSkipped]
 
 
 class HealthOut(BaseModel):
